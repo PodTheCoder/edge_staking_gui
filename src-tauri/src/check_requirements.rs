@@ -43,7 +43,6 @@ pub fn check_os_type() -> Result<String, String>{
     }
 }
 
-
 /// Check processor architecture with bitness. eg. arm64
 pub fn check_processor_architecture() -> Result<String, String> {    
     let processor_brand = get_cpu_info::main();
@@ -51,8 +50,11 @@ pub fn check_processor_architecture() -> Result<String, String> {
     match processor_brand{
         Ok(processor_brand) => {
             let mut processor_architecture_str = String::from(processor_brand);
+
             let bitness_str = get_os_bitness();
-            if !(bitness_str == "64-bit"){
+            let supported_bitness = String::from("64-bit");
+            
+            if !(bitness_str == supported_bitness){
                 return Err(format!("Not a 64 bit processor. Your bitness = {}", bitness_str))
             }
 
