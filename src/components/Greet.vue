@@ -11,6 +11,7 @@ async function greet() {
 }
 </script>
 
+<!-- TODO: Rework to Device Add functionality. -->
 <template>
   <div class="card">
     <input id="greet-input" v-model="name" placeholder="Enter a name..." />
