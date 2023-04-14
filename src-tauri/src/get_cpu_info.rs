@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 /// Checks if processor brand is supported, and converts to a more accessible naming
 fn check_supported_processor_brand(processor_brand: String) -> Result<String, String> {
-    let mut supported_brand_name_dict = HashMap::new();
+    let mut supported_brand_name_dict: HashMap<String, String> = HashMap::new();
     supported_brand_name_dict.insert(String::from("GenuineIntel"), String::from("Intel x"));
     supported_brand_name_dict.insert(String::from("AuthenticAMD") , String::from("AMD arm"));
 
@@ -13,7 +13,7 @@ fn check_supported_processor_brand(processor_brand: String) -> Result<String, St
             return Ok(simple_brand_name)
         }
         None => {
-            let error_str = String::from("Processor brand not recognized.");
+            let error_str = String::from(format!("Processor brand not recognized. Your processor brand: {}", processor_brand));
             return Err(error_str)
         }
     }
