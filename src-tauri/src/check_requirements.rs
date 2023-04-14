@@ -1,7 +1,7 @@
 use os_info::{self, Info};
 use std::collections::HashMap;
 
-use crate::get_cpu_info;
+use crate::check_cpu;
 
 fn get_full_os_info() -> Info{
     let info = os_info::get();
@@ -45,7 +45,7 @@ pub fn check_os_type() -> Result<String, String>{
 
 /// Check processor architecture with bitness. eg. arm64
 pub fn check_processor_architecture() -> Result<String, String> {    
-    let processor_brand = get_cpu_info::main();
+    let processor_brand = check_cpu::main();
 
     match processor_brand{
         Ok(processor_brand) => {

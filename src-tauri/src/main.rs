@@ -3,7 +3,7 @@
 
 // 
 
-mod get_cpu_info;
+mod check_cpu;
 mod check_requirements;
 mod pretty_string;
 
