@@ -9,14 +9,14 @@ import Requirements from "./components/Requirements.vue";
 <template>
   <div class="container">
     <h1>Edge Staking GUI</h1>
-    <h2>1. Check if your system is ready for staking.</h2>
+    <p>1. Check if your system is ready for staking.</p>
 
     <Requirements />
 
-    <h2>2. Check if the latest Edge CLI is installed.</h2>
+    <p>2. Check if the latest Edge CLI is installed.</p>
     <!-- TODO: Compose the url based on the OS + processor + bitness.  -->
     <!-- TODO: Checksum the Edge CLI -->
-    <div class="row">
+    <!-- <div class="row">
       <a href="https://vitejs.dev" target="_blank">
         <img src="/vite.svg" class="logo vite" alt="Vite logo" />
       </a>
@@ -26,7 +26,7 @@ import Requirements from "./components/Requirements.vue";
       <a href="https://vuejs.org/" target="_blank">
         <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
       </a>
-    </div>
+    </div> -->
 
     <p>3. Add your device code.</p>
     <Greet />
