@@ -1,50 +1,41 @@
-use chrono::{Utc, DateTime};
+use chrono::{DateTime, Utc};
 
-mod check_cpu;
-mod check_os;
+mod check_specifications;
 mod pretty_check_string;
 
 // Runs all requirement checks
 pub fn main() -> String {
-    // TODO: Make each string into an async event
     let mut result_string = String::from("");
     // TODO: Create wrapper for last checked.
     let dt: DateTime<Utc> = Utc::now();
 
-    let mut cpu_arch = String::from("");
-    match check_cpu::check_processor_architecture(){
-        Ok(found_cpu_arch) => {
-            let ok_cpu = pretty_check_string::pretty_ok_str(&found_cpu_arch);
-            cpu_arch.push_str(&ok_cpu)}
-        Err(not_found_cpu_arch) => {
-            let err_cpu = pretty_check_string::pretty_err_str(&not_found_cpu_arch);
-            cpu_arch.push_str(&err_cpu)}
+    // TODO: Check OS Name eg. Windows
+    // Check Processor Arch eg. Arch64
+    let processor_info = check_specifications::get_processor_info();
+    if processor_info.full_architecture_supported {
+        result_string.push_str(&pretty_check_string::pretty_ok_str(
+            &processor_info.full_architecture_name,
+        ))
+    } else {
+        result_string.push_str(&pretty_check_string::pretty_err_str(&format!(
+            "Processor Architecture not supported. Processor = {} Bitness = {}",
+            processor_info.raw_processor_brand, processor_info.bitness
+        )))
     }
 
-    let mut os_type= String::from("");
-    match check_os::check_os_type(){
-        Ok(found_os) => {
-            let ok_os = pretty_check_string::pretty_ok_str(&found_os);
-            os_type.push_str(&ok_os)
-        }
-        Err(err_os) => {
-            let err_os = pretty_check_string::pretty_err_str(&err_os);
-            os_type.push_str(&err_os)
-        }
-    }
+    // TODO: Check Docker
+    // TODO: Implement more system checks.
+    // Check Memory
+    // Check CPU
+    // Check Disks
 
-    // Check System Infrastructure
-    result_string.push_str(&format!("OS: {} | ", &os_type));
-    result_string.push_str(&format!("Processor: {} | ", &cpu_arch));
-    //TODO: Docker check. 
-    result_string.push_str("DO you have Docker installed & running? Docker can take a while to start up.");
+    // OS info
 
     println!("Checked all requirements.");
+    result_string.push_str(&format!(
+        "Requirements last checked on: {} ",
+        dt.format("%d %B %Y %H:%M:%S %Z").to_string()
+    ));
 
-    result_string.push_str(&format!("Requirements last checked on: {} ", dt.format("%d %B %Y %H:%M:%S %Z").to_string()));
-    return result_string
-
-    // Check OS
-    // Check Processor Arch
-    // Check Docker
+    return result_string;
 }
