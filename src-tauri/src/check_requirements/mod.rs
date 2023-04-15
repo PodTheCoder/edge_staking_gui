@@ -10,6 +10,14 @@ pub fn main() -> String {
     let dt: DateTime<Utc> = Utc::now();
 
     // TODO: Check OS Name eg. Windows
+
+    let os_info = check_specifications::get_os_info();
+    if os_info.os_name_supported {
+        result_string.push_str(&pretty_check_string::pretty_ok_str(&os_info.os_name));
+    } else {
+        result_string.push_str(&pretty_check_string::pretty_err_str(&os_info.os_name));
+    }
+
     // Check Processor Arch eg. Arch64
     let processor_info = check_specifications::get_processor_info();
     if processor_info.full_architecture_supported {

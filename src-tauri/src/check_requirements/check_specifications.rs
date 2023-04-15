@@ -2,10 +2,10 @@ use os_info;
 use raw_cpuid::CpuId;
 use std::collections::HashMap;
 
-// pub struct OsInfo {
-//     is_os_name_supported: bool,
-//     os_name_basic: String, // eg. Windows, Mac OS
-// }
+pub struct OsInfo {
+    pub os_name_supported: bool,
+    pub os_name: String, // eg. Windows, Mac OS
+}
 
 pub struct ProcessorInfo {
     pub raw_processor_brand: String, // eg. GenuineIntel
@@ -34,29 +34,41 @@ fn is_bitness_supported(bitness: String) -> bool {
     }
 }
 
-/// Gets OS type eg. Windows
 // TODO: Recreate get os type using sysinfo lib
-
+/// Gets OS name eg. Windows
+fn get_os_name() -> String {
+    let info = os_info::get();
+    let os_name = String::from(format!("{}", info.os_type()));
+    return os_name;
+}
 /// If supported, returns OS type eg. Windows
-// pub fn is_os_type_supported() -> Result<String, String>{
-//     let os_type = get_os_type();
+fn is_os_name_supported(os_type: String) -> bool {
+    //TODO: Add more supported OS types (eg. specific distros) https://crates.io/crates/os_info.
+    let supported_os_list = vec!["Windows", "Linux", "Mac OS"];
 
-//     //TODO: Add more supported OS types (eg. specific distros) https://crates.io/crates/os_info.
-//     let supported_os_list = vec!["Windows", "Linux", "Mac OS"];
+    let mut supported_os_dict: HashMap<String, Option<String>> = HashMap::new();
+    for os in supported_os_list {
+        supported_os_dict.insert(String::from(os), None);
+    }
 
-//     let mut supported_os_dict: HashMap<String, Option<String>> = HashMap::new();
-// for os in supported_os_list{
-//         supported_os_dict.insert(String::from(os), None);
-//     }
+    if supported_os_dict.contains_key(&os_type) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
-//     if supported_os_dict.contains_key(&os_type){
-//         return Ok(os_type)
-//     }
-//     else{
-//         return Err(format!("Not a supported OS. Your OS = {}", os_type))
-//     }
-// }
+pub fn get_os_info() -> OsInfo {
+    let os_name = get_os_name();
+    let os_name_supported = is_os_name_supported(os_name.clone());
 
+    let os_info = OsInfo {
+        os_name_supported,
+        os_name,
+    };
+
+    return os_info;
+}
 //
 // get raw brand, check if raw brand supported, convert raw to simple brand, get bitness, check bitness supported, compose full_arch name
 
@@ -130,11 +142,11 @@ pub fn get_processor_info() -> ProcessorInfo {
 
     let processor_info = ProcessorInfo {
         raw_processor_brand,
-        processor_brand_supported: processor_brand_supported,
-        bitness: bitness,
-        bitness_supported: bitness_supported,
-        full_architecture_name: full_architecture_name,
-        full_architecture_supported: full_architecture_supported,
+        processor_brand_supported,
+        bitness,
+        bitness_supported,
+        full_architecture_name,
+        full_architecture_supported,
     };
     return processor_info;
 }
