@@ -205,7 +205,7 @@ pub(crate) fn get_edge_cli() -> String {
     match File::create(filename) {
         Ok(ok_file) => file = ok_file,
         Err(err) => {
-            let error_message = format!("Error creating File based on filename. Error = {}", err);
+            let error_message = format!("Error creating File based on filename. Potential solution: Run the program as administrator. Error = {}", err);
             return error_message;
         }
     }
