@@ -14,8 +14,8 @@ async function greet() {
 <!-- TODO: Rework to Device Add functionality. -->
 <template>
   <div class="card">
-    <input id="greet-input" v-model="name" placeholder="Enter a name..." />
-    <button type="button" @click="greet()">Greet</button>
+    <input id="greet-input" v-model="name" placeholder="Enter device code..." />
+    <button type="button" @click="greet()">Add</button>
   </div>
 
   <p>{{ greetMsg }}</p>
