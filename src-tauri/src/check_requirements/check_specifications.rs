@@ -12,7 +12,7 @@ pub struct ProcessorInfo {
     pub processor_brand_supported: bool,
     pub bitness: String, // eg. 64-bit
     pub bitness_supported: bool,
-    pub full_architecture_name: String, // eg. Intel x64 or AMD arm64
+    pub full_architecture_name: String, // eg. x64 or arm64
     pub full_architecture_supported: bool,
 }
 
@@ -88,8 +88,8 @@ fn get_raw_processor_brand() -> String {
 /// Checks if processor brand is supported, and converts to a more accessible naming with space for bitness
 fn is_processor_brand_supported(raw_processor_brand: String) -> Result<String, String> {
     let mut supported_brand_name_dict: HashMap<String, String> = HashMap::new();
-    supported_brand_name_dict.insert(String::from("GenuineIntel"), String::from("Intel x"));
-    supported_brand_name_dict.insert(String::from("AuthenticAMD"), String::from("AMD arm"));
+    supported_brand_name_dict.insert(String::from("GenuineIntel"), String::from("x"));
+    supported_brand_name_dict.insert(String::from("AuthenticAMD"), String::from("arm"));
 
     match supported_brand_name_dict.get(&raw_processor_brand) {
         Some(simple_name_value) => {
@@ -115,7 +115,7 @@ pub fn get_processor_info() -> ProcessorInfo {
     match is_processor_brand_supported(raw_processor_brand.clone()) {
         Ok(supported_processor) => {
             processor_brand_supported = true;
-            processor_brand_simple_without_bitness = supported_processor; // eg. Intel x
+            processor_brand_simple_without_bitness = supported_processor; // eg. arm
         }
         Err(not_supported_processor) => {
             processor_brand_supported = false;
