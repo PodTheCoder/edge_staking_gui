@@ -20,13 +20,19 @@ fn check_requirements() -> String {
 fn install_edge_cli() -> String {
     return check_requirements::check_edge::get_edge_cli();
 }
+
+#[tauri::command]
+fn get_edge_cli_download_url() -> String {
+    return check_requirements::check_edge::get_edge_cli_download_url();
+}
 //TODO: Add boolean for every phase. (eg. system requirements has been checked.)
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             greet,
             check_requirements,
-            install_edge_cli
+            install_edge_cli,
+            get_edge_cli_download_url
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

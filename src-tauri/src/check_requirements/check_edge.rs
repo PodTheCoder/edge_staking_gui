@@ -61,6 +61,20 @@ pub fn get_checksum(
     return Ok(checksum);
 }
 
+pub fn get_edge_cli_download_url() -> String {
+    let net = String::from("mainnet");
+    let os_info = get_os_info();
+    let os = os_info.cli_os_name;
+    let processor_info = get_processor_info();
+    let arch = processor_info.cli_architecture_name;
+    let version = String::from("latest");
+
+    let filename = String::from("edge.exe");
+
+    let edge_url = create_edge_url(net, os, arch, version, filename);
+
+    return edge_url;
+}
 pub fn is_edge_correctly_downloaded(
     net: String,
     os: String,
