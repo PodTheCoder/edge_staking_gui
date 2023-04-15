@@ -3,6 +3,7 @@ use std::process::Command;
 pub(crate) fn get_docker_status() -> Result<String, String> {
     let output;
 
+    // OS-independent method implemented https://docs.docker.com/config/daemon/troubleshoot/#check-whether-docker-is-running
     match Command::new("docker").arg("info").output() {
         Ok(command_completed_result) => output = command_completed_result,
         Err(command_not_completed) => {
