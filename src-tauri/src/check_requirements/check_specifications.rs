@@ -10,7 +10,7 @@ pub struct OsInfo {
 pub struct ProcessorInfo {
     pub raw_processor_brand: String, // eg. GenuineIntel
     pub processor_brand_supported: bool,
-    pub bitness: String, // eg. 64-bit
+    pub bitness: String, // eg. 64
     pub bitness_supported: bool,
     pub full_architecture_name: String, // eg. x64 or arm64
     pub full_architecture_supported: bool,
@@ -25,7 +25,7 @@ fn get_os_bitness() -> String {
 }
 
 fn is_bitness_supported(bitness: String) -> bool {
-    let supported_bitness = String::from("64-bit");
+    let supported_bitness = String::from("64");
 
     if bitness == supported_bitness {
         return true;
@@ -124,8 +124,9 @@ pub fn get_processor_info() -> ProcessorInfo {
     }
 
     let bitness = get_os_bitness();
+    let bitness_truncated = String::from(&bitness[0..2]);
     // assumption, the operating system bitness matches the processor bitness.
-    let bitness_supported = is_bitness_supported(bitness.clone());
+    let bitness_supported = is_bitness_supported(bitness_truncated.clone());
 
     let full_architecture_supported;
     let full_architecture_name: String;
@@ -133,7 +134,7 @@ pub fn get_processor_info() -> ProcessorInfo {
         full_architecture_supported = true;
         full_architecture_name = String::from(&format!(
             "{}{}",
-            &processor_brand_simple_without_bitness, &bitness
+            &processor_brand_simple_without_bitness, bitness_truncated
         ));
     } else {
         full_architecture_supported = false;
