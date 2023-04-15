@@ -2,6 +2,8 @@
 
 In alpha. Step 1 and 2 are tested on Windows 10. The other remaining steps are still in development.
 
+<img width="594" alt="Edge_Staking_Gui_Ver_0_1_0 - Copy" src="https://user-images.githubusercontent.com/113918164/232255569-e3b9fb54-fe19-478c-9b39-3507dcfc0bdc.PNG">
+
 ## Design Goals
 - Minimal configuration, set it and forget it.
 - Don’t integrate wallet functionality into the GUI. The web Edge wallet already does that well. All a node needs is a stake. When correctly configured, version 1 of the Edge Staking GUI aims to have NO access to the wallet where your XE is held.
