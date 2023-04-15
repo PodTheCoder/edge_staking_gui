@@ -13,16 +13,16 @@ pub fn main() -> String {
 
     let os_info = check_specifications::get_os_info();
     if os_info.os_name_supported {
-        result_string.push_str(&pretty_check_string::pretty_ok_str(&os_info.os_name));
+        result_string.push_str(&pretty_check_string::pretty_ok_str(&os_info.cli_os_name));
     } else {
-        result_string.push_str(&pretty_check_string::pretty_err_str(&os_info.os_name));
+        result_string.push_str(&pretty_check_string::pretty_err_str(&os_info.cli_os_name));
     }
 
     // Check Processor Arch eg. Arch64
     let processor_info = check_specifications::get_processor_info();
     if processor_info.full_architecture_supported {
         result_string.push_str(&pretty_check_string::pretty_ok_str(
-            &processor_info.full_architecture_name,
+            &processor_info.cli_architecture_name,
         ))
     } else {
         result_string.push_str(&pretty_check_string::pretty_err_str(&format!(

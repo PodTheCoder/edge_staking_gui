@@ -3,8 +3,9 @@ use raw_cpuid::CpuId;
 use std::collections::HashMap;
 
 pub struct OsInfo {
+    pub raw_os_name: String, // eg. Windows
     pub os_name_supported: bool,
-    pub os_name: String, // eg. Windows, Mac OS
+    pub cli_os_name: String, // eg. windows, matches CLI naming
 }
 
 pub struct ProcessorInfo {
@@ -12,7 +13,7 @@ pub struct ProcessorInfo {
     pub processor_brand_supported: bool,
     pub bitness: String, // eg. 64
     pub bitness_supported: bool,
-    pub full_architecture_name: String, // eg. x64 or arm64
+    pub cli_architecture_name: String, // eg. x64 or arm64
     pub full_architecture_supported: bool,
 }
 
@@ -36,35 +37,50 @@ fn is_bitness_supported(bitness: String) -> bool {
 
 // TODO: Recreate get os type using sysinfo lib
 /// Gets OS name eg. Windows
-fn get_os_name() -> String {
+fn get_raw_os_name() -> String {
     let info = os_info::get();
     let os_name = String::from(format!("{}", info.os_type()));
     return os_name;
 }
 /// If supported, returns OS type eg. Windows
-fn is_os_name_supported(os_type: String) -> bool {
+fn is_os_name_supported(os_type: String) -> Result<String, String> {
     //TODO: Add more supported OS types (eg. specific distros) https://crates.io/crates/os_info.
-    let supported_os_list = vec!["Windows", "Linux", "Mac OS"];
+    let mut supported_os_dict: HashMap<String, String> = HashMap::new();
+    supported_os_dict.insert(String::from("Windows"), String::from("windows"));
+    supported_os_dict.insert(String::from("Linux"), String::from("linux"));
+    supported_os_dict.insert(String::from("Mac OS"), String::from("macos"));
 
-    let mut supported_os_dict: HashMap<String, Option<String>> = HashMap::new();
-    for os in supported_os_list {
-        supported_os_dict.insert(String::from(os), None);
-    }
-
-    if supported_os_dict.contains_key(&os_type) {
-        return true;
-    } else {
-        return false;
+    match supported_os_dict.get(&os_type) {
+        Some(simple_name_value) => {
+            let cli_os_name = String::from(simple_name_value);
+            return Ok(cli_os_name);
+        }
+        None => {
+            let error_str = String::from(format!("OS not recognized. Your OS: {}", os_type));
+            return Err(error_str);
+        }
     }
 }
 
 pub fn get_os_info() -> OsInfo {
-    let os_name = get_os_name();
-    let os_name_supported = is_os_name_supported(os_name.clone());
+    let raw_os_name = get_raw_os_name();
+    let os_name_supported: bool;
+    let cli_os_name: String;
+    match is_os_name_supported(raw_os_name.clone()) {
+        Ok(simple_os_name) => {
+            cli_os_name = simple_os_name; // eg. Windows will have become windows to match the CLI
+            os_name_supported = true;
+        }
+        Err(wrong_os_name) => {
+            cli_os_name = wrong_os_name;
+            os_name_supported = false;
+        }
+    }
 
     let os_info = OsInfo {
+        raw_os_name,
         os_name_supported,
-        os_name,
+        cli_os_name,
     };
 
     return os_info;
@@ -146,7 +162,7 @@ pub fn get_processor_info() -> ProcessorInfo {
         processor_brand_supported,
         bitness,
         bitness_supported,
-        full_architecture_name,
+        cli_architecture_name: full_architecture_name,
         full_architecture_supported,
     };
     return processor_info;
