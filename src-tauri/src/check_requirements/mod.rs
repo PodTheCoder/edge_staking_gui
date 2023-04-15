@@ -1,5 +1,11 @@
 use chrono::{DateTime, Utc};
 
+use crate::check_requirements::{
+    check_docker::get_docker_status,
+    pretty_check_string::{pretty_err_str, pretty_ok_str},
+};
+
+mod check_docker;
 mod check_specifications;
 mod pretty_check_string;
 
@@ -32,6 +38,10 @@ pub fn main() -> String {
     }
 
     // TODO: Check Docker
+    match get_docker_status() {
+        Ok(docker_ok_string) => result_string.push_str(&pretty_ok_str(&docker_ok_string)),
+        Err(docker_not_ok_string) => result_string.push_str(&pretty_err_str(&docker_not_ok_string)),
+    }
     // TODO: Implement more system checks.
     // Check Memory
     // Check CPU
