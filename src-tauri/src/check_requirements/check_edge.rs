@@ -143,7 +143,6 @@ pub fn is_edge_correctly_downloaded(
 pub(crate) fn get_edge_cli() -> String {
     let filename = String::from("edge.exe");
 
-    // TODO: Check Edge
     let net = String::from("mainnet");
     let os_info = get_os_info();
     let os = os_info.cli_os_name;
@@ -226,7 +225,7 @@ pub(crate) fn get_edge_cli() -> String {
         }
         Err(_) => {
             let errormessage = format!("File was not downloaded correctly. Please remove the edge.exe file from your directory.");
-            // TODO: automatically remove file.
+            // TODO: Automatically remove invalid file.
             return errormessage;
         }
     }

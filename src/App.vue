@@ -15,27 +15,25 @@ import Get_Edge_Cli_Download from "./components/Get_Edge_Cli_Download_Url.vue"
     <Requirements />
 
     <p>2. Install the latest Edge CLI.</p>
-    <p>Option 1: Automatic install. (Administrator permission required)</p>
-    <p>Note: The automatic install can make the Edge Staking GUI temporarily unresponsive.</p>
+  <p>Option 1: Automatic install. (Administrator permission required)</p>
+  <p>Note: The automatic install can make the Edge Staking GUI temporarily unresponsive.</p>
 
   <Install_Edge_Cli />
 
   <p>Option 2: Manually download Edge CLI and place in your staking GUI installation folder.</p>
   <Get_Edge_Cli_Download />
 
-  <!-- TODO: Compose the url based on the OS + processor + bitness.  -->
-  <!-- TODO: Checksum the Edge CLI -->
   <!-- <div class="row">
       <a href="https://vitejs.dev" target="_blank">
-                <img src="/vite.svg" class="logo vite" alt="Vite logo" />
-                                  </a>
-                                  <a href="https://tauri.app" target="_blank">
-                                    <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
-                                  </a>
-                                  <a href="https://vuejs.org/" target="_blank">
-                                    <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-                                  </a>
-                                </div> -->
+                  <img src="/vite.svg" class="logo vite" alt="Vite logo" />
+                                    </a>
+                                    <a href="https://tauri.app" target="_blank">
+                                      <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
+                                    </a>
+                                    <a href="https://vuejs.org/" target="_blank">
+                                      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
+                                    </a>
+                                  </div> -->
 
     <p>3. Add your device code.</p>
     <Greet />

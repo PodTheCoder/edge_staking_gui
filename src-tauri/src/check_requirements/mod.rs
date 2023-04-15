@@ -16,8 +16,6 @@ pub fn main() -> String {
     // TODO: Create wrapper for last checked.
     let dt: DateTime<Utc> = Utc::now();
 
-    // TODO: Check OS Name eg. Windows
-
     let os_info = check_specifications::get_os_info();
     if os_info.os_name_supported {
         result_string.push_str(&pretty_check_string::pretty_ok_str(&os_info.cli_os_name));
@@ -38,24 +36,15 @@ pub fn main() -> String {
         )))
     }
 
-    // TODO: Check Docker
     match get_docker_status() {
         Ok(docker_ok_string) => result_string.push_str(&pretty_ok_str(&docker_ok_string)),
         Err(docker_not_ok_string) => result_string.push_str(&pretty_err_str(&docker_not_ok_string)),
     }
 
-    // TODO: Check Edge
     let net = String::from("mainnet");
     let os = os_info.cli_os_name;
     let arch = processor_info.cli_architecture_name;
     let version = String::from("latest");
-
-    // match check_edge::get_checksum(net.clone(), os.clone(), arch.clone(), version.clone()) {
-    //     Ok(ok_checksum_str) => checksum = ok_checksum_str,
-    //     Err(err_checksum_str) => {
-    //         checksum = String::from(format!("Checksum not found. Err = {}", err_checksum_str))
-    //     }
-    // }
 
     match check_edge::is_edge_correctly_downloaded(
         net.clone(),

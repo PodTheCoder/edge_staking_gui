@@ -25,7 +25,7 @@ fn install_edge_cli() -> String {
 fn get_edge_cli_download_url() -> String {
     return check_requirements::check_edge::get_edge_cli_download_url();
 }
-//TODO: Add boolean for every phase. (eg. system requirements has been checked.)
+//TODO: Add persistent boolean if initialization is completed.
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
