@@ -97,8 +97,8 @@ fn is_processor_brand_supported(raw_processor_brand: String) -> Result<String, S
 pub fn get_processor_info() -> ProcessorInfo {
     let raw_processor_brand = get_raw_processor_brand();
 
-    let mut processor_brand_supported = false;
-    let mut processor_brand_simple_without_bitness = String::from("");
+    let processor_brand_supported;
+    let processor_brand_simple_without_bitness;
 
     match is_processor_brand_supported(raw_processor_brand.clone()) {
         Ok(supported_processor) => {
@@ -115,17 +115,17 @@ pub fn get_processor_info() -> ProcessorInfo {
     // assumption, the operating system bitness matches the processor bitness.
     let bitness_supported = is_bitness_supported(bitness.clone());
 
-    let mut full_architecture_name = String::from("");
-    let mut full_architecture_supported = false;
+    let full_architecture_supported;
+    let full_architecture_name: String;
     if bitness_supported && processor_brand_supported {
         full_architecture_supported = true;
-        full_architecture_name.push_str(&format!(
+        full_architecture_name = String::from(&format!(
             "{}{}",
             &processor_brand_simple_without_bitness, &bitness
         ));
     } else {
         full_architecture_supported = false;
-        full_architecture_name.push_str("Full processor architecture not recognized.")
+        full_architecture_name = String::from("Full processor architecture not recognized.");
     }
 
     let processor_info = ProcessorInfo {
