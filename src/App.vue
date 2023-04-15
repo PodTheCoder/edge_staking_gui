@@ -3,7 +3,7 @@
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import Greet from "./components/Greet.vue";
 import Requirements from "./components/Requirements.vue";
-
+import Install_Edge_Cli from "./components/Install_Edge_Cli.vue";
 </script>
 
 <template>
@@ -13,20 +13,23 @@ import Requirements from "./components/Requirements.vue";
 
     <Requirements />
 
-    <p>2. Check if the latest Edge CLI is installed.</p>
-    <!-- TODO: Compose the url based on the OS + processor + bitness.  -->
-    <!-- TODO: Checksum the Edge CLI -->
-    <!-- <div class="row">
+  <p>2. Check if the latest Edge CLI is installed.</p>
+  <p>Note: The initial install can make the Edge Staking GUI temporarily unresponsive.</p>
+
+  <Install_Edge_Cli />
+  <!-- TODO: Compose the url based on the OS + processor + bitness.  -->
+  <!-- TODO: Checksum the Edge CLI -->
+  <!-- <div class="row">
       <a href="https://vitejs.dev" target="_blank">
         <img src="/vite.svg" class="logo vite" alt="Vite logo" />
-      </a>
-      <a href="https://tauri.app" target="_blank">
-        <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
-      </a>
-      <a href="https://vuejs.org/" target="_blank">
-        <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-      </a>
-    </div> -->
+                      </a>
+                      <a href="https://tauri.app" target="_blank">
+                        <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
+                      </a>
+                      <a href="https://vuejs.org/" target="_blank">
+                        <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
+                      </a>
+                    </div> -->
 
     <p>3. Add your device code.</p>
     <Greet />
@@ -35,7 +38,7 @@ import Requirements from "./components/Requirements.vue";
 
     <!-- TODO: Add checkbox for auto starting the staking GUI. -->
 
-    
+
   </div>
 </template>
 

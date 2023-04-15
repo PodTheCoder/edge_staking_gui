@@ -22,9 +22,9 @@ pub(crate) fn get_docker_status() -> Result<String, String> {
             println!("Docker Exit code = {}", exit_code);
 
             if exit_code == docker_installed_and_running_code {
-                return Ok(String::from("Docker is installed & ready."));
+                return Ok(String::from("Docker installed & ready."));
             } else if exit_code == docker_installed_not_running_code {
-                return Err(String::from("Docker is installed but not running."));
+                return Err(String::from("Docker installed but not running."));
             } else {
                 return Err(String::from(format!("Docker exit code not recognized")));
             }
