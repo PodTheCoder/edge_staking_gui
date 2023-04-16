@@ -10,7 +10,8 @@ pub mod check_edge;
 mod check_specifications;
 mod pretty_check_string;
 
-// Runs all requirement checks
+// TODO: Add argument whether to return string.
+/// Runs all system requirement checks
 pub fn main() -> String {
     let mut result_string = String::from("");
     // TODO: Create wrapper for last checked.

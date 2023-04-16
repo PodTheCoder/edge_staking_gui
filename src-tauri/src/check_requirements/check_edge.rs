@@ -9,7 +9,7 @@ use crate::check_requirements::check_specifications::{get_os_info, get_processor
 use crate::check_requirements::pretty_check_string;
 
 // TODO: Rework to Tauri API? https://tauri.app/v1/api/js/http/ . Add progress bar in GUI.
-// Create url to Edge
+/// Create an edge url based on url components
 pub fn create_edge_url(
     net: String,
     os: String,
@@ -34,6 +34,8 @@ pub fn create_edge_url(
 
     return edge_url;
 }
+
+/// Downloads checksum of edge binary
 pub fn get_checksum(
     net: String,
     os: String,
@@ -62,6 +64,7 @@ pub fn get_checksum(
     return Ok(checksum);
 }
 
+/// Creates URL based on user's system. eg. windows user will get link to windows binary.
 pub fn get_edge_cli_download_url() -> String {
     let net = String::from("mainnet");
     let os_info = get_os_info();
@@ -76,6 +79,8 @@ pub fn get_edge_cli_download_url() -> String {
 
     return edge_url;
 }
+
+/// Checks whether the Edge CLI was downloaded correctly by checksumming.
 pub fn is_edge_correctly_downloaded(
     net: String,
     os: String,
@@ -141,6 +146,7 @@ pub fn is_edge_correctly_downloaded(
     }
 }
 
+/// Download the fitting Edge CLI based on user's system.
 pub(crate) fn get_edge_cli() -> String {
     let filename = String::from("edge.exe");
 

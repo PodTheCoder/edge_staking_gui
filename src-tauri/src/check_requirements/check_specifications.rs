@@ -122,6 +122,7 @@ fn is_processor_brand_supported(raw_processor_brand: String) -> Result<String, S
     }
 }
 
+/// Gets info about user's processor. eg. bitness = 86, raw_processor_brand = GenuineIntel
 pub fn get_processor_info() -> ProcessorInfo {
     let raw_processor_brand = get_raw_processor_brand();
 
