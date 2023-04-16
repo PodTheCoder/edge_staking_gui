@@ -8,6 +8,7 @@ use std::{fs, io};
 use crate::check_requirements::check_specifications::{get_os_info, get_processor_info};
 use crate::check_requirements::pretty_check_string;
 
+// TODO: Rework to Tauri API? https://tauri.app/v1/api/js/http/ . Add progress bar in GUI.
 // Create url to Edge
 pub fn create_edge_url(
     net: String,

@@ -4,7 +4,7 @@
 mod check_requirements;
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 // Tauri API allowlist has no impact on Rust std functions.
-
+// Example Frontend: https://github.com/tauri-apps/tauri/blob/dev/examples/api/src/views/Welcome.svelte
 // TODO: Pass appDir and andappLocalDataDir to Rust, writeable folders without need for admin permissions. https://tauri.app/v1/api/js/path#appconfigdir
 // Will need to place the snippet below in the tauri.conf.json
 //   "allowlist": {
