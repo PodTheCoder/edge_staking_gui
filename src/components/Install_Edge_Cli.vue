@@ -4,7 +4,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 
 const Requirements_response = ref("");
 
-async function check_requirements() {
+async function install_edge_cli() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   Requirements_response.value = await invoke("install_edge_cli");
 }
@@ -12,7 +12,7 @@ async function check_requirements() {
 
 <template>
   <div class="card">
-    <button type="button" @click="check_requirements()">Install Edge Cli</button>
+    <button type="button" @click="install_edge_cli()">Install Edge Cli</button>
   </div>
 
   <p>{{ Requirements_response }}</p>
