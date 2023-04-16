@@ -1,11 +1,16 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-//
-
 mod check_requirements;
-
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+// Tauri API allowlist has no impact on Rust std functions.
+
+// TODO: Pass appDir and andappLocalDataDir to Rust, writeable folders without need for admin permissions. https://tauri.app/v1/api/js/path#appconfigdir
+// Will need to place the snippet below in the tauri.conf.json
+//   "allowlist": {
+//     "path": {
+//       "all": "true"
+//      }
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
