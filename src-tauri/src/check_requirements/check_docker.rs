@@ -8,7 +8,7 @@ pub(crate) fn get_docker_status() -> Result<String, String> {
         Ok(command_completed_result) => output = command_completed_result,
         Err(command_not_completed) => {
             return Err(format!(
-                "Docker command was not completed. Error = {}",
+                "Docker command was not completed. Is Docker installed & did you restart your computer? Docker installation link: https://www.docker.com/products/docker-desktop/ Error = {}",
                 command_not_completed.to_string()
             ))
         }
@@ -25,7 +25,7 @@ pub(crate) fn get_docker_status() -> Result<String, String> {
             if exit_code == docker_installed_and_running_code {
                 return Ok(String::from("Docker installed & ready."));
             } else if exit_code == docker_installed_not_running_code {
-                return Err(String::from("Docker installed but not running."));
+                return Err(String::from("Docker installed but not running/ready."));
             } else {
                 return Err(String::from(format!("Docker exit code not recognized")));
             }
