@@ -81,8 +81,15 @@ pub fn device_stop() -> String {
 }
 
 pub fn device_start() -> String {
-    println!("Starting host.");
     let cli_command = String::from("device start");
+    match command_edge_cli(cli_command) {
+        Ok(ok_str) => return ok_str,
+        Err(err_str) => return err_str,
+    }
+}
+
+pub fn device_info() -> String {
+    let cli_command = String::from("device info");
     match command_edge_cli(cli_command) {
         Ok(ok_str) => return ok_str,
         Err(err_str) => return err_str,

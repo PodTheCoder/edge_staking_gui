@@ -45,6 +45,11 @@ fn device_start() -> String {
 fn device_stop() -> String {
     return control_edge_cli::device_stop();
 }
+
+#[tauri::command]
+fn device_info() -> String {
+    return control_edge_cli::device_info();
+}
 //TODO: Add persistent boolean if initialization is completed.
 fn main() {
     tauri::Builder::default()
@@ -54,7 +59,8 @@ fn main() {
             install_edge_cli,
             get_edge_cli_download_url,
             device_start,
-            device_stop
+            device_stop,
+            device_info
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
