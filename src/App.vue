@@ -5,6 +5,7 @@ import Greet from "./components/Greet.vue";
 import Requirements from "./components/Requirements.vue";
 import Install_Edge_Cli from "./components/Install_Edge_Cli.vue";
 import Get_Edge_Cli_Download from "./components/Get_Edge_Cli_Download_Url.vue"
+import Node_Control from "./components/Node_Control.vue";
 </script>
 
 <template>
@@ -27,6 +28,7 @@ import Get_Edge_Cli_Download from "./components/Get_Edge_Cli_Download_Url.vue"
     <Greet />
 
     <p>4. Stake!</p>
+    <Node_Control />
 
     <!-- TODO: Add checkbox for auto starting the staking GUI. -->
 

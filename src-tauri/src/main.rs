@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod check_requirements;
+mod control_edge_cli;
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 // Tauri API allowlist has no impact on Rust std functions.
 // Example Frontend: https://github.com/tauri-apps/tauri/blob/dev/examples/api/src/views/Welcome.svelte
@@ -19,7 +20,10 @@ fn greet(name: &str) -> String {
 
 #[tauri::command]
 fn check_requirements() -> String {
-    return check_requirements::main();
+    match check_requirements::main() {
+        Ok(res) => return res,
+        Err(res) => return res,
+    }
 }
 
 #[tauri::command]
@@ -31,6 +35,16 @@ fn install_edge_cli() -> String {
 fn get_edge_cli_download_url() -> String {
     return check_requirements::check_edge::get_edge_cli_download_url();
 }
+
+#[tauri::command]
+fn device_start() -> String {
+    return control_edge_cli::device_start();
+}
+
+#[tauri::command]
+fn device_stop() -> String {
+    return control_edge_cli::device_stop();
+}
 //TODO: Add persistent boolean if initialization is completed.
 fn main() {
     tauri::Builder::default()
@@ -38,7 +52,9 @@ fn main() {
             greet,
             check_requirements,
             install_edge_cli,
-            get_edge_cli_download_url
+            get_edge_cli_download_url,
+            device_start,
+            device_stop
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
