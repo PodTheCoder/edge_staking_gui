@@ -65,16 +65,11 @@ fn command_edge_cli(datadir: String, cli_command: String) -> Result<String, Stri
                     stderr_output_str
                 ));
             } else {
-                return Err(String::from(format!("Docker exit code not recognized")));
+                return Err(String::from(format!("Edge exit code not recognized")));
             }
         }
-        None => Err(String::from("Docker running status could not be checked.")),
+        None => Err(String::from("Edge running status could not be checked.")),
     }
-
-    // output Docker log.
-
-    // io::stdout().write_all(&output.stdout).unwrap();
-    // io::stderr().write_all(&output.stderr).unwrap();
 }
 pub fn device_stop(datadir: String) -> String {
     let cli_command = String::from("device stop");
