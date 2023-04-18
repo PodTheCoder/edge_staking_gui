@@ -33,6 +33,10 @@ pub fn create_edge_url(
     return edge_url;
 }
 
+// TODO: Add base_download_path arg, to download without needing admin permission
+// https://github.com/tauri-apps/tauri/blob/dev/examples/api/src/views/Welcome.svelte
+// https://github.com/tauri-apps/tauri/blob/dev/examples/api/src/views/FileSystem.svelte
+// API documentation, app data dir does not need admin permission: https://tauri.app/v1/api/js/path#appdatadir
 /// Downloads checksum of latest edge binary for system
 pub fn get_edge_cli_checksum() -> Result<String, String> {
     let checksum_url = get_edge_cli_checksum_url();
@@ -158,6 +162,10 @@ fn hash_file(file_path: &Path) -> Result<String, String> {
     return Ok(hash_string);
 }
 
+// TODO: Add base_download_path arg, to download without needing admin permission
+// https://github.com/tauri-apps/tauri/blob/dev/examples/api/src/views/Welcome.svelte
+// https://github.com/tauri-apps/tauri/blob/dev/examples/api/src/views/FileSystem.svelte
+// API documentation, app data dir does not need admin permission: https://tauri.app/v1/api/js/path#appdatadir
 /// Download the fitting Edge CLI based on user's system.
 pub(crate) fn get_edge_cli() -> String {
     let filename = String::from("edge.exe");
