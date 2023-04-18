@@ -42,17 +42,7 @@ pub fn main() -> String {
         Err(docker_not_ok_string) => result_string.push_str(&pretty_err_str(&docker_not_ok_string)),
     }
 
-    let net = String::from("mainnet");
-    let os = os_info.cli_os_name;
-    let arch = processor_info.cli_architecture_name;
-    let version = String::from("latest");
-
-    match check_edge::is_edge_correctly_downloaded(
-        net.clone(),
-        os.clone(),
-        arch.clone(),
-        version.clone(),
-    ) {
+    match check_edge::is_edge_correctly_downloaded() {
         Ok(edge_downloaded_correctly) => {
             result_string.push_str(&pretty_ok_str(&edge_downloaded_correctly))
         }
