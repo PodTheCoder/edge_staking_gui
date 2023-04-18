@@ -35,6 +35,7 @@ pub fn create_edge_url(
     return edge_url;
 }
 
+// TODO: Replace args with single url based on get_edge_cli_download_url
 /// Downloads checksum of edge binary
 pub fn get_checksum(
     net: String,
@@ -45,6 +46,7 @@ pub fn get_checksum(
     // Send a GET request and wait for the response headers.
     // Must be `mut` so we can read the response body.
 
+    // TODO: Replace filename with checksum.
     let filename = String::from("checksum");
     let download_url = create_edge_url(net, os, arch, version, filename);
     println!("Download Url: {}", download_url);
@@ -80,6 +82,7 @@ pub fn get_edge_cli_download_url() -> String {
     return edge_url;
 }
 
+// TODO: Replace args with single url based on get_edge_url
 /// Checks whether the Edge CLI was downloaded correctly by checksumming.
 pub fn is_edge_correctly_downloaded(
     net: String,
@@ -107,26 +110,14 @@ pub fn is_edge_correctly_downloaded(
             }
         }
 
-        // TODO: Rework to more elegant.
-        let mut edge_binary: File;
-        match fs::File::open(edge_cli_path) {
-            Ok(valid_path) => edge_binary = valid_path,
-            Err(invalid_path) => {
-                panic!(
-                    "Path no longer exists after opening. Error = {}",
-                    invalid_path
-                )
+        let hash_string: String;
+        match hash_file(edge_cli_path) {
+            Ok(hash_str) => hash_string = hash_str,
+            Err(err_str) => {
+                let error_message = String::from(err_str);
+                return Err(error_message);
             }
         }
-        let mut hasher = Sha256::new();
-
-        match io::copy(&mut edge_binary, &mut hasher) {
-            Ok(_) => {}
-            Err(_) => {}
-        }
-        let hash = hasher.finalize();
-
-        let hash_string = format!("{:x}", hash);
 
         if calculated_checksum.eq(&hash_string) {
             println!("Checksum matches: {}.", calculated_checksum);
@@ -146,6 +137,31 @@ pub fn is_edge_correctly_downloaded(
     }
 }
 
+fn hash_file(file_path: &Path) -> Result<String, String> {
+    let mut file_binary: File;
+    match fs::File::open(file_path) {
+        Ok(valid_path) => file_binary = valid_path,
+        Err(invalid_path) => {
+            let error_message = String::from(format!(
+                "Path no longer exists after opening. Invalid Path = {}",
+                invalid_path
+            ));
+            return Err(error_message);
+        }
+    }
+    let mut hasher = Sha256::new();
+
+    match io::copy(&mut file_binary, &mut hasher) {
+        Ok(_) => {}
+        Err(_) => {}
+    }
+    let hash = hasher.finalize();
+
+    let hash_string = format!("{:x}", hash);
+    return Ok(hash_string);
+}
+
+// TODO: Replace args with single url based on get_edge_url
 /// Download the fitting Edge CLI based on user's system.
 pub(crate) fn get_edge_cli() -> String {
     let filename = String::from("edge.exe");
