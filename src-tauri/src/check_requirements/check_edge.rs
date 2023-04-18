@@ -122,7 +122,7 @@ pub fn is_edge_correctly_downloaded() -> Result<String, String> {
             return Ok(success_message);
         } else {
             let checksums_do_not_match_err = String::from(format!(
-                "Checksums do not match. Download checksum: {} . Calculated checksum: {} .",
+                "Edge CLI not correctly downloaded. Download checksum: {} . Calculated checksum: {} .",
                 calculated_checksum, hash_string
             ));
 
