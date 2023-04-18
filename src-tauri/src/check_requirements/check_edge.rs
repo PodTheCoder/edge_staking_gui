@@ -9,7 +9,7 @@ use crate::check_requirements::check_specifications::{get_os_info, get_processor
 use crate::check_requirements::pretty_check_string;
 
 /// Create an edge url based on url components
-pub fn create_edge_url(
+fn create_edge_url(
     net: String,
     os: String,
     arch: String,
@@ -38,7 +38,7 @@ pub fn create_edge_url(
 // https://github.com/tauri-apps/tauri/blob/dev/examples/api/src/views/FileSystem.svelte
 // API documentation, app data dir does not need admin permission: https://tauri.app/v1/api/js/path#appdatadir
 /// Downloads checksum of latest edge binary for system
-pub fn get_edge_cli_checksum() -> Result<String, String> {
+fn get_edge_cli_checksum() -> Result<String, String> {
     let checksum_url = get_edge_cli_checksum_url();
     let download_path = String::from("checksum");
 
