@@ -10,7 +10,6 @@ pub mod check_edge;
 mod check_specifications;
 mod pretty_check_string;
 
-// TODO: Add argument whether to return string.
 /// Runs all system requirement checks
 pub fn main() -> Result<String, String> {
     let mut result_string = String::from("");
