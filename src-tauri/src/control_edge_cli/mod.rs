@@ -1,6 +1,5 @@
 use crate::check_requirements;
 use std::process::Command;
-
 /// Run a command in the Edge Cli
 fn command_edge_cli(datadir: String, cli_command: String) -> Result<String, String> {
     let arglist: Vec<&str> = cli_command.split(' ').collect();

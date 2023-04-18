@@ -1,8 +1,11 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use tauri::Window;
+
 mod check_requirements;
 mod control_edge_cli;
+mod utility_events;
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 // Tauri API allowlist has no impact on Rust std functions.
 // Example Frontend: https://github.com/tauri-apps/tauri/blob/dev/examples/api/src/views/Welcome.svelte
@@ -12,6 +15,8 @@ mod control_edge_cli;
 //     "path": {
 //       "all": "true"
 //      }
+
+const STATUSLISTENER: &str = "program_status_listener";
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -50,7 +55,15 @@ fn device_stop(datadir: &str) -> String {
 fn device_info(datadir: &str) -> String {
     return control_edge_cli::device_info(String::from(datadir));
 }
+
+#[tauri::command]
+fn emit_from_backend(window: Window) {
+    println!("function invoked");
+    utility_events::test_emit(&window, STATUSLISTENER);
+    return;
+}
 //TODO: Add persistent boolean if initialization is completed.
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
@@ -60,7 +73,8 @@ fn main() {
             get_edge_cli_download_url,
             device_start,
             device_stop,
-            device_info
+            device_info,
+            emit_from_backend
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
