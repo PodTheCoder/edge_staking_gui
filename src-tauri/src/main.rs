@@ -19,16 +19,16 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-fn check_requirements() -> String {
-    match check_requirements::main() {
+fn check_requirements(datadir: &str) -> String {
+    match check_requirements::main(String::from(datadir)) {
         Ok(res) => return res,
         Err(res) => return res,
     }
 }
 
 #[tauri::command]
-fn install_edge_cli() -> String {
-    return check_requirements::check_edge::get_edge_cli();
+fn install_edge_cli(datadir: &str) -> String {
+    return check_requirements::check_edge::get_edge_cli(String::from(datadir));
 }
 
 #[tauri::command]
@@ -37,18 +37,18 @@ fn get_edge_cli_download_url() -> String {
 }
 
 #[tauri::command]
-fn device_start() -> String {
-    return control_edge_cli::device_start();
+fn device_start(datadir: &str) -> String {
+    return control_edge_cli::device_start(String::from(datadir));
 }
 
 #[tauri::command]
-fn device_stop() -> String {
-    return control_edge_cli::device_stop();
+fn device_stop(datadir: &str) -> String {
+    return control_edge_cli::device_stop(String::from(datadir));
 }
 
 #[tauri::command]
-fn device_info() -> String {
-    return control_edge_cli::device_info();
+fn device_info(datadir: &str) -> String {
+    return control_edge_cli::device_info(String::from(datadir));
 }
 //TODO: Add persistent boolean if initialization is completed.
 fn main() {

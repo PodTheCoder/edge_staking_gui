@@ -1,21 +1,25 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
+import { appLocalDataDir } from '@tauri-apps/api/path';
 
-const Requirements_response = ref("");
+const Node_Control_Response = ref("");
 
 async function device_start_emitter() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-  Requirements_response.value = await invoke("device_start");
+  const appLocalDataDirPath = await appLocalDataDir();
+  Node_Control_Response.value = await invoke("device_start", { datadir: appLocalDataDirPath });
 }
 async function device_stop_emitter() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-  Requirements_response.value = await invoke("device_stop");
+  const appLocalDataDirPath = await appLocalDataDir();
+  Node_Control_Response.value = await invoke("device_stop", { datadir: appLocalDataDirPath });
 }
 
 async function device_info_emitter() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-  Requirements_response.value = await invoke("device_info");
+  const appLocalDataDirPath = await appLocalDataDir();
+  Node_Control_Response.value = await invoke("device_info", { datadir: appLocalDataDirPath });
 }
 </script>
 
@@ -28,5 +32,5 @@ async function device_info_emitter() {
     <button type="button" @click="device_info_emitter()">Info</button>
   </div>
 
-  <p>{{ Requirements_response }}</p>
+  <p>{{ Node_Control_Response }}</p>
 </template>

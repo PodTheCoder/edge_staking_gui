@@ -3,6 +3,7 @@ use sha2::{Digest, Sha256};
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
+use std::path::PathBuf;
 use std::{fs, io};
 
 use crate::check_requirements::check_specifications::{get_os_info, get_processor_info};
@@ -38,11 +39,13 @@ fn create_edge_url(
 // https://github.com/tauri-apps/tauri/blob/dev/examples/api/src/views/FileSystem.svelte
 // API documentation, app data dir does not need admin permission: https://tauri.app/v1/api/js/path#appdatadir
 /// Downloads checksum of latest edge binary for system
-fn get_edge_cli_checksum() -> Result<String, String> {
+fn get_edge_cli_checksum(datadir: String) -> Result<String, String> {
     let checksum_url = get_edge_cli_checksum_url();
-    let download_path = String::from("checksum");
 
-    match download_file(checksum_url.clone(), download_path.clone()) {
+    let filename = String::from("checksum");
+    let filepath = format!("{}{}", datadir, filename);
+
+    match download_file(checksum_url.clone(), filepath.clone()) {
         Ok(_) => {}
         Err(err) => {
             let error_message = err;
@@ -53,7 +56,7 @@ fn get_edge_cli_checksum() -> Result<String, String> {
     println!("Checksum download Url: {}", checksum_url);
 
     let checksum: String;
-    match fs::read_to_string(download_path) {
+    match fs::read_to_string(filepath) {
         Ok(checksum_str) => checksum = checksum_str, // Checksum is SHA256
         Err(err) => {
             let error_message = err.to_string();
@@ -91,17 +94,18 @@ pub fn get_edge_cli_download_url() -> String {
 }
 
 /// Checks whether the Edge CLI was downloaded correctly by checksumming.
-pub fn is_edge_correctly_downloaded() -> Result<String, String> {
+pub fn is_edge_correctly_downloaded(datadir: String) -> Result<String, String> {
     // Send a GET request and wait for the response headers.
     // Must be `mut` so we can read the response body.
 
     let filename = String::from("edge.exe");
+    let filepath = format!("{}{}", datadir, filename);
 
-    let edge_cli_path = Path::new(&filename);
+    let edge_cli_path = Path::new(&filepath);
 
     if edge_cli_path.exists() {
         let calculated_checksum;
-        match get_edge_cli_checksum() {
+        match get_edge_cli_checksum(datadir) {
             Ok(ok_checksum_str) => calculated_checksum = ok_checksum_str,
             Err(err_checksum_str) => {
                 calculated_checksum = String::from(format!(
@@ -167,10 +171,12 @@ fn hash_file(file_path: &Path) -> Result<String, String> {
 // https://github.com/tauri-apps/tauri/blob/dev/examples/api/src/views/FileSystem.svelte
 // API documentation, app data dir does not need admin permission: https://tauri.app/v1/api/js/path#appdatadir
 /// Download the fitting Edge CLI based on user's system.
-pub(crate) fn get_edge_cli() -> String {
+pub(crate) fn get_edge_cli(datadir: String) -> String {
     let filename = String::from("edge.exe");
+    let filepath = format!("{}{}", datadir, filename);
+    println!("Hello, {:?}! You've been greeted from Rust!", filepath);
 
-    match is_edge_correctly_downloaded() {
+    match is_edge_correctly_downloaded(filepath.clone()) {
         Ok(_) => {
             let result_string = pretty_check_string::pretty_ok_str(&String::from(
                 "Latest Edge CLI is already correctly installed.",
@@ -183,7 +189,7 @@ pub(crate) fn get_edge_cli() -> String {
     let cli_download_url = get_edge_cli_download_url();
     println!("Download Url: {}", cli_download_url);
 
-    match download_file(cli_download_url, filename) {
+    match download_file(cli_download_url, filepath.clone()) {
         Ok(_) => {}
         Err(err) => {
             let error_message = String::from(err);
@@ -191,7 +197,7 @@ pub(crate) fn get_edge_cli() -> String {
         }
     }
 
-    match is_edge_correctly_downloaded() {
+    match is_edge_correctly_downloaded(datadir) {
         Ok(_) => {
             let result_string = pretty_check_string::pretty_ok_str(&String::from(
                 "Latest Edge CLI downloaded & correctly installed.",
@@ -208,7 +214,9 @@ pub(crate) fn get_edge_cli() -> String {
 
 // TODO: Rework to use Tauri API? https://tauri.app/v1/api/js/http/ . Add progress bar in GUI.
 /// Download a file from a url to a local download path
-fn download_file(download_url: String, download_path: String) -> Result<(), String> {
+fn download_file(download_url: String, download_path_str: String) -> Result<(), String> {
+    let download_path = PathBuf::new();
+    let download_path = download_path.join(download_path_str);
     let mut response;
     match isahc::get(download_url) {
         Ok(successful_response) => response = successful_response,

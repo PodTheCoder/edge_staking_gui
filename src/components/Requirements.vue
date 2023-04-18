@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
+import { appLocalDataDir } from '@tauri-apps/api/path';
 
-const Requirements_response = ref("");
+const Requirements_Response = ref("");
 
 async function check_requirements() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-  Requirements_response.value = await invoke("check_requirements");
+
+  const appLocalDataDirPath = await appLocalDataDir();
+  Requirements_Response.value = await invoke("check_requirements", { datadir: appLocalDataDirPath });
 }
 </script>
 
@@ -15,5 +18,5 @@ async function check_requirements() {
     <button type="button" @click="check_requirements()">Check System</button>
   </div>
 
-  <p>{{ Requirements_response }}</p>
+  <p>{{ Requirements_Response }}</p>
 </template>

@@ -11,7 +11,7 @@ mod check_specifications;
 mod pretty_check_string;
 
 /// Runs all system requirement checks
-pub fn main() -> Result<String, String> {
+pub fn main(datadir: String) -> Result<String, String> {
     let mut result_string = String::from("");
     // TODO: Create wrapper for last checked.
     let dt: DateTime<Utc> = Utc::now();
@@ -51,7 +51,7 @@ pub fn main() -> Result<String, String> {
         }
     }
 
-    match check_edge::is_edge_correctly_downloaded() {
+    match check_edge::is_edge_correctly_downloaded(datadir) {
         Ok(edge_downloaded_correctly) => {
             result_string.push_str(&pretty_ok_str(&edge_downloaded_correctly))
         }

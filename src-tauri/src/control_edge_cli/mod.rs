@@ -2,12 +2,13 @@ use crate::check_requirements;
 use std::process::Command;
 
 /// Run a command in the Edge Cli
-fn command_edge_cli(cli_command: String) -> Result<String, String> {
+fn command_edge_cli(datadir: String, cli_command: String) -> Result<String, String> {
     let arglist: Vec<&str> = cli_command.split(' ').collect();
     let output;
 
+    println!("{}", datadir);
     // Requirements must first be met before commands can be run.
-    match check_requirements::main() {
+    match check_requirements::main(datadir.clone()) {
         Ok(_) => {}
         Err(err) => {
             let error_message = format!("You need to pass all system checks before running an Edge CLI command. Your system check results: {}", err);
@@ -16,7 +17,10 @@ fn command_edge_cli(cli_command: String) -> Result<String, String> {
     }
     println!("Invoking command in Edge CLI = {}", cli_command);
     // TODO: Add edge binary program path as arg
-    match Command::new(r".\edge.exe").args(arglist).output() {
+    let bin_name = "edge.exe";
+    let bin_path = format!("{}{}", datadir.clone(), bin_name);
+
+    match Command::new(bin_path).args(arglist).output() {
         Ok(command_completed_result) => {
             output = command_completed_result;
             println!(
@@ -72,25 +76,25 @@ fn command_edge_cli(cli_command: String) -> Result<String, String> {
     // io::stdout().write_all(&output.stdout).unwrap();
     // io::stderr().write_all(&output.stderr).unwrap();
 }
-pub fn device_stop() -> String {
+pub fn device_stop(datadir: String) -> String {
     let cli_command = String::from("device stop");
-    match command_edge_cli(cli_command) {
+    match command_edge_cli(datadir, cli_command) {
         Ok(ok_str) => return ok_str,
         Err(err_str) => return err_str,
     }
 }
 
-pub fn device_start() -> String {
+pub fn device_start(datadir: String) -> String {
     let cli_command = String::from("device start");
-    match command_edge_cli(cli_command) {
+    match command_edge_cli(datadir, cli_command) {
         Ok(ok_str) => return ok_str,
         Err(err_str) => return err_str,
     }
 }
 
-pub fn device_info() -> String {
+pub fn device_info(datadir: String) -> String {
     let cli_command = String::from("device info");
-    match command_edge_cli(cli_command) {
+    match command_edge_cli(datadir, cli_command) {
         Ok(ok_str) => return ok_str,
         Err(err_str) => return err_str,
     }
