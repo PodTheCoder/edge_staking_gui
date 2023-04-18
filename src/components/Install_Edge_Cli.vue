@@ -12,7 +12,7 @@ async function install_edge_cli() {
 
 <template>
   <div class="card">
-    <button type="button" @click="install_edge_cli()">Install Edge Cli</button>
+    <button type="button" @click="install_edge_cli()">Install latest Edge Cli</button>
   </div>
 
   <p>{{ Requirements_response }}</p>
