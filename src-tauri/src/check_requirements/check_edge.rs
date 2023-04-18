@@ -161,13 +161,6 @@ fn hash_file(file_path: &Path) -> Result<String, String> {
 pub(crate) fn get_edge_cli() -> String {
     let filename = String::from("edge.exe");
 
-    let net = String::from("mainnet");
-    let os_info = get_os_info();
-    let os = os_info.cli_os_name;
-    let processor_info = get_processor_info();
-    let arch = processor_info.cli_architecture_name;
-    let version = String::from("latest");
-
     match is_edge_correctly_downloaded() {
         Ok(_) => {
             let result_string = pretty_check_string::pretty_ok_str(&String::from(
@@ -178,13 +171,7 @@ pub(crate) fn get_edge_cli() -> String {
         Err(_) => {}
     }
 
-    let cli_download_url = create_edge_url(
-        net.clone(),
-        os.clone(),
-        arch.clone(),
-        version.clone(),
-        filename.clone(),
-    );
+    let cli_download_url = get_edge_cli_download_url();
     println!("Download Url: {}", cli_download_url);
 
     // let mut response =
