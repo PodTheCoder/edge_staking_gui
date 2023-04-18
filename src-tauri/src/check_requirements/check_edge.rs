@@ -26,7 +26,6 @@ pub fn create_edge_url(
     }
 
     edge_url = add_url_component(edge_url.clone(), net.clone()); // eg. mainnet
-
     edge_url = add_url_component(edge_url.clone(), os.clone()); // eg. windows
     edge_url = add_url_component(edge_url.clone(), arch.clone()); // eg. arm64
     edge_url = add_url_component(edge_url.clone(), version.clone()); // eg. latest
@@ -83,7 +82,6 @@ pub fn get_edge_cli_download_url() -> String {
     return edge_cli_url;
 }
 
-// TODO: Replace args with single url based on get_edge_url
 /// Checks whether the Edge CLI was downloaded correctly by checksumming.
 pub fn is_edge_correctly_downloaded() -> Result<String, String> {
     // Send a GET request and wait for the response headers.
@@ -156,7 +154,6 @@ fn hash_file(file_path: &Path) -> Result<String, String> {
     return Ok(hash_string);
 }
 
-// TODO: Replace args with single url based on get_edge_url
 /// Download the fitting Edge CLI based on user's system.
 pub(crate) fn get_edge_cli() -> String {
     let filename = String::from("edge.exe");
