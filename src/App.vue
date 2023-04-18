@@ -15,7 +15,7 @@ import Node_Control from "./components/Node_Control.vue";
 
     <Requirements />
 
-    <p>2. Install the latest Edge CLI.</p>
+  <p>2. Install the latest Edge CLI.</p>
     <p>Option 1: Automatic install. (Administrator permission required)</p>
     <p>Note: The automatic install can make the Edge Staking GUI temporarily unresponsive.</p>
 
@@ -24,10 +24,11 @@ import Node_Control from "./components/Node_Control.vue";
     <p>Option 2: Manually download Edge CLI and place in your staking GUI installation folder.</p>
     <Get_Edge_Cli_Download />
 
-    <p>3. Add your device code.</p>
-    <Greet />
+    <!-- <p>3. Add your device code.</p>
+          <Greet /> -->
 
-    <p>4. Stake!</p>
+    <p>3. Control your node. Currently requires your device to already be setup. In a future version this setup will also
+      be automated.</p>
     <Node_Control />
 
     <!-- TODO: Add checkbox for auto starting the staking GUI. -->
