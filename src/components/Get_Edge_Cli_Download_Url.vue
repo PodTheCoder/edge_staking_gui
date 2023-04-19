@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
+import { appLocalDataDir } from '@tauri-apps/api/path';
+import { appWindow } from '@tauri-apps/api/window';
 
 const Requirements_response = ref("");
 
 async function get_edge_cli_download_url() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-  Requirements_response.value = await invoke("get_edge_cli_download_url");
+  const appLocalDataDirPath = await appLocalDataDir();
+  Requirements_response.value = await invoke("get_edge_cli_download_url", {
+    datadir: appLocalDataDirPath,
+    window: appWindow,
+  });
 }
 </script>
 

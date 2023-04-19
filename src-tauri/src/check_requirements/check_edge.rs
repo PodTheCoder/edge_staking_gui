@@ -1,3 +1,4 @@
+use crate::BackendCommunicator;
 use isahc::prelude::*;
 use sha2::{Digest, Sha256};
 use std::fs::File;
@@ -39,11 +40,12 @@ fn create_edge_url(
 // https://github.com/tauri-apps/tauri/blob/dev/examples/api/src/views/FileSystem.svelte
 // API documentation, app data dir does not need admin permission: https://tauri.app/v1/api/js/path#appdatadir
 /// Downloads checksum of latest edge binary for system
-fn get_edge_cli_checksum(datadir: String) -> Result<String, String> {
-    let checksum_url = get_edge_cli_checksum_url();
+fn get_edge_cli_checksum(backend_communicator: BackendCommunicator) -> Result<String, String> {
+    let backend_communicator = backend_communicator.clone();
+    let checksum_url = get_edge_cli_checksum_url(backend_communicator.clone());
 
     let filename = String::from("checksum");
-    let filepath = format!("{}{}", datadir, filename);
+    let filepath = format!("{}{}", backend_communicator.data_dir.clone(), filename);
 
     match download_file(checksum_url.clone(), filepath.clone()) {
         Ok(_) => {}
@@ -68,11 +70,11 @@ fn get_edge_cli_checksum(datadir: String) -> Result<String, String> {
 }
 
 // Create URL based on user's system to filename.
-fn get_edge_file_url(filename: String) -> String {
+fn get_edge_file_url(filename: String, backend_communicator: BackendCommunicator) -> String {
     let net = String::from("mainnet");
-    let os_info = get_os_info();
+    let os_info = get_os_info(backend_communicator.clone());
     let os = os_info.cli_os_name;
-    let processor_info = get_processor_info();
+    let processor_info = get_processor_info(backend_communicator.clone());
     let arch = processor_info.cli_architecture_name;
     let version = String::from("latest");
     let edge_url = create_edge_url(net, os, arch, version, filename);
@@ -80,32 +82,34 @@ fn get_edge_file_url(filename: String) -> String {
     return edge_url;
 }
 
-fn get_edge_cli_checksum_url() -> String {
+fn get_edge_cli_checksum_url(backend_communicator: BackendCommunicator) -> String {
     let filename = String::from("checksum");
-    let checksum_url = get_edge_file_url(filename);
+    let checksum_url = get_edge_file_url(filename, backend_communicator);
     return checksum_url;
 }
 /// Creates URL to Edge CLI based on user's system. eg. windows user will get link to windows binary.
-pub fn get_edge_cli_download_url() -> String {
+pub fn get_edge_cli_download_url(backend_communicator: BackendCommunicator) -> String {
     let filename = String::from("edge.exe");
-    let edge_cli_url = get_edge_file_url(filename);
+    let edge_cli_url = get_edge_file_url(filename, backend_communicator);
 
     return edge_cli_url;
 }
 
 /// Checks whether the Edge CLI was downloaded correctly by checksumming.
-pub fn is_edge_correctly_downloaded(datadir: String) -> Result<String, String> {
+pub fn is_edge_correctly_downloaded(
+    backend_communicator: BackendCommunicator,
+) -> Result<String, String> {
     // Send a GET request and wait for the response headers.
     // Must be `mut` so we can read the response body.
 
     let filename = String::from("edge.exe");
-    let filepath = format!("{}{}", datadir, filename);
+    let filepath = format!("{}{}", backend_communicator.data_dir.clone(), filename);
 
     let edge_cli_path = Path::new(&filepath);
 
     if edge_cli_path.exists() {
         let calculated_checksum;
-        match get_edge_cli_checksum(datadir) {
+        match get_edge_cli_checksum(backend_communicator) {
             Ok(ok_checksum_str) => calculated_checksum = ok_checksum_str,
             Err(err_checksum_str) => {
                 calculated_checksum = String::from(format!(
@@ -171,15 +175,19 @@ fn hash_file(file_path: &Path) -> Result<String, String> {
 // https://github.com/tauri-apps/tauri/blob/dev/examples/api/src/views/FileSystem.svelte
 // API documentation, app data dir does not need admin permission: https://tauri.app/v1/api/js/path#appdatadir
 /// Download the fitting Edge CLI based on user's system.
-pub(crate) fn get_edge_cli(datadir: String) -> String {
+pub(crate) fn get_edge_cli(backend_communicator: BackendCommunicator) -> String {
     let edge_binary_filename = String::from("edge.exe");
-    let edge_binary_filepath = format!("{}{}", datadir, edge_binary_filename);
+    let edge_binary_filepath = format!(
+        "{}{}",
+        backend_communicator.clone().data_dir.clone(),
+        edge_binary_filename
+    );
     println!(
         "Hello, {:?}! You've been greeted from Rust!",
         edge_binary_filepath
     );
 
-    match is_edge_correctly_downloaded(edge_binary_filepath.clone()) {
+    match is_edge_correctly_downloaded(backend_communicator.clone()) {
         Ok(_) => {
             let result_string = pretty_check_string::pretty_ok_str(&String::from(
                 "Latest Edge CLI is already correctly installed.",
@@ -189,7 +197,7 @@ pub(crate) fn get_edge_cli(datadir: String) -> String {
         Err(_) => {}
     }
 
-    let cli_download_url = get_edge_cli_download_url();
+    let cli_download_url = get_edge_cli_download_url(backend_communicator.clone());
     println!("Download Url: {}", cli_download_url);
 
     match download_file(cli_download_url, edge_binary_filepath.clone()) {
@@ -200,7 +208,7 @@ pub(crate) fn get_edge_cli(datadir: String) -> String {
         }
     }
 
-    match is_edge_correctly_downloaded(datadir) {
+    match is_edge_correctly_downloaded(backend_communicator) {
         Ok(_) => {
             let result_string = pretty_check_string::pretty_ok_str(&String::from(
                 "Latest Edge CLI downloaded & correctly installed.",

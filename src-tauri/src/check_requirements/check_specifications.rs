@@ -1,3 +1,4 @@
+use crate::BackendCommunicator;
 use os_info;
 use raw_cpuid::CpuId;
 use std::collections::HashMap;
@@ -62,7 +63,7 @@ fn is_os_name_supported(os_type: String) -> Result<String, String> {
     }
 }
 
-pub fn get_os_info() -> OsInfo {
+pub fn get_os_info(backend_communicator: BackendCommunicator) -> OsInfo {
     let raw_os_name = get_raw_os_name();
     let os_name_supported: bool;
     let cli_os_name: String;
@@ -123,7 +124,7 @@ fn is_processor_brand_supported(raw_processor_brand: String) -> Result<String, S
 }
 
 /// Gets info about user's processor. eg. bitness = 86, raw_processor_brand = GenuineIntel
-pub fn get_processor_info() -> ProcessorInfo {
+pub fn get_processor_info(backend_communicator: BackendCommunicator) -> ProcessorInfo {
     let raw_processor_brand = get_raw_processor_brand();
 
     let processor_brand_supported;

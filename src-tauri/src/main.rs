@@ -2,68 +2,115 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use tauri::Window;
+use utility_events::log_and_emit;
 
 mod check_requirements;
 mod control_edge_cli;
 mod utility_events;
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-// Tauri API allowlist has no impact on Rust std functions.
-// Example Frontend: https://github.com/tauri-apps/tauri/blob/dev/examples/api/src/views/Welcome.svelte
-// TODO: Pass appDir and andappLocalDataDir to Rust, writeable folders without need for admin permissions. https://tauri.app/v1/api/js/path#appconfigdir
-// Will need to place the snippet below in the tauri.conf.json
-//   "allowlist": {
-//     "path": {
-//       "all": "true"
-//      }
 
+// Note: Every tauri function requires the following boilerplate to enable communication with front-end:
+// datadir: &str
+// window: Window
+// These are contained in a BackendCommunicator for convenience and passed along each function as arg.
 const STATUSLISTENER: &str = "program_status_listener";
 
+#[derive(Clone)]
+pub struct BackendCommunicator {
+    event_listener: String,
+    data_dir: String,
+    front_end_window: Window,
+}
+
 #[tauri::command]
-fn greet(name: &str) -> String {
+fn greet(window: Window, datadir: String, name: String) -> String {
+    let backend_communicator = BackendCommunicator {
+        event_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
 #[tauri::command]
-fn check_requirements(datadir: &str) -> String {
-    match check_requirements::main(String::from(datadir)) {
+fn check_requirements(window: Window, datadir: String) -> String {
+    let backend_communicator = BackendCommunicator {
+        event_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
+    match check_requirements::main(backend_communicator) {
         Ok(res) => return res,
         Err(res) => return res,
     }
 }
 
 #[tauri::command]
-fn install_edge_cli(datadir: &str) -> String {
-    return check_requirements::check_edge::get_edge_cli(String::from(datadir));
+fn install_edge_cli(window: Window, datadir: String) -> String {
+    let backend_communicator = BackendCommunicator {
+        event_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
+    return check_requirements::check_edge::get_edge_cli(backend_communicator);
 }
 
 #[tauri::command]
-fn get_edge_cli_download_url() -> String {
-    return check_requirements::check_edge::get_edge_cli_download_url();
+fn get_edge_cli_download_url(window: Window, datadir: String) -> String {
+    let backend_communicator = BackendCommunicator {
+        event_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
+    return check_requirements::check_edge::get_edge_cli_download_url(backend_communicator);
 }
 
 #[tauri::command]
-fn device_start(datadir: &str) -> String {
-    return control_edge_cli::device_start(String::from(datadir));
+fn device_start(window: Window, datadir: String) -> String {
+    let backend_communicator = BackendCommunicator {
+        event_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
+    return control_edge_cli::device_start(backend_communicator);
 }
 
 #[tauri::command]
-fn device_stop(datadir: &str) -> String {
-    return control_edge_cli::device_stop(String::from(datadir));
+fn device_stop(window: Window, datadir: String) -> String {
+    let backend_communicator = BackendCommunicator {
+        event_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
+    return control_edge_cli::device_stop(backend_communicator);
 }
 
 #[tauri::command]
-fn device_info(datadir: &str) -> String {
-    return control_edge_cli::device_info(String::from(datadir));
+fn device_info(window: Window, datadir: String) -> String {
+    let backend_communicator = BackendCommunicator {
+        event_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
+    return control_edge_cli::device_info(backend_communicator);
 }
 
 #[tauri::command]
 fn emit_from_backend(window: Window, datadir: String) {
+    let backend_communicator = BackendCommunicator {
+        event_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
     let message = format!("Called from backend.");
-    match utility_events::log_event(datadir, message.clone()) {
-        Ok(_) => {}
-        Err(_) => {}
-    }
-    utility_events::emit_event(&window, STATUSLISTENER, message);
+    log_and_emit(message, backend_communicator);
     return;
 }
 //TODO: Add persistent boolean if initialization is completed.

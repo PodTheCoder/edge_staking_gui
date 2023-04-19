@@ -1,7 +1,10 @@
+use crate::BackendCommunicator;
 use std::process::Command;
 
 /// Os-independent docker status check based on https://docs.docker.com/config/daemon/troubleshoot/#check-whether-docker-is-running
-pub(crate) fn get_docker_status() -> Result<String, String> {
+pub(crate) fn get_docker_status(
+    backend_communicator: BackendCommunicator,
+) -> Result<String, String> {
     let output;
 
     // OS-independent method implemented

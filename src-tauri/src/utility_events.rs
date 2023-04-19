@@ -1,16 +1,30 @@
 use chrono::{DateTime, Utc};
 use std::fs::OpenOptions;
 use std::io::Write;
-use tauri::Window;
+
+use crate::BackendCommunicator;
 
 #[derive(Clone, serde::Serialize)]
 struct Payload {
     message: String,
 }
 
-pub fn log_event(datadir: String, log_message: String) -> Result<String, String> {
+/// Convenience function, logs a message and emits an event with the message as payload.
+pub fn log_and_emit(message: String, backend_communicator: BackendCommunicator) {
+    match log_event(message.clone(), backend_communicator.clone()) {
+        Ok(_) => {}
+        Err(err_str) => println!("{}", err_str),
+    }
+    emit_event(message.clone(), backend_communicator);
+    return {};
+}
+
+pub fn log_event(
+    message: String,
+    backend_communicator: BackendCommunicator,
+) -> Result<String, String> {
     let log_name = format!("log.txt");
-    let log_path_str = format!("{}{}", datadir, log_name);
+    let log_path_str = format!("{}{}", backend_communicator.data_dir.clone(), log_name);
 
     let dt: DateTime<Utc> = Utc::now();
 
@@ -22,7 +36,7 @@ pub fn log_event(datadir: String, log_message: String) -> Result<String, String>
         Ok(ok_file) => {
             let mut valid_file = ok_file;
             let mut complete_log_string = dt.format("%d %B %Y %H:%M:%S%.3f %Z ").to_string();
-            complete_log_string.push_str(&log_message);
+            complete_log_string.push_str(&message);
             complete_log_string.push_str(&format!("\n"));
 
             match valid_file.write(complete_log_string.as_bytes()) {
@@ -39,12 +53,18 @@ pub fn log_event(datadir: String, log_message: String) -> Result<String, String>
     }
 }
 
-pub fn emit_event(window: &Window, event_listener_name: &str, payload: String) {
+pub fn emit_event(message: String, backend_communicator: BackendCommunicator) {
     // window.center();
-    window.emit(&event_listener_name, payload.clone()).unwrap();
+    backend_communicator
+        .front_end_window
+        .emit(
+            &backend_communicator.event_listener.clone(),
+            message.clone(),
+        )
+        .unwrap();
     println!(
         "Sent event on listener: {},  payload: {}",
-        event_listener_name, payload
+        &backend_communicator.event_listener, message
     );
     return {};
 }

@@ -1,13 +1,18 @@
 use crate::check_requirements;
+use crate::BackendCommunicator;
 use std::process::Command;
+
 /// Run a command in the Edge Cli
-fn command_edge_cli(datadir: String, cli_command: String) -> Result<String, String> {
+fn command_edge_cli(
+    cli_command: String,
+    backend_communicator: BackendCommunicator,
+) -> Result<String, String> {
     let arglist: Vec<&str> = cli_command.split(' ').collect();
     let output;
 
-    println!("{}", datadir);
+    println!("{}", backend_communicator.data_dir.clone());
     // Requirements must first be met before commands can be run.
-    match check_requirements::main(datadir.clone()) {
+    match check_requirements::main(backend_communicator.clone()) {
         Ok(_) => {}
         Err(err) => {
             let error_message = format!("You need to pass all system checks before running an Edge CLI command. Your system check results: {}", err);
@@ -17,7 +22,7 @@ fn command_edge_cli(datadir: String, cli_command: String) -> Result<String, Stri
     println!("Invoking command in Edge CLI = {}", cli_command);
     // TODO: Add edge binary program path as arg
     let bin_name = "edge.exe";
-    let bin_path = format!("{}{}", datadir.clone(), bin_name);
+    let bin_path = format!("{}{}", backend_communicator.data_dir.clone(), bin_name);
 
     match Command::new(bin_path).args(arglist).output() {
         Ok(command_completed_result) => {
@@ -70,25 +75,25 @@ fn command_edge_cli(datadir: String, cli_command: String) -> Result<String, Stri
         None => Err(String::from("Edge running status could not be checked.")),
     }
 }
-pub fn device_stop(datadir: String) -> String {
+pub fn device_stop(backend_communicator: BackendCommunicator) -> String {
     let cli_command = String::from("device stop");
-    match command_edge_cli(datadir, cli_command) {
+    match command_edge_cli(cli_command, backend_communicator) {
         Ok(ok_str) => return ok_str,
         Err(err_str) => return err_str,
     }
 }
 
-pub fn device_start(datadir: String) -> String {
+pub fn device_start(backend_communicator: BackendCommunicator) -> String {
     let cli_command = String::from("device start");
-    match command_edge_cli(datadir, cli_command) {
+    match command_edge_cli(cli_command, backend_communicator) {
         Ok(ok_str) => return ok_str,
         Err(err_str) => return err_str,
     }
 }
 
-pub fn device_info(datadir: String) -> String {
+pub fn device_info(backend_communicator: BackendCommunicator) -> String {
     let cli_command = String::from("device info");
-    match command_edge_cli(datadir, cli_command) {
+    match command_edge_cli(cli_command, backend_communicator) {
         Ok(ok_str) => return ok_str,
         Err(err_str) => return err_str,
     }

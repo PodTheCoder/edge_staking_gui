@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
+import { appLocalDataDir } from '@tauri-apps/api/path';
+import { appWindow } from '@tauri-apps/api/window';
 
 const greetMsg = ref("");
 const name = ref("");
 
 async function greet() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-  greetMsg.value = await invoke("greet", { name: name.value });
+  const appLocalDataDirPath = await appLocalDataDir();
+  greetMsg.value = await invoke("greet", {
+    name: name.value,
+    datadir: appLocalDataDirPath,
+    window: appWindow,
+  });
 }
 </script>
 

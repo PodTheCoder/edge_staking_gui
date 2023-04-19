@@ -2,24 +2,34 @@
 import { ref } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
 import { appLocalDataDir } from '@tauri-apps/api/path';
+import { appWindow } from '@tauri-apps/api/window';
 
 const Node_Control_Response = ref("");
 
 async function device_start_emitter() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   const appLocalDataDirPath = await appLocalDataDir();
-  Node_Control_Response.value = await invoke("device_start", { datadir: appLocalDataDirPath });
+  Node_Control_Response.value = await invoke("device_start", {
+    datadir: appLocalDataDirPath,
+    window: appWindow,
+  });
 }
 async function device_stop_emitter() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   const appLocalDataDirPath = await appLocalDataDir();
-  Node_Control_Response.value = await invoke("device_stop", { datadir: appLocalDataDirPath });
+  Node_Control_Response.value = await invoke("device_stop", {
+    datadir: appLocalDataDirPath,
+    window: appWindow,
+  });
 }
 
 async function device_info_emitter() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   const appLocalDataDirPath = await appLocalDataDir();
-  Node_Control_Response.value = await invoke("device_info", { datadir: appLocalDataDirPath });
+  Node_Control_Response.value = await invoke("device_info", {
+    datadir: appLocalDataDirPath,
+    window: appWindow,
+  });
 }
 </script>
 
