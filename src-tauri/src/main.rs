@@ -57,9 +57,13 @@ fn device_info(datadir: &str) -> String {
 }
 
 #[tauri::command]
-fn emit_from_backend(window: Window) {
-    println!("function invoked");
-    utility_events::test_emit(&window, STATUSLISTENER);
+fn emit_from_backend(window: Window, datadir: String) {
+    let message = format!("Called from backend.");
+    match utility_events::log_event(datadir, message.clone()) {
+        Ok(_) => {}
+        Err(_) => {}
+    }
+    utility_events::emit_event(&window, STATUSLISTENER, message);
     return;
 }
 //TODO: Add persistent boolean if initialization is completed.

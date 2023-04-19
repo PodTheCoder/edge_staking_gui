@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
 
 import { appWindow } from '@tauri-apps/api/window';
+import { appLocalDataDir } from '@tauri-apps/api/path';
 import { emit } from '@tauri-apps/api/event'
 
 const Status_Response = ref("");
@@ -25,10 +26,11 @@ async function emit_event_from_frontend() {
 }
 
 async function emit_event_from_backend() {
+  const appLocalDataDirPath = await appLocalDataDir();
   await invoke("emit_from_backend",
     {
       window: appWindow,
-      eventListenerName: eventListenerName
+      datadir: appLocalDataDirPath
     });
 }
 </script>
