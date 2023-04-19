@@ -1,6 +1,6 @@
 # Unofficial Edge Staking GUI
 
-In alpha. Step 1 and 2 are tested on Windows 10. The other remaining steps are still in development.
+In alpha.
 
 <img width="599" alt="staking_gui_0_3_0" src="https://user-images.githubusercontent.com/113918164/233075945-ed3ed2dc-4069-495c-b29d-c95625e125d3.PNG">
 
