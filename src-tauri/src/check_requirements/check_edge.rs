@@ -172,11 +172,14 @@ fn hash_file(file_path: &Path) -> Result<String, String> {
 // API documentation, app data dir does not need admin permission: https://tauri.app/v1/api/js/path#appdatadir
 /// Download the fitting Edge CLI based on user's system.
 pub(crate) fn get_edge_cli(datadir: String) -> String {
-    let filename = String::from("edge.exe");
-    let filepath = format!("{}{}", datadir, filename);
-    println!("Hello, {:?}! You've been greeted from Rust!", filepath);
+    let edge_binary_filename = String::from("edge.exe");
+    let edge_binary_filepath = format!("{}{}", datadir, edge_binary_filename);
+    println!(
+        "Hello, {:?}! You've been greeted from Rust!",
+        edge_binary_filepath
+    );
 
-    match is_edge_correctly_downloaded(filepath.clone()) {
+    match is_edge_correctly_downloaded(edge_binary_filepath.clone()) {
         Ok(_) => {
             let result_string = pretty_check_string::pretty_ok_str(&String::from(
                 "Latest Edge CLI is already correctly installed.",
@@ -189,7 +192,7 @@ pub(crate) fn get_edge_cli(datadir: String) -> String {
     let cli_download_url = get_edge_cli_download_url();
     println!("Download Url: {}", cli_download_url);
 
-    match download_file(cli_download_url, filepath.clone()) {
+    match download_file(cli_download_url, edge_binary_filepath.clone()) {
         Ok(_) => {}
         Err(err) => {
             let error_message = String::from(err);
@@ -206,7 +209,8 @@ pub(crate) fn get_edge_cli(datadir: String) -> String {
         }
         Err(_) => {
             let errormessage = format!("File was not downloaded correctly. Please remove the edge.exe file from your directory.");
-            // TODO: Automatically remove invalid file.
+            fs::remove_file(edge_binary_filepath.clone())
+                .expect("Could not remove downloaded file.");
             return errormessage;
         }
     }
