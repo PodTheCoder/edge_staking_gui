@@ -9,9 +9,10 @@ struct Payload {
     message: String,
 }
 
+// TODO: Add more logging.
 /// Convenience function, logs a message and emits an event with the message as payload.
 pub fn log_and_emit(message: String, backend_communicator: BackendCommunicator) {
-    match log_event(message.clone(), backend_communicator.clone()) {
+    match log_message(message.clone(), backend_communicator.clone()) {
         Ok(_) => {}
         Err(err_str) => println!("{}", err_str),
     }
@@ -19,7 +20,7 @@ pub fn log_and_emit(message: String, backend_communicator: BackendCommunicator) 
     return {};
 }
 
-pub fn log_event(
+pub fn log_message(
     message: String,
     backend_communicator: BackendCommunicator,
 ) -> Result<String, String> {

@@ -41,8 +41,8 @@ async function emit_event_from_backend() {
     <p>Status: {{ Status_Response }}</p>
   </div>
 
-  <div class="card">
-    <button type="button" @click="emit_event_from_frontend()">Emit from frontend</button>
-    <button type="button" @click="emit_event_from_backend()">Emit from backend</button>
-  </div>
+  <!-- <div class="card">
+      <button type="button" @click="emit_event_from_frontend()">Emit from frontend</button>
+      <button type="button" @click="emit_event_from_backend()">Emit from backend</button>
+    </div> -->
 </template>

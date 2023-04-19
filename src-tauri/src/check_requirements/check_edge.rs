@@ -1,3 +1,5 @@
+use crate::utility_events::log_and_emit;
+use crate::utility_events::log_message;
 use crate::BackendCommunicator;
 use isahc::prelude::*;
 use sha2::{Digest, Sha256};
@@ -35,10 +37,6 @@ fn create_edge_url(
     return edge_url;
 }
 
-// TODO: Add base_download_path arg, to download without needing admin permission
-// https://github.com/tauri-apps/tauri/blob/dev/examples/api/src/views/Welcome.svelte
-// https://github.com/tauri-apps/tauri/blob/dev/examples/api/src/views/FileSystem.svelte
-// API documentation, app data dir does not need admin permission: https://tauri.app/v1/api/js/path#appdatadir
 /// Downloads checksum of latest edge binary for system
 fn get_edge_cli_checksum(backend_communicator: BackendCommunicator) -> Result<String, String> {
     let backend_communicator = backend_communicator.clone();
@@ -47,15 +45,22 @@ fn get_edge_cli_checksum(backend_communicator: BackendCommunicator) -> Result<St
     let filename = String::from("checksum");
     let filepath = format!("{}{}", backend_communicator.data_dir.clone(), filename);
 
-    match download_file(checksum_url.clone(), filepath.clone()) {
+    log_and_emit(
+        format!("Downloading checksum from URL: {}", checksum_url.clone()),
+        backend_communicator.clone(),
+    );
+
+    match download_file(
+        checksum_url.clone(),
+        filepath.clone(),
+        backend_communicator.clone(),
+    ) {
         Ok(_) => {}
         Err(err) => {
             let error_message = err;
             return Err(error_message);
         }
     }
-
-    println!("Checksum download Url: {}", checksum_url);
 
     let checksum: String;
     match fs::read_to_string(filepath) {
@@ -109,7 +114,7 @@ pub fn is_edge_correctly_downloaded(
 
     if edge_cli_path.exists() {
         let calculated_checksum;
-        match get_edge_cli_checksum(backend_communicator) {
+        match get_edge_cli_checksum(backend_communicator.clone()) {
             Ok(ok_checksum_str) => calculated_checksum = ok_checksum_str,
             Err(err_checksum_str) => {
                 calculated_checksum = String::from(format!(
@@ -129,7 +134,7 @@ pub fn is_edge_correctly_downloaded(
         }
 
         if calculated_checksum.eq(&hash_string) {
-            println!("Checksum matches: {}.", calculated_checksum);
+            log_and_emit(format!("CLI installed correctly!"), backend_communicator);
             let success_message = String::from("Latest Edge CLI installed for your system.");
             return Ok(success_message);
         } else {
@@ -170,10 +175,6 @@ fn hash_file(file_path: &Path) -> Result<String, String> {
     return Ok(hash_string);
 }
 
-// TODO: Add base_download_path arg, to download without needing admin permission
-// https://github.com/tauri-apps/tauri/blob/dev/examples/api/src/views/Welcome.svelte
-// https://github.com/tauri-apps/tauri/blob/dev/examples/api/src/views/FileSystem.svelte
-// API documentation, app data dir does not need admin permission: https://tauri.app/v1/api/js/path#appdatadir
 /// Download the fitting Edge CLI based on user's system.
 pub(crate) fn get_edge_cli(backend_communicator: BackendCommunicator) -> String {
     let edge_binary_filename = String::from("edge.exe");
@@ -198,9 +199,16 @@ pub(crate) fn get_edge_cli(backend_communicator: BackendCommunicator) -> String 
     }
 
     let cli_download_url = get_edge_cli_download_url(backend_communicator.clone());
-    println!("Download Url: {}", cli_download_url);
+    log_and_emit(
+        format!("Download Url: {}", cli_download_url),
+        backend_communicator.clone(),
+    );
 
-    match download_file(cli_download_url, edge_binary_filepath.clone()) {
+    match download_file(
+        cli_download_url,
+        edge_binary_filepath.clone(),
+        backend_communicator.clone(),
+    ) {
         Ok(_) => {}
         Err(err) => {
             let error_message = String::from(err);
@@ -224,12 +232,23 @@ pub(crate) fn get_edge_cli(backend_communicator: BackendCommunicator) -> String 
     }
 }
 
-// TODO: Rework to use Tauri API? https://tauri.app/v1/api/js/http/ . Add progress bar in GUI.
+// BUG: Program hangs while downloading and writing file. Download & write in chunks.
 /// Download a file from a url to a local download path
-fn download_file(download_url: String, download_path_str: String) -> Result<(), String> {
+fn download_file(
+    download_url: String,
+    download_path_str: String,
+    backend_communicator: BackendCommunicator,
+) -> Result<(), String> {
     let download_path = PathBuf::new();
-    let download_path = download_path.join(download_path_str);
+    let download_path = download_path.join(download_path_str.clone());
     let mut response;
+    log_and_emit(
+        format!(
+            "Downloading: {}. Program may be temporarily unresponsive while downloading.",
+            download_url.clone()
+        ),
+        backend_communicator.clone(),
+    );
     match isahc::get(download_url) {
         Ok(successful_response) => response = successful_response,
         Err(error_response) => {
@@ -237,8 +256,17 @@ fn download_file(download_url: String, download_path_str: String) -> Result<(), 
             return Err(error_message);
         }
     }
-    println!("Status: {}", response.status());
-    println!("Headers: {:#?}", response.headers());
+    log_and_emit(
+        format!("Download Status: {}", response.status()),
+        backend_communicator.clone(),
+    );
+    match log_message(
+        format!("Download Headers: {:#?}", response.headers()),
+        backend_communicator.clone(),
+    ) {
+        Ok(_) => {}
+        Err(_) => {}
+    };
     let edge_cli_bytes;
     match response.bytes() {
         Ok(converted_byte_vector) => edge_cli_bytes = converted_byte_vector,
@@ -250,7 +278,13 @@ fn download_file(download_url: String, download_path_str: String) -> Result<(), 
             return Err(error_message);
         }
     }
-    println!("Writing file. Program may lag while downloading.");
+    log_and_emit(
+        format!(
+            "Writing file: {}. Program may be temporarily unresponsive while writing.",
+            download_path_str.clone()
+        ),
+        backend_communicator.clone(),
+    );
     let mut file;
     match File::create(download_path) {
         Ok(ok_file) => file = ok_file,

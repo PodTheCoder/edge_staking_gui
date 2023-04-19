@@ -23,7 +23,7 @@ pub struct BackendCommunicator {
 
 #[tauri::command]
 fn greet(window: Window, datadir: String, name: String) -> String {
-    let backend_communicator = BackendCommunicator {
+    let _backend_communicator = BackendCommunicator {
         event_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,

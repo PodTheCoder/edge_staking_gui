@@ -15,11 +15,13 @@ In alpha. Step 1 and 2 are tested on Windows 10. The other remaining steps are s
 - Check if your system is ready for staking.
 - Automatically intall the correct Edge CLI for your system.
 - Start & Stop staking.
-- Log for troubleshooting.
+- Display current status & log for troubleshooting.
 
-## Planned Features
+## Planned Features Ver 1.0
 - Set up staking using only your device code.
-- Automatically check if your device is online.
+- Check if your device is online.
+
+## Planned Features Ver 1.5
 - Auto-launch application when your system starts.
 - Minimize application to tray.
 

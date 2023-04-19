@@ -1,3 +1,5 @@
+use crate::utility_events;
+use crate::utility_events::log_and_emit;
 use crate::BackendCommunicator;
 use std::process::Command;
 
@@ -11,10 +13,12 @@ pub(crate) fn get_docker_status(
     match Command::new("docker").arg("info").output() {
         Ok(command_completed_result) => output = command_completed_result,
         Err(command_not_completed) => {
-            return Err(format!(
+            let errormessage = format!(
                 "Docker command was not completed. Is Docker installed & did you restart your computer? Docker installation link: https://www.docker.com/products/docker-desktop/ Error = {}",
                 command_not_completed.to_string()
-            ))
+            );
+            utility_events::log_and_emit(errormessage.clone(), backend_communicator);
+            return Err(errormessage);
         }
     }
 
@@ -24,7 +28,10 @@ pub(crate) fn get_docker_status(
     match output.status.code() {
         Some(code) => {
             exit_code = code;
-            println!("Docker Exit code = {}", exit_code);
+            log_and_emit(
+                format!("Docker Exit code = {}", exit_code),
+                backend_communicator,
+            );
 
             if exit_code == docker_installed_and_running_code {
                 return Ok(String::from("Docker installed & ready."));

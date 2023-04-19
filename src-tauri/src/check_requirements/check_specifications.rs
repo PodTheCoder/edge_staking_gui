@@ -63,10 +63,11 @@ fn is_os_name_supported(os_type: String) -> Result<String, String> {
     }
 }
 
-pub fn get_os_info(backend_communicator: BackendCommunicator) -> OsInfo {
+pub fn get_os_info(_backend_communicator: BackendCommunicator) -> OsInfo {
     let raw_os_name = get_raw_os_name();
     let os_name_supported: bool;
     let cli_os_name: String;
+
     match is_os_name_supported(raw_os_name.clone()) {
         Ok(simple_os_name) => {
             cli_os_name = simple_os_name; // eg. Windows will have become windows to match the CLI
@@ -124,7 +125,7 @@ fn is_processor_brand_supported(raw_processor_brand: String) -> Result<String, S
 }
 
 /// Gets info about user's processor. eg. bitness = 86, raw_processor_brand = GenuineIntel
-pub fn get_processor_info(backend_communicator: BackendCommunicator) -> ProcessorInfo {
+pub fn get_processor_info(_backend_communicator: BackendCommunicator) -> ProcessorInfo {
     let raw_processor_brand = get_raw_processor_brand();
 
     let processor_brand_supported;

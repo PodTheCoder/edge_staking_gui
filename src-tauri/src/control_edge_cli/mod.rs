@@ -1,4 +1,5 @@
 use crate::check_requirements;
+use crate::utility_events::log_and_emit;
 use crate::BackendCommunicator;
 use std::process::Command;
 
@@ -10,7 +11,6 @@ fn command_edge_cli(
     let arglist: Vec<&str> = cli_command.split(' ').collect();
     let output;
 
-    println!("{}", backend_communicator.data_dir.clone());
     // Requirements must first be met before commands can be run.
     match check_requirements::main(backend_communicator.clone()) {
         Ok(_) => {}
@@ -19,7 +19,10 @@ fn command_edge_cli(
             return Err(error_message);
         }
     }
-    println!("Invoking command in Edge CLI = {}", cli_command);
+    log_and_emit(
+        format!("Invoking command in Edge CLI = {}", cli_command),
+        backend_communicator.clone(),
+    );
     // TODO: Add edge binary program path as arg
     let bin_name = "edge.exe";
     let bin_path = format!("{}{}", backend_communicator.data_dir.clone(), bin_name);
@@ -27,11 +30,14 @@ fn command_edge_cli(
     match Command::new(bin_path).args(arglist).output() {
         Ok(command_completed_result) => {
             output = command_completed_result;
-            println!(
-                "Edge CLI command {} completed with status code:{}",
-                cli_command.clone(),
-                output.clone().status.code().unwrap()
-            )
+            log_and_emit(
+                format!(
+                    "Edge CLI command `{}` completed.",
+                    cli_command.clone(),
+                    // output.clone().status.code().unwrap()
+                ),
+                backend_communicator,
+            );
         }
         Err(command_not_completed) => {
             return Err(format!(
