@@ -7,7 +7,7 @@ In alpha. Step 1 and 2 are tested on Windows 10. The other remaining steps are s
 ## Design Goals
 - Easy to use.
 - Minimal configuration.
-- No administrator permissions required.
+- No administrator permissions required for running.
 - Run on Windows, Mac or Linux. Initial focus on Windows.
 - Don’t integrate wallet functionality into the GUI. The web Edge wallet already does that well. All a node needs is a stake. When correctly configured, version 1 of the Edge Staking GUI aims to have NO access to the wallet where your XE is held.
 
