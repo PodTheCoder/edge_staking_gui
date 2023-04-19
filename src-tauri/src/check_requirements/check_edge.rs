@@ -233,6 +233,7 @@ pub(crate) fn get_edge_cli(backend_communicator: BackendCommunicator) -> String 
 }
 
 // BUG: Program hangs while downloading and writing file. Download & write in chunks.
+// TODO: Replace isahc with reqwests https://crates.io/crates/reqwest
 /// Download a file from a url to a local download path
 fn download_file(
     download_url: String,
@@ -267,6 +268,10 @@ fn download_file(
         Ok(_) => {}
         Err(_) => {}
     };
+    log_and_emit(
+        format!("Converting downloaded file body to bytes."),
+        backend_communicator.clone(),
+    );
     let edge_cli_bytes;
     match response.bytes() {
         Ok(converted_byte_vector) => edge_cli_bytes = converted_byte_vector,
@@ -280,7 +285,7 @@ fn download_file(
     }
     log_and_emit(
         format!(
-            "Writing file: {}. Program may be temporarily unresponsive while writing.",
+            "Opening file: {}. Program may be temporarily unresponsive while writing.",
             download_path_str.clone()
         ),
         backend_communicator.clone(),
@@ -293,6 +298,13 @@ fn download_file(
             return Err(error_message);
         }
     }
+    log_and_emit(
+        format!(
+            "Writing file: {}. Program may be temporarily unresponsive while writing.",
+            download_path_str.clone()
+        ),
+        backend_communicator.clone(),
+    );
 
     match file.write_all(&edge_cli_bytes) {
         Ok(_) => {}
