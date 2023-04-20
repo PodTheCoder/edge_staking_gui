@@ -246,7 +246,7 @@ pub(crate) async fn get_edge_cli(backend_communicator: BackendCommunicator) -> S
     }
 }
 
-// TODO: Replace isahc with reqwests https://crates.io/crates/reqwest
+// TODO: Add caching via config file. Lookup timestamp if exist, check if beyond caching time arg, save timestamp when file fully downloaded.
 /// Download a file from a url to a local download path
 async fn download_file(
     download_url: String,
