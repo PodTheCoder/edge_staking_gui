@@ -1,8 +1,14 @@
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 use std::fs::OpenOptions;
 use std::io::Write;
 
 use crate::BackendCommunicator;
+
+#[derive(Debug, Serialize, Deserialize)]
+struct ConfigStruct {
+    initialized: bool,
+}
 
 #[derive(Clone, serde::Serialize)]
 struct Payload {
@@ -69,3 +75,6 @@ pub fn emit_event(message: String, backend_communicator: BackendCommunicator) {
     );
     return {};
 }
+
+/// Write key value pair to config
+pub fn write_config(key: String, value: String, backend_communicator: BackendCommunicator) {}

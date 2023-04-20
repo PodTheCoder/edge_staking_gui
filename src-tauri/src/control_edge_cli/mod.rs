@@ -1,5 +1,5 @@
 use crate::check_requirements;
-use crate::utility_events::log_and_emit;
+use crate::utility::log_and_emit;
 use crate::BackendCommunicator;
 use std::process::Command;
 

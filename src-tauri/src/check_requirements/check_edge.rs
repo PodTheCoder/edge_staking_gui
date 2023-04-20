@@ -1,4 +1,4 @@
-use crate::utility_events::log_and_emit;
+use crate::utility::log_and_emit;
 use crate::BackendCommunicator;
 use futures_util::StreamExt;
 use reqwest;

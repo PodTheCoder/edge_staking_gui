@@ -1,5 +1,5 @@
-use crate::utility_events;
-use crate::utility_events::log_and_emit;
+use crate::utility;
+use crate::utility::log_and_emit;
 use crate::BackendCommunicator;
 use std::process::Command;
 
@@ -17,7 +17,7 @@ pub(crate) fn get_docker_status(
                 "Docker command was not completed. Is Docker installed & did you restart your computer? Docker installation link: https://www.docker.com/products/docker-desktop/ Error = {}",
                 command_not_completed.to_string()
             );
-            utility_events::log_and_emit(errormessage.clone(), backend_communicator);
+            utility::log_and_emit(errormessage.clone(), backend_communicator);
             return Err(errormessage);
         }
     }

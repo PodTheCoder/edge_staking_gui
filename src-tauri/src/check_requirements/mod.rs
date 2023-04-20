@@ -6,7 +6,7 @@ use crate::{
         check_docker::get_docker_status,
         pretty_check_string::{pretty_err_str, pretty_ok_str},
     },
-    utility_events::log_and_emit,
+    utility::log_and_emit,
 };
 
 use self::check_edge::is_edge_correctly_downloaded;

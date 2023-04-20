@@ -2,11 +2,11 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use tauri::Window;
-use utility_events::log_and_emit;
+use utility::log_and_emit;
 
 mod check_requirements;
 mod control_edge_cli;
-mod utility_events;
+mod utility;
 
 // Note: Every tauri function requires the following boilerplate to enable communication with front-end:
 // datadir: &str
