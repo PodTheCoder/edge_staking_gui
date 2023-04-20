@@ -67,13 +67,13 @@ pub fn emit_event(message: String, backend_communicator: BackendCommunicator) {
     backend_communicator
         .front_end_window
         .emit(
-            &backend_communicator.event_listener.clone(),
+            &backend_communicator.status_listener.clone(),
             message.clone(),
         )
         .unwrap();
     println!(
         "Sent event on listener: {},  payload: {}",
-        &backend_communicator.event_listener, message
+        &backend_communicator.status_listener, message
     );
     return {};
 }

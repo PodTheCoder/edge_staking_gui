@@ -16,7 +16,7 @@ const STATUSLISTENER: &str = "program_status_listener";
 
 #[derive(Clone)]
 pub struct BackendCommunicator {
-    event_listener: String,
+    status_listener: String,
     data_dir: String,
     front_end_window: Window,
 }
@@ -24,7 +24,7 @@ pub struct BackendCommunicator {
 #[tauri::command]
 async fn greet(window: Window, datadir: String, name: String) -> String {
     let _backend_communicator = BackendCommunicator {
-        event_listener: String::from(STATUSLISTENER),
+        status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
@@ -35,7 +35,7 @@ async fn greet(window: Window, datadir: String, name: String) -> String {
 #[tauri::command]
 async fn check_requirements(window: Window, datadir: String) -> String {
     let backend_communicator = BackendCommunicator {
-        event_listener: String::from(STATUSLISTENER),
+        status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
@@ -50,7 +50,7 @@ async fn check_requirements(window: Window, datadir: String) -> String {
 #[tauri::command]
 async fn install_edge_cli(window: Window, datadir: String) -> String {
     let backend_communicator = BackendCommunicator {
-        event_listener: String::from(STATUSLISTENER),
+        status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
@@ -60,7 +60,7 @@ async fn install_edge_cli(window: Window, datadir: String) -> String {
 #[tauri::command]
 fn get_edge_cli_download_url(window: Window, datadir: String) -> String {
     let backend_communicator = BackendCommunicator {
-        event_listener: String::from(STATUSLISTENER),
+        status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
@@ -71,7 +71,7 @@ fn get_edge_cli_download_url(window: Window, datadir: String) -> String {
 #[tauri::command]
 async fn device_start(window: Window, datadir: String) -> String {
     let backend_communicator = BackendCommunicator {
-        event_listener: String::from(STATUSLISTENER),
+        status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
@@ -82,7 +82,7 @@ async fn device_start(window: Window, datadir: String) -> String {
 #[tauri::command]
 fn load_config_frontend(window: Window, datadir: String) -> String {
     let backend_communicator = BackendCommunicator {
-        event_listener: String::from(STATUSLISTENER),
+        status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
@@ -95,7 +95,7 @@ fn load_config_frontend(window: Window, datadir: String) -> String {
 #[tauri::command]
 async fn device_stop(window: Window, datadir: String) -> String {
     let backend_communicator = BackendCommunicator {
-        event_listener: String::from(STATUSLISTENER),
+        status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
@@ -106,7 +106,7 @@ async fn device_stop(window: Window, datadir: String) -> String {
 #[tauri::command]
 async fn device_info(window: Window, datadir: String) -> String {
     let backend_communicator = BackendCommunicator {
-        event_listener: String::from(STATUSLISTENER),
+        status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
@@ -117,7 +117,7 @@ async fn device_info(window: Window, datadir: String) -> String {
 #[tauri::command]
 fn emit_from_backend(window: Window, datadir: String) {
     let backend_communicator = BackendCommunicator {
-        event_listener: String::from(STATUSLISTENER),
+        status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
