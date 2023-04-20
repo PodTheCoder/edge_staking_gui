@@ -22,7 +22,7 @@ pub struct BackendCommunicator {
 }
 
 #[tauri::command]
-fn greet(window: Window, datadir: String, name: String) -> String {
+async fn greet(window: Window, datadir: String, name: String) -> String {
     let _backend_communicator = BackendCommunicator {
         event_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
@@ -33,28 +33,28 @@ fn greet(window: Window, datadir: String, name: String) -> String {
 }
 
 #[tauri::command]
-fn check_requirements(window: Window, datadir: String) -> String {
+async fn check_requirements(window: Window, datadir: String) -> String {
     let backend_communicator = BackendCommunicator {
         event_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
 
-    match check_requirements::main(backend_communicator) {
+    let check_requirements_future = check_requirements::main(backend_communicator).await;
+    match check_requirements_future {
         Ok(res) => return res,
         Err(res) => return res,
     }
 }
 
 #[tauri::command]
-fn install_edge_cli(window: Window, datadir: String) -> String {
+async fn install_edge_cli(window: Window, datadir: String) -> String {
     let backend_communicator = BackendCommunicator {
         event_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
-
-    return check_requirements::check_edge::get_edge_cli(backend_communicator);
+    return check_requirements::check_edge::get_edge_cli(backend_communicator).await;
 }
 
 #[tauri::command]
@@ -69,36 +69,36 @@ fn get_edge_cli_download_url(window: Window, datadir: String) -> String {
 }
 
 #[tauri::command]
-fn device_start(window: Window, datadir: String) -> String {
+async fn device_start(window: Window, datadir: String) -> String {
     let backend_communicator = BackendCommunicator {
         event_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
 
-    return control_edge_cli::device_start(backend_communicator);
+    return control_edge_cli::device_start(backend_communicator).await;
 }
 
 #[tauri::command]
-fn device_stop(window: Window, datadir: String) -> String {
+async fn device_stop(window: Window, datadir: String) -> String {
     let backend_communicator = BackendCommunicator {
         event_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
 
-    return control_edge_cli::device_stop(backend_communicator);
+    return control_edge_cli::device_stop(backend_communicator).await;
 }
 
 #[tauri::command]
-fn device_info(window: Window, datadir: String) -> String {
+async fn device_info(window: Window, datadir: String) -> String {
     let backend_communicator = BackendCommunicator {
         event_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
 
-    return control_edge_cli::device_info(backend_communicator);
+    return control_edge_cli::device_info(backend_communicator).await;
 }
 
 #[tauri::command]

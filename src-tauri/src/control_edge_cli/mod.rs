@@ -4,7 +4,7 @@ use crate::BackendCommunicator;
 use std::process::Command;
 
 /// Run a command in the Edge Cli
-fn command_edge_cli(
+async fn command_edge_cli(
     cli_command: String,
     backend_communicator: BackendCommunicator,
 ) -> Result<String, String> {
@@ -12,7 +12,8 @@ fn command_edge_cli(
     let output;
 
     // Requirements must first be met before commands can be run.
-    match check_requirements::main(backend_communicator.clone()) {
+    let check_requirements_future = check_requirements::main(backend_communicator.clone()).await;
+    match check_requirements_future {
         Ok(_) => {}
         Err(err) => {
             let error_message = format!("You need to pass all system checks before running an Edge CLI command. Your system check results: {}", err);
@@ -81,25 +82,28 @@ fn command_edge_cli(
         None => Err(String::from("Edge running status could not be checked.")),
     }
 }
-pub fn device_stop(backend_communicator: BackendCommunicator) -> String {
+pub async fn device_stop(backend_communicator: BackendCommunicator) -> String {
     let cli_command = String::from("device stop");
-    match command_edge_cli(cli_command, backend_communicator) {
+    let command_edge_cli_future = command_edge_cli(cli_command, backend_communicator).await;
+    match command_edge_cli_future {
         Ok(ok_str) => return ok_str,
         Err(err_str) => return err_str,
     }
 }
 
-pub fn device_start(backend_communicator: BackendCommunicator) -> String {
+pub async fn device_start(backend_communicator: BackendCommunicator) -> String {
     let cli_command = String::from("device start");
-    match command_edge_cli(cli_command, backend_communicator) {
+    let command_edge_cli_future = command_edge_cli(cli_command, backend_communicator).await;
+    match command_edge_cli_future {
         Ok(ok_str) => return ok_str,
         Err(err_str) => return err_str,
     }
 }
 
-pub fn device_info(backend_communicator: BackendCommunicator) -> String {
+pub async fn device_info(backend_communicator: BackendCommunicator) -> String {
     let cli_command = String::from("device info");
-    match command_edge_cli(cli_command, backend_communicator) {
+    let command_edge_cli_future = command_edge_cli(cli_command, backend_communicator).await;
+    match command_edge_cli_future {
         Ok(ok_str) => return ok_str,
         Err(err_str) => return err_str,
     }

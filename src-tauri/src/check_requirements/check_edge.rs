@@ -1,7 +1,8 @@
 use crate::utility_events::log_and_emit;
-use crate::utility_events::log_message;
 use crate::BackendCommunicator;
-use isahc::prelude::*;
+use futures_util::StreamExt;
+use reqwest;
+use reqwest::Client;
 use sha2::{Digest, Sha256};
 use std::fs::File;
 use std::io::prelude::*;
@@ -38,7 +39,9 @@ fn create_edge_url(
 }
 
 /// Downloads checksum of latest edge binary for system
-fn get_edge_cli_checksum(backend_communicator: BackendCommunicator) -> Result<String, String> {
+async fn get_edge_cli_checksum(
+    backend_communicator: BackendCommunicator,
+) -> Result<String, String> {
     let backend_communicator = backend_communicator.clone();
     let checksum_url = get_edge_cli_checksum_url(backend_communicator.clone());
 
@@ -50,11 +53,13 @@ fn get_edge_cli_checksum(backend_communicator: BackendCommunicator) -> Result<St
         backend_communicator.clone(),
     );
 
-    match download_file(
+    let download_file_future = download_file(
         checksum_url.clone(),
         filepath.clone(),
         backend_communicator.clone(),
-    ) {
+    )
+    .await;
+    match download_file_future {
         Ok(_) => {}
         Err(err) => {
             let error_message = err;
@@ -101,7 +106,7 @@ pub fn get_edge_cli_download_url(backend_communicator: BackendCommunicator) -> S
 }
 
 /// Checks whether the Edge CLI was downloaded correctly by checksumming.
-pub fn is_edge_correctly_downloaded(
+pub async fn is_edge_correctly_downloaded(
     backend_communicator: BackendCommunicator,
 ) -> Result<String, String> {
     // Send a GET request and wait for the response headers.
@@ -114,7 +119,9 @@ pub fn is_edge_correctly_downloaded(
 
     if edge_cli_path.exists() {
         let calculated_checksum;
-        match get_edge_cli_checksum(backend_communicator.clone()) {
+        let get_edge_cli_checksum_future =
+            get_edge_cli_checksum(backend_communicator.clone()).await;
+        match get_edge_cli_checksum_future {
             Ok(ok_checksum_str) => calculated_checksum = ok_checksum_str,
             Err(err_checksum_str) => {
                 calculated_checksum = String::from(format!(
@@ -176,7 +183,7 @@ fn hash_file(file_path: &Path) -> Result<String, String> {
 }
 
 /// Download the fitting Edge CLI based on user's system.
-pub(crate) fn get_edge_cli(backend_communicator: BackendCommunicator) -> String {
+pub(crate) async fn get_edge_cli(backend_communicator: BackendCommunicator) -> String {
     let edge_binary_filename = String::from("edge.exe");
     let edge_binary_filepath = format!(
         "{}{}",
@@ -188,7 +195,9 @@ pub(crate) fn get_edge_cli(backend_communicator: BackendCommunicator) -> String 
         edge_binary_filepath
     );
 
-    match is_edge_correctly_downloaded(backend_communicator.clone()) {
+    let is_edge_correctly_downloaded_future_pre_download_cli =
+        is_edge_correctly_downloaded(backend_communicator.clone()).await;
+    match is_edge_correctly_downloaded_future_pre_download_cli {
         Ok(_) => {
             let result_string = pretty_check_string::pretty_ok_str(&String::from(
                 "Latest Edge CLI is already correctly installed.",
@@ -204,11 +213,14 @@ pub(crate) fn get_edge_cli(backend_communicator: BackendCommunicator) -> String 
         backend_communicator.clone(),
     );
 
-    match download_file(
+    let download_file_future = download_file(
         cli_download_url,
         edge_binary_filepath.clone(),
         backend_communicator.clone(),
-    ) {
+    )
+    .await;
+
+    match download_file_future {
         Ok(_) => {}
         Err(err) => {
             let error_message = String::from(err);
@@ -216,7 +228,9 @@ pub(crate) fn get_edge_cli(backend_communicator: BackendCommunicator) -> String 
         }
     }
 
-    match is_edge_correctly_downloaded(backend_communicator) {
+    let is_edge_correctly_downloaded_future_post_download_cli =
+        is_edge_correctly_downloaded(backend_communicator).await;
+    match is_edge_correctly_downloaded_future_post_download_cli {
         Ok(_) => {
             let result_string = pretty_check_string::pretty_ok_str(&String::from(
                 "Latest Edge CLI downloaded & correctly installed.",
@@ -232,57 +246,58 @@ pub(crate) fn get_edge_cli(backend_communicator: BackendCommunicator) -> String 
     }
 }
 
-// BUG: Program hangs while downloading and writing file. Download & write in chunks.
 // TODO: Replace isahc with reqwests https://crates.io/crates/reqwest
 /// Download a file from a url to a local download path
-fn download_file(
+async fn download_file(
     download_url: String,
     download_path_str: String,
     backend_communicator: BackendCommunicator,
 ) -> Result<(), String> {
     let download_path = PathBuf::new();
     let download_path = download_path.join(download_path_str.clone());
-    let mut response;
+
     log_and_emit(
-        format!(
-            "Downloading: {}. Program may be temporarily unresponsive while downloading.",
+        format!("Preparing to download: {}.", download_url.clone()),
+        backend_communicator.clone(),
+    );
+
+    let client = Client::new();
+    let response = client
+        .get(download_url.clone())
+        .send()
+        .await
+        .or(Err(format!(
+            "Error while downloading file {}.",
             download_url.clone()
-        ),
-        backend_communicator.clone(),
-    );
-    match isahc::get(download_url) {
-        Ok(successful_response) => response = successful_response,
-        Err(error_response) => {
-            let error_message = format!("Error while downloading CLI. Error = {}", error_response);
-            return Err(error_message);
-        }
-    }
-    log_and_emit(
-        format!("Download Status: {}", response.status()),
-        backend_communicator.clone(),
-    );
-    match log_message(
-        format!("Download Headers: {:#?}", response.headers()),
-        backend_communicator.clone(),
-    ) {
-        Ok(_) => {}
-        Err(_) => {}
-    };
-    log_and_emit(
-        format!("Converting downloaded file body to bytes."),
-        backend_communicator.clone(),
-    );
-    let edge_cli_bytes;
-    match response.bytes() {
-        Ok(converted_byte_vector) => edge_cli_bytes = converted_byte_vector,
-        Err(error_response) => {
-            let error_message = format!(
-                "Error while converting downloaded file to bytes. Error: {}",
-                error_response
+        )));
+
+    let filesize;
+    let valid_response;
+    match response {
+        Ok(ok_response) => {
+            valid_response = ok_response;
+            match valid_response.content_length() {
+                Some(ok_filesize) => filesize = ok_filesize,
+                None => {
+                    let error_message = format!("Unable to read filesize from valid response.");
+                    log_and_emit(error_message.clone(), backend_communicator);
+                    return Err(error_message);
+                }
+            };
+            log_and_emit(
+                format!("Download Headers: {:#?}", valid_response.headers()),
+                backend_communicator.clone(),
             );
-            return Err(error_message);
+        }
+        Err(_) => {
+            log_and_emit(
+                format!("Unable to read filesize from response."),
+                backend_communicator,
+            );
+            return Err(format!("Unable to read filesize from response."));
         }
     }
+
     log_and_emit(
         format!(
             "Opening file: {}. Program may be temporarily unresponsive while writing.",
@@ -298,20 +313,48 @@ fn download_file(
             return Err(error_message);
         }
     }
+
+    let mut bytes_downloaded: u64 = 0;
+    let mut download_stream = valid_response.bytes_stream();
+    let mut chunk_counter: u64 = 0;
+    while let Some(stream_content) = download_stream.next().await {
+        let stream_chunk;
+        match stream_content {
+            Ok(ok_chunk) => stream_chunk = ok_chunk,
+            Err(_) => {
+                let error_message = format!("Unable to read chunk {}", chunk_counter);
+                log_and_emit(error_message.clone(), backend_communicator.clone());
+                return Err(error_message);
+            }
+        }
+        match file.write_all(&stream_chunk) {
+            Ok(_) => {}
+            Err(_) => {
+                let error_message = format!("Unable to write chunk.");
+                log_and_emit(error_message.clone(), backend_communicator.clone());
+                return Err(error_message);
+            }
+        }
+        let bytes_added = stream_chunk.len() as u64;
+        bytes_downloaded += bytes_added;
+        if chunk_counter % 250 == 0 {
+            log_and_emit(
+                format!(
+                    "Downloading file: {}. Downloaded {} / {} bytes",
+                    download_url.clone(),
+                    bytes_downloaded,
+                    filesize
+                ),
+                backend_communicator.clone(),
+            )
+        }
+        chunk_counter += 1;
+    }
+
     log_and_emit(
-        format!(
-            "Writing file: {}. Program may be temporarily unresponsive while writing.",
-            download_path_str.clone()
-        ),
-        backend_communicator.clone(),
+        format!("File downloaded: {} !", download_url),
+        backend_communicator,
     );
 
-    match file.write_all(&edge_cli_bytes) {
-        Ok(_) => {}
-        Err(err) => {
-            let error_message = format!("Unable to write file. Error = {}", err);
-            return Err(error_message);
-        }
-    }
     return Ok(());
 }

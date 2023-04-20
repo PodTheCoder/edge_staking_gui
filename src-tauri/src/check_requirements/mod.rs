@@ -9,13 +9,15 @@ use crate::{
     utility_events::log_and_emit,
 };
 
+use self::check_edge::is_edge_correctly_downloaded;
+
 mod check_docker;
 pub mod check_edge;
 mod check_specifications;
 mod pretty_check_string;
 
 /// Runs all system requirement checks
-pub fn main(backend_communicator: BackendCommunicator) -> Result<String, String> {
+pub async fn main(backend_communicator: BackendCommunicator) -> Result<String, String> {
     let mut result_string = String::from("");
     let dt: DateTime<Utc> = Utc::now();
 
@@ -71,7 +73,9 @@ pub fn main(backend_communicator: BackendCommunicator) -> Result<String, String>
         backend_communicator.clone(),
     );
 
-    match check_edge::is_edge_correctly_downloaded(backend_communicator.clone()) {
+    let is_edge_downloaded_correctly_future =
+        is_edge_correctly_downloaded(backend_communicator.clone()).await;
+    match is_edge_downloaded_correctly_future {
         Ok(edge_downloaded_correctly) => {
             result_string.push_str(&pretty_ok_str(&edge_downloaded_correctly))
         }
