@@ -9,9 +9,7 @@ use crate::BackendCommunicator;
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
 pub struct ConfigStruct {
     pub initialized: bool, // Has the device be initialized? Set to true when node launched successfully.
-    pub checksum_last_downloaded: String, // When was checksum file last downloaded? datetime as rfc2822 string
-    pub edge_cli_last_downloaded: String, // When was edge cli file last downloaded? datetime as rfc2822 string
-    pub index_api_last_contacted: String, // datetime as rfc2822 string
+    pub index_api_last_contacted: String, // When did the index api last get contacted? datetime as rfc2822 string
 }
 
 #[derive(Clone, serde::Serialize)]
@@ -104,8 +102,6 @@ pub fn create_default_config(backend_communicator: BackendCommunicator) -> Resul
     let default_config = ConfigStruct {
         initialized: false,
         index_api_last_contacted: dt_not_yet_downloaded.to_rfc2822(),
-        checksum_last_downloaded: dt_not_yet_downloaded.to_rfc2822(),
-        edge_cli_last_downloaded: dt_not_yet_downloaded.to_rfc2822(),
     };
     match confy::store_path(config_path, default_config) {
         Ok(_) => {
