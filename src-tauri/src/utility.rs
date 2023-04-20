@@ -193,7 +193,8 @@ pub fn load_config(backend_communicator: BackendCommunicator) -> Result<ConfigSt
 }
 
 /// Write initialized value to config
-pub fn config_mark_device_initialized(
+pub fn config_set_device_initialization_status(
+    device_initialization_status: bool,
     backend_communicator: BackendCommunicator,
 ) -> Result<(), std::string::String> {
     let filepath = format!(
@@ -203,7 +204,6 @@ pub fn config_mark_device_initialized(
     );
     let config_path = Path::new(&filepath);
 
-    let device_initialization_status = true;
     match load_config(backend_communicator.clone()) {
         Ok(ok_config) => {
             let mut changed_config = ok_config;

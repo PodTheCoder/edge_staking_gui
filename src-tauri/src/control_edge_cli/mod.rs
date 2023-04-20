@@ -1,5 +1,5 @@
 use crate::check_requirements;
-use crate::utility::{config_mark_device_initialized, log_and_emit};
+use crate::utility::{config_set_device_initialization_status, log_and_emit};
 use crate::BackendCommunicator;
 use std::process::Command;
 
@@ -121,7 +121,7 @@ pub async fn device_start(backend_communicator: BackendCommunicator) -> String {
     let command_edge_cli_future = command_edge_cli(cli_command, backend_communicator.clone()).await;
     match command_edge_cli_future {
         Ok(ok_str) => {
-            match config_mark_device_initialized(backend_communicator.clone()) {
+            match config_set_device_initialization_status(true, backend_communicator.clone()) {
                 Ok(_) => return ok_str,
                 Err(_) => {
                     let error_message = format!("{}, however could not change config. This has no impact on your running node.", ok_str);
