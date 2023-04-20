@@ -83,7 +83,7 @@ async fn command_edge_cli(
             );
 
             if exit_code == cli_found_successful_command {
-                let log_message = format!("Stdout: {}", stderr_output_str);
+                let log_message = format!("Stdout: {}", stdout_output_str);
                 log_and_emit(log_message, backend_communicator.clone());
                 return Ok(format!("{}", stdout_output_str));
             } else if exit_code == cli_found_failed_command {
@@ -108,10 +108,18 @@ async fn command_edge_cli(
 /// Stop Edge device
 pub async fn device_stop(backend_communicator: BackendCommunicator) -> String {
     let cli_command = String::from("device stop");
-    let command_edge_cli_future = command_edge_cli(cli_command, backend_communicator).await;
+    let command_edge_cli_future = command_edge_cli(cli_command, backend_communicator.clone()).await;
     match command_edge_cli_future {
-        Ok(ok_str) => return ok_str,
-        Err(err_str) => return err_str,
+        Ok(stdout_str) => {
+            let ok_message = format!("Device stopped successfully.");
+            log_and_emit(ok_message, backend_communicator.clone());
+            return stdout_str;
+        }
+        Err(stderr_str) => {
+            let err_message = format!("Error in running device stop command.");
+            log_and_emit(err_message, backend_communicator.clone());
+            return stderr_str;
+        }
     }
 }
 
@@ -120,26 +128,42 @@ pub async fn device_start(backend_communicator: BackendCommunicator) -> String {
     let cli_command = String::from("device start");
     let command_edge_cli_future = command_edge_cli(cli_command, backend_communicator.clone()).await;
     match command_edge_cli_future {
-        Ok(ok_str) => {
+        Ok(stdout_str) => {
             match config_set_device_initialization_status(true, backend_communicator.clone()) {
-                Ok(_) => return ok_str,
+                Ok(_) => {
+                    let ok_message = format!("Started device!");
+                    log_and_emit(ok_message, backend_communicator.clone());
+                    return stdout_str;
+                }
                 Err(_) => {
-                    let error_message = format!("{}, however could not change config. This has no impact on your running node.", ok_str);
+                    let error_message = format!("{}, however could not change config. This has no impact on your running node.", stdout_str);
                     log_and_emit(error_message.clone(), backend_communicator.clone());
                     return error_message;
                 }
             }
         }
-        Err(err_str) => return err_str,
+        Err(stderr_str) => {
+            let error_message = format!("Could not start device.");
+            log_and_emit(error_message, backend_communicator.clone());
+            return stderr_str;
+        }
     }
 }
 
 /// Get local Edge device info
 pub async fn device_info(backend_communicator: BackendCommunicator) -> String {
     let cli_command = String::from("device info");
-    let command_edge_cli_future = command_edge_cli(cli_command, backend_communicator).await;
+    let command_edge_cli_future = command_edge_cli(cli_command, backend_communicator.clone()).await;
     match command_edge_cli_future {
-        Ok(ok_str) => return ok_str,
-        Err(err_str) => return err_str,
+        Ok(stdout_str) => {
+            let ok_message = format!("Received device info successfully");
+            log_and_emit(ok_message, backend_communicator.clone());
+            return stdout_str;
+        }
+        Err(stderr_str) => {
+            let err_message = format!("Failed to receive device info.");
+            log_and_emit(err_message, backend_communicator.clone());
+            return stderr_str;
+        }
     }
 }
