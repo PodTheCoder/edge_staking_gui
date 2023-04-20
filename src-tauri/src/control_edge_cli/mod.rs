@@ -17,6 +17,7 @@ async fn command_edge_cli(
         Ok(_) => {}
         Err(err) => {
             let error_message = format!("You need to pass all system checks before running an Edge CLI command. Your system check results: {}", err);
+            log_and_emit(error_message.clone(), backend_communicator.clone());
             return Err(error_message);
         }
     }
@@ -37,14 +38,17 @@ async fn command_edge_cli(
                     cli_command.clone(),
                     // output.clone().status.code().unwrap()
                 ),
-                backend_communicator,
+                backend_communicator.clone(),
             );
         }
         Err(command_not_completed) => {
-            return Err(format!(
-                "Command did not complete successfully. Error = {}",
+            let error_message = format!(
+                "Command {} did not complete successfully. Error = {}",
+                cli_command.clone(),
                 command_not_completed.to_string()
-            ))
+            );
+            log_and_emit(error_message.clone(), backend_communicator.clone());
+            return Err(error_message);
         }
     }
 
@@ -52,12 +56,19 @@ async fn command_edge_cli(
     let stdout_output_str: String;
     match String::from_utf8(output.stdout.to_vec()) {
         Ok(ok_converted_str) => stdout_output_str = ok_converted_str,
-        Err(_) => return Err(format!("Unable to convert stdout.")),
+        Err(_) => {
+            let err_message = format!("Unable to convert stdout.");
+            log_and_emit(err_message.clone(), backend_communicator.clone());
+            return Err(err_message);
+        }
     }
     let stderr_output_str: String;
     match String::from_utf8(output.stderr.to_vec()) {
         Ok(ok_converted_str) => stderr_output_str = ok_converted_str,
-        Err(_) => stderr_output_str = format!("Unable to convert stderr."),
+        Err(_) => {
+            stderr_output_str = format!("Unable to convert stderr.");
+            log_and_emit(stderr_output_str.clone(), backend_communicator.clone())
+        }
     }
 
     let exit_code: i32;
@@ -66,22 +77,35 @@ async fn command_edge_cli(
     match output.status.code() {
         Some(code) => {
             exit_code = code;
-            println!("Edge CLI exit code = {}", exit_code);
+            log_and_emit(
+                format!("Edge CLI exit code = {}", exit_code),
+                backend_communicator.clone(),
+            );
 
             if exit_code == cli_found_successful_command {
+                let log_message = format!("Stdout: {}", stderr_output_str);
+                log_and_emit(log_message, backend_communicator.clone());
                 return Ok(format!("{}", stdout_output_str));
             } else if exit_code == cli_found_failed_command {
-                return Err(format!(
-                    "CLI installed but ran with error: {}",
-                    stderr_output_str
-                ));
+                let err_message =
+                    format!("CLI installed but ran with error: {}", stderr_output_str);
+                log_and_emit(err_message.clone(), backend_communicator.clone());
+                return Err(err_message);
             } else {
-                return Err(String::from(format!("Edge exit code not recognized")));
+                let err_message = format!("Edge exit code {} not recognized.", exit_code);
+                log_and_emit(err_message.clone(), backend_communicator.clone());
+                return Err(err_message);
             }
         }
-        None => Err(String::from("Edge running status could not be checked.")),
+        None => {
+            let err_message = format!("Edge CLI running status could not be checked.");
+            log_and_emit(err_message.clone(), backend_communicator.clone());
+            return Err(err_message);
+        }
     }
 }
+
+/// Stop Edge device
 pub async fn device_stop(backend_communicator: BackendCommunicator) -> String {
     let cli_command = String::from("device stop");
     let command_edge_cli_future = command_edge_cli(cli_command, backend_communicator).await;
@@ -91,6 +115,7 @@ pub async fn device_stop(backend_communicator: BackendCommunicator) -> String {
     }
 }
 
+/// Start Edge device
 pub async fn device_start(backend_communicator: BackendCommunicator) -> String {
     let cli_command = String::from("device start");
     let command_edge_cli_future = command_edge_cli(cli_command, backend_communicator.clone()).await;
@@ -100,6 +125,7 @@ pub async fn device_start(backend_communicator: BackendCommunicator) -> String {
                 Ok(_) => return ok_str,
                 Err(_) => {
                     let error_message = format!("{}, however could not change config. This has no impact on your running node.", ok_str);
+                    log_and_emit(error_message.clone(), backend_communicator.clone());
                     return error_message;
                 }
             }
@@ -108,6 +134,7 @@ pub async fn device_start(backend_communicator: BackendCommunicator) -> String {
     }
 }
 
+/// Get local Edge device info
 pub async fn device_info(backend_communicator: BackendCommunicator) -> String {
     let cli_command = String::from("device info");
     let command_edge_cli_future = command_edge_cli(cli_command, backend_communicator).await;
