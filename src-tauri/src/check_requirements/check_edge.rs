@@ -257,7 +257,11 @@ async fn download_file(
     let download_path = download_path.join(download_path_str.clone());
 
     log_and_emit(
-        format!("Preparing to download: {}.", download_url.clone()),
+        format!(
+            "Preparing to download {} to {}.",
+            download_url.clone(),
+            download_path_str.clone()
+        ),
         backend_communicator.clone(),
     );
 
@@ -267,8 +271,9 @@ async fn download_file(
         .send()
         .await
         .or(Err(format!(
-            "Error while downloading file {}.",
-            download_url.clone()
+            "Error while downloading file {} to {}.",
+            download_url.clone(),
+            download_path_str.clone()
         )));
 
     let filesize;
@@ -340,8 +345,9 @@ async fn download_file(
         if chunk_counter % 250 == 0 {
             log_and_emit(
                 format!(
-                    "Downloading file: {}. Downloaded {} / {} bytes",
+                    "Downloading file: {} to {}. Downloaded {} / {} bytes",
                     download_url.clone(),
+                    download_path_str,
                     bytes_downloaded,
                     filesize
                 ),

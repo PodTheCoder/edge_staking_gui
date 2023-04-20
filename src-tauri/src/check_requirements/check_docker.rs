@@ -30,18 +30,28 @@ pub(crate) fn get_docker_status(
             exit_code = code;
             log_and_emit(
                 format!("Docker Exit code = {}", exit_code),
-                backend_communicator,
+                backend_communicator.clone(),
             );
 
             if exit_code == docker_installed_and_running_code {
-                return Ok(String::from("Docker installed & ready."));
+                let ok_string = String::from("Docker installed & ready.");
+                log_and_emit(ok_string.clone(), backend_communicator.clone());
+                return Ok(ok_string);
             } else if exit_code == docker_installed_not_running_code {
-                return Err(String::from("Docker installed but not running/ready."));
+                let err_string = format!("Docker installed but not running");
+                log_and_emit(err_string.clone(), backend_communicator.clone());
+                return Err(err_string);
             } else {
-                return Err(String::from(format!("Docker exit code not recognized")));
+                let err_string = format!("Docker exit code not recognized");
+                log_and_emit(err_string.clone(), backend_communicator.clone());
+                return Err(err_string);
             }
         }
-        None => Err(String::from("Docker running status could not be checked.")),
+        None => {
+            let err_string = format!("Docker running status could not be checked");
+            log_and_emit(err_string.clone(), backend_communicator.clone());
+            return Err(err_string);
+        }
     }
 
     // output Docker log.
