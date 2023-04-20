@@ -25,10 +25,10 @@ import Curstatus from "./components/Curstatus.vue";
     <Install_Edge_Cli />
 
     <!-- <p>Option 2: Manually download Edge CLI and place in your staking GUI installation folder.</p>
-                        <Get_Edge_Cli_Download /> -->
+                                <Get_Edge_Cli_Download /> -->
 
     <!-- <p>3. Add your device code.</p>
-                                <Greet /> -->
+                                        <Greet /> -->
 
     <p>3. Control your node. Currently requires your device to already be setup. In a future version this setup will also
       be automated.</p>

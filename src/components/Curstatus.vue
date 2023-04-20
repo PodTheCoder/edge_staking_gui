@@ -19,6 +19,18 @@ await appWindow.listen(
 // Default status
 await emit(eventListenerName, defaultStatus);
 
+// Initialize default config
+async function load_config_frontend() {
+  // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+  const appLocalDataDirPath = await appLocalDataDir();
+  await invoke("load_config_frontend", {
+    datadir: appLocalDataDirPath,
+    window: appWindow,
+  });
+}
+
+const nodeInitialized = load_config_frontend()
+
 async function emit_event_from_frontend() {
   await emit(eventListenerName,
     'Called from frontend'
@@ -42,7 +54,7 @@ async function emit_event_from_backend() {
   </div>
 
   <!-- <div class="card">
-      <button type="button" @click="emit_event_from_frontend()">Emit from frontend</button>
-      <button type="button" @click="emit_event_from_backend()">Emit from backend</button>
-    </div> -->
+                                <button type="button" @click="emit_event_from_frontend()">Emit from frontend</button>
+                                <button type="button" @click="emit_event_from_backend()">Emit from backend</button>
+                              </div> -->
 </template>

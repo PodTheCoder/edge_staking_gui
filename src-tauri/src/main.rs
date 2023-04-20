@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use tauri::Window;
-use utility::log_and_emit;
+use utility::{load_config, log_and_emit};
 
 mod check_requirements;
 mod control_edge_cli;
@@ -80,6 +80,19 @@ async fn device_start(window: Window, datadir: String) -> String {
 }
 
 #[tauri::command]
+fn load_config_frontend(window: Window, datadir: String) -> String {
+    let backend_communicator = BackendCommunicator {
+        event_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+    match load_config(backend_communicator.clone()) {
+        Ok(_) => return format!("Config initialized successfully."),
+        Err(_) => return format!("Config failed to initialize."),
+    }
+}
+
+#[tauri::command]
 async fn device_stop(window: Window, datadir: String) -> String {
     let backend_communicator = BackendCommunicator {
         event_listener: String::from(STATUSLISTENER),
@@ -125,7 +138,8 @@ fn main() {
             device_start,
             device_stop,
             device_info,
-            emit_from_backend
+            emit_from_backend,
+            load_config_frontend
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
