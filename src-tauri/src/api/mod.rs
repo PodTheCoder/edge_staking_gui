@@ -175,3 +175,36 @@ pub async fn get_stake_info_from_api(
         Err(err_str) => return Err(err_str),
     }
 }
+
+/// Query Index API for transaction history based on xe_address
+pub async fn get_transaction_history_from_api(
+    xe_address: String, // eg. xe_7a65d81dC21E87d593aC30DFe0AcbC2622bbdAE8
+    backend_communicator: BackendCommunicator,
+) -> Result<String, String> {
+    let base_download_url = format!("https://index.xe.network/transactions/");
+    let download_url = format!("{}{}", base_download_url, xe_address);
+
+    let download_path_str = format!(
+        "{}{}",
+        backend_communicator.data_dir,
+        format!("transaction_history.json")
+    );
+
+    match api_json_query_to_hashmap(
+        download_url,
+        download_path_str,
+        backend_communicator.clone(),
+    )
+    .await
+    {
+        Ok(ok_hashmap) => {
+            let ok_hashmap_str = format!("{:?}", ok_hashmap);
+            log_and_emit(
+                format!("Transaction history: {}", ok_hashmap_str.clone()),
+                backend_communicator.clone(),
+            );
+            return Ok(ok_hashmap_str);
+        }
+        Err(err_str) => return Err(err_str),
+    }
+}
