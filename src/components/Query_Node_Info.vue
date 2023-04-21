@@ -8,9 +8,8 @@ const api_response = ref("");
 const node_address = ref("");
 
 async function get_node_session_from_index_api() {
-  // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   const appLocalDataDirPath = await appLocalDataDir();
-  api_response.value = await invoke("greet", {
+  api_response.value = await invoke("query_node_session", {
     name: node_address.value,
     datadir: appLocalDataDirPath,
     window: appWindow,
@@ -18,10 +17,9 @@ async function get_node_session_from_index_api() {
 }
 </script>
 
-<!-- TODO: Rework to Device Add functionality. -->
 <template>
   <div class="card">
-    <input id="greet-input" v-model="node_address" placeholder="Enter node address..." />
+    <input id="node-address-input" v-model="node_address" placeholder="Enter node address..." />
     <button type="button" @click="get_node_session_from_index_api()">Get Session Info</button>
   </div>
 

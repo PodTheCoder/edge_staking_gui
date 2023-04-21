@@ -24,7 +24,7 @@ pub struct BackendCommunicator {
 }
 
 #[tauri::command]
-async fn greet(window: Window, datadir: String, name: String) -> String {
+async fn query_node_session(window: Window, datadir: String, name: String) -> String {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
@@ -149,7 +149,7 @@ fn emit_from_backend(window: Window, datadir: String) {
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
-            greet,
+            query_node_session,
             check_requirements,
             install_edge_cli,
             get_edge_cli_download_url,
