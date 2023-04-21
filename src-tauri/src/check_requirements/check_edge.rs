@@ -1,13 +1,9 @@
+use crate::utility::download_file;
 use crate::utility::log_and_emit;
 use crate::BackendCommunicator;
-use futures_util::StreamExt;
-use reqwest;
-use reqwest::Client;
 use sha2::{Digest, Sha256};
 use std::fs::File;
-use std::io::prelude::*;
 use std::path::Path;
-use std::path::PathBuf;
 use std::{fs, io};
 
 use crate::check_requirements::check_specifications::{get_os_info, get_processor_info};
@@ -244,123 +240,4 @@ pub(crate) async fn get_edge_cli(backend_communicator: BackendCommunicator) -> S
             return errormessage;
         }
     }
-}
-
-// TODO: Add caching via config file. Lookup timestamp if exist, check if beyond caching time arg, save timestamp when file fully downloaded.
-/// Download a file from a url to a local download path
-async fn download_file(
-    download_url: String,
-    download_path_str: String,
-    backend_communicator: BackendCommunicator,
-) -> Result<(), String> {
-    let download_path = PathBuf::new();
-    let download_path = download_path.join(download_path_str.clone());
-
-    log_and_emit(
-        format!(
-            "Preparing to download {} to {}.",
-            download_url.clone(),
-            download_path_str.clone()
-        ),
-        backend_communicator.clone(),
-    );
-
-    let client = Client::new();
-    let response = client
-        .get(download_url.clone())
-        .send()
-        .await
-        .or(Err(format!(
-            "Error while downloading file {} to {}.",
-            download_url.clone(),
-            download_path_str.clone()
-        )));
-
-    let filesize;
-    let valid_response;
-    match response {
-        Ok(ok_response) => {
-            valid_response = ok_response;
-            match valid_response.content_length() {
-                Some(ok_filesize) => filesize = ok_filesize,
-                None => {
-                    let error_message = format!("Unable to read filesize from valid response.");
-                    log_and_emit(error_message.clone(), backend_communicator);
-                    return Err(error_message);
-                }
-            };
-            log_and_emit(
-                format!("Download Headers: {:#?}", valid_response.headers()),
-                backend_communicator.clone(),
-            );
-        }
-        Err(_) => {
-            log_and_emit(
-                format!("Unable to read filesize from response."),
-                backend_communicator,
-            );
-            return Err(format!("Unable to read filesize from response."));
-        }
-    }
-
-    log_and_emit(
-        format!(
-            "Opening file: {}. Program may be temporarily unresponsive while writing.",
-            download_path_str.clone()
-        ),
-        backend_communicator.clone(),
-    );
-    let mut file;
-    match File::create(download_path) {
-        Ok(ok_file) => file = ok_file,
-        Err(err) => {
-            let error_message = format!("Error creating File based on filename. Potential solution: Run the program as administrator. Error = {}", err);
-            return Err(error_message);
-        }
-    }
-
-    let mut bytes_downloaded: u64 = 0;
-    let mut download_stream = valid_response.bytes_stream();
-    let mut chunk_counter: u64 = 0;
-    while let Some(stream_content) = download_stream.next().await {
-        let stream_chunk;
-        match stream_content {
-            Ok(ok_chunk) => stream_chunk = ok_chunk,
-            Err(_) => {
-                let error_message = format!("Unable to read chunk {}", chunk_counter);
-                log_and_emit(error_message.clone(), backend_communicator.clone());
-                return Err(error_message);
-            }
-        }
-        match file.write_all(&stream_chunk) {
-            Ok(_) => {}
-            Err(_) => {
-                let error_message = format!("Unable to write chunk.");
-                log_and_emit(error_message.clone(), backend_communicator.clone());
-                return Err(error_message);
-            }
-        }
-        let bytes_added = stream_chunk.len() as u64;
-        bytes_downloaded += bytes_added;
-        if chunk_counter % 250 == 0 {
-            log_and_emit(
-                format!(
-                    "Downloading file: {} to {}. Downloaded {} / {} bytes",
-                    download_url.clone(),
-                    download_path_str,
-                    bytes_downloaded,
-                    filesize
-                ),
-                backend_communicator.clone(),
-            )
-        }
-        chunk_counter += 1;
-    }
-
-    log_and_emit(
-        format!("File downloaded: {} !", download_url),
-        backend_communicator,
-    );
-
-    return Ok(());
 }
