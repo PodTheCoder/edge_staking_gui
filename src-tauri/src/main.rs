@@ -1,11 +1,11 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use api::get_node_session_from_api;
 use tauri::Window;
 use utility::{load_config, log_and_emit};
 
-use crate::utility::get_node_session_from_api;
-
+mod api;
 mod check_requirements;
 mod control_edge_cli;
 mod utility;
