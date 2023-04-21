@@ -4,6 +4,8 @@
 use tauri::Window;
 use utility::{load_config, log_and_emit};
 
+use crate::utility::get_node_session_from_api;
+
 mod check_requirements;
 mod control_edge_cli;
 mod utility;
@@ -23,13 +25,29 @@ pub struct BackendCommunicator {
 
 #[tauri::command]
 async fn greet(window: Window, datadir: String, name: String) -> String {
-    let _backend_communicator = BackendCommunicator {
+    let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
 
-    format!("Hello, {}! You've been greeted from Rust!", name)
+    match get_node_session_from_api(name, backend_communicator.clone()).await {
+        Ok(node_info) => {
+            log_and_emit(
+                format!("Received and parsed node info from API."),
+                backend_communicator.clone(),
+            );
+            return node_info;
+        }
+        Err(err_str) => {
+            log_and_emit(
+                format!("Error while getting node info from api."),
+                backend_communicator.clone(),
+            );
+            return err_str;
+        }
+    }
+    // format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
 #[tauri::command]

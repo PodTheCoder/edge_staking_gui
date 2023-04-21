@@ -4,14 +4,14 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { appLocalDataDir } from '@tauri-apps/api/path';
 import { appWindow } from '@tauri-apps/api/window';
 
-const greetMsg = ref("");
-const name = ref("");
+const api_response = ref("");
+const node_address = ref("");
 
-async function greet() {
+async function get_node_session_from_index_api() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   const appLocalDataDirPath = await appLocalDataDir();
-  greetMsg.value = await invoke("greet", {
-    name: name.value,
+  api_response.value = await invoke("greet", {
+    name: node_address.value,
     datadir: appLocalDataDirPath,
     window: appWindow,
   });
@@ -21,9 +21,9 @@ async function greet() {
 <!-- TODO: Rework to Device Add functionality. -->
 <template>
   <div class="card">
-    <input id="greet-input" v-model="name" placeholder="Enter device code..." />
-    <button type="button" @click="greet()">Add</button>
+    <input id="greet-input" v-model="node_address" placeholder="Enter node address..." />
+    <button type="button" @click="get_node_session_from_index_api()">Get Session Info</button>
   </div>
 
-  <p>{{ greetMsg }}</p>
+  <p>{{ api_response }}</p>
 </template>
