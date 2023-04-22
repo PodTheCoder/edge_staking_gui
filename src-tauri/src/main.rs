@@ -1,10 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use api::{
-    derive_wallet_address_from_node_address, get_node_session_from_api,
-    lookup_value_from_api_hashmap,
-};
+use api::derivation::derive_wallet_address_from_node_address;
 use tauri::Window;
 use utility::{load_config, log_and_emit};
 
