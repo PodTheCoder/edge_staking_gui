@@ -1,7 +1,10 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use api::{get_node_session_from_api, lookup_value_from_api_hashmap};
+use api::{
+    derive_wallet_address_from_node_address, get_node_session_from_api,
+    lookup_value_from_api_hashmap,
+};
 use tauri::Window;
 use utility::{load_config, log_and_emit};
 
@@ -31,30 +34,9 @@ async fn query_node_session(window: Window, datadir: String, name: String) -> St
         front_end_window: window,
     };
 
-    match get_node_session_from_api(name, backend_communicator.clone()).await {
-        Ok(api_hashmap) => {
-            log_and_emit(
-                format!("Received and parsed node info from API."),
-                backend_communicator.clone(),
-            );
-            // let json_object_key = format!("node:stake");
-            let json_object_key = format!("online");
-            match lookup_value_from_api_hashmap(
-                api_hashmap,
-                json_object_key,
-                backend_communicator.clone(),
-            )
-            .await
-            {
-                Ok(ok_str) => return ok_str,
-                Err(err_str) => return err_str,
-            }
-        }
+    match derive_wallet_address_from_node_address(name, backend_communicator.clone()).await {
+        Ok(ok_wallet_address) => return ok_wallet_address,
         Err(err_str) => {
-            log_and_emit(
-                format!("Error while getting node info from api."),
-                backend_communicator.clone(),
-            );
             return err_str;
         }
     }

@@ -114,7 +114,7 @@ pub async fn get_node_session_from_api(
 pub async fn get_node_snapshots_from_api(
     node_address: String, // eg. xe_7a65d81dC21E87d593aC30DFe0AcbC2622bbdAE8
     backend_communicator: BackendCommunicator,
-) -> Result<String, String> {
+) -> Result<HashMap<String, Value>, String> {
     let base_download_url = format!("https://index.xe.network/snapshots/");
     let download_url = format!("{}{}", base_download_url, node_address);
 
@@ -137,7 +137,7 @@ pub async fn get_node_snapshots_from_api(
                 format!("Node snapshots info {}", ok_hashmap_str.clone()),
                 backend_communicator.clone(),
             );
-            return Ok(ok_hashmap_str);
+            return Ok(ok_hashmap);
         }
         Err(err_str) => return Err(err_str),
     }
@@ -147,7 +147,7 @@ pub async fn get_node_snapshots_from_api(
 pub async fn get_stake_info_from_api(
     stake_token: String, // eg. 9d51f5129e9188ba9622163f06b34e51071be224209365ad367d1300979e0b0e
     backend_communicator: BackendCommunicator,
-) -> Result<String, String> {
+) -> Result<HashMap<String, Value>, String> {
     let base_download_url = format!("https://index.xe.network/stake/");
     let download_url = format!("{}{}", base_download_url, stake_token);
 
@@ -170,7 +170,7 @@ pub async fn get_stake_info_from_api(
                 format!("Stake info {}", ok_hashmap_str.clone()),
                 backend_communicator.clone(),
             );
-            return Ok(ok_hashmap_str);
+            return Ok(ok_hashmap);
         }
         Err(err_str) => return Err(err_str),
     }
@@ -180,7 +180,7 @@ pub async fn get_stake_info_from_api(
 pub async fn get_transaction_history_from_api(
     xe_address: String, // eg. xe_7a65d81dC21E87d593aC30DFe0AcbC2622bbdAE8
     backend_communicator: BackendCommunicator,
-) -> Result<String, String> {
+) -> Result<HashMap<String, Value>, String> {
     let base_download_url = format!("https://index.xe.network/transactions/");
     let download_url = format!("{}{}", base_download_url, xe_address);
 
@@ -203,7 +203,7 @@ pub async fn get_transaction_history_from_api(
                 format!("Transaction history: {}", ok_hashmap_str.clone()),
                 backend_communicator.clone(),
             );
-            return Ok(ok_hashmap_str);
+            return Ok(ok_hashmap);
         }
         Err(err_str) => return Err(err_str),
     }
@@ -297,7 +297,20 @@ pub async fn lookup_value_from_api_hashmap(
                     );
                     match api_hashmap.get(&ultimate_key_str.clone()) {
                         Some(ultimate_value) => {
-                            let ultimate_value_str = ultimate_value.to_string();
+                            let ultimate_value_str;
+                            match ultimate_value.as_str() {
+                                Some(str_without_quotes) => {
+                                    ultimate_value_str = str_without_quotes;
+                                }
+                                None => {
+                                    let error_message = format!("Unable to interpret ultimate value as string. To string variant: {}", ultimate_value.to_string());
+                                    log_and_emit(
+                                        error_message.clone(),
+                                        backend_communicator.clone(),
+                                    );
+                                    return Err(error_message);
+                                }
+                            }
                             log_and_emit(
                                 format!(
                                     "Key: {} has value: {}",
@@ -306,7 +319,8 @@ pub async fn lookup_value_from_api_hashmap(
                                 ),
                                 backend_communicator.clone(),
                             );
-                            return Ok(ultimate_value_str);
+                            let ultimate_string_without_quotes = format!("{}", ultimate_value_str);
+                            return Ok(ultimate_string_without_quotes);
                         }
                         None => {
                             let error_message =
@@ -369,7 +383,91 @@ pub async fn lookup_value_from_api_hashmap(
     return Err(error_message);
 }
 
-// get_wallet_id
-// parse_api_hasmap_to_field_value, check if correct value type.
+/// Use the API to derive the stake token from node address
+pub async fn derive_stake_token_from_node_address(
+    node_address: String,
+    backend_communicator: BackendCommunicator,
+) -> Result<String, String> {
+    let api_hashmap;
+    match get_node_session_from_api(node_address.clone(), backend_communicator.clone()).await {
+        Ok(ok_hashmap) => {
+            api_hashmap = ok_hashmap;
+        }
+        Err(_) => {
+            let error_message = format!("Unable to derive stake.");
+            log_and_emit(error_message.clone(), backend_communicator.clone());
+            return Err(error_message);
+        }
+    }
+
+    let json_object_key = format!("node:stake");
+    match lookup_value_from_api_hashmap(api_hashmap, json_object_key, backend_communicator.clone())
+        .await
+    {
+        Ok(ok_stake_value) => {
+            let stake_value = ok_stake_value;
+            let ok_message = format!("Found stake value {}", stake_value.clone());
+            log_and_emit(ok_message, backend_communicator.clone());
+            return Ok(stake_value);
+        }
+        Err(_) => {
+            let error_message = format!("Could not lookup stake value.");
+            log_and_emit(error_message.clone(), backend_communicator.clone());
+            return Err(error_message);
+        }
+    }
+}
+
+/// Use the api to derive the wallet address from the node address
+pub async fn derive_wallet_address_from_node_address(
+    node_address: String,
+    backend_communicator: BackendCommunicator,
+) -> Result<String, String> {
+    // Derive stake from device address
+    let stake_token;
+    match derive_stake_token_from_node_address(node_address.clone(), backend_communicator.clone())
+        .await
+    {
+        Ok(ok_stake_token) => {
+            stake_token = ok_stake_token;
+        }
+        Err(_) => {
+            let error_message = format!("Could not derive stake inside derive_wallet_address.");
+            log_and_emit(error_message.clone(), backend_communicator.clone());
+            return Err(error_message);
+        }
+    }
+
+    // Derive wallet address from stake
+
+    // Get JSON
+    let api_hashmap;
+    match get_stake_info_from_api(stake_token.clone(), backend_communicator.clone()).await {
+        Ok(ok_api_hashmap) => {
+            api_hashmap = ok_api_hashmap;
+        }
+        Err(err_str) => {
+            return Err(err_str);
+        }
+    }
+
+    // Lookup Value
+    let json_object_key = format!("wallet");
+    match lookup_value_from_api_hashmap(api_hashmap, json_object_key, backend_communicator.clone())
+        .await
+    {
+        Ok(ok_wallet_address) => {
+            let ok_message = format!(
+                "Derived wallet address: {} from stake {} based on node address {}",
+                ok_wallet_address.clone(),
+                stake_token.clone(),
+                node_address.clone()
+            );
+            log_and_emit(ok_message.clone(), backend_communicator.clone());
+            return Ok(ok_wallet_address);
+        }
+        Err(err_str) => return Err(err_str),
+    }
+}
 
 // char::is_whitespace
