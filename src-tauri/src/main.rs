@@ -1,7 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use api::get_node_session_from_api;
+use api::{get_node_session_from_api, lookup_value_from_api_hashmap};
 use tauri::Window;
 use utility::{load_config, log_and_emit};
 
@@ -32,12 +32,23 @@ async fn query_node_session(window: Window, datadir: String, name: String) -> St
     };
 
     match get_node_session_from_api(name, backend_communicator.clone()).await {
-        Ok(node_info) => {
+        Ok(api_hashmap) => {
             log_and_emit(
                 format!("Received and parsed node info from API."),
                 backend_communicator.clone(),
             );
-            return node_info;
+            // let json_object_key = format!("node:stake");
+            let json_object_key = format!("online");
+            match lookup_value_from_api_hashmap(
+                api_hashmap,
+                json_object_key,
+                backend_communicator.clone(),
+            )
+            .await
+            {
+                Ok(ok_str) => return ok_str,
+                Err(err_str) => return err_str,
+            }
         }
         Err(err_str) => {
             log_and_emit(

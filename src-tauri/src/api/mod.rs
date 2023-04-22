@@ -1,5 +1,5 @@
 use serde_json::Value;
-use std::{collections::HashMap, fs};
+use std::{collections::HashMap, collections::VecDeque, fs};
 
 use crate::{
     utility::{download_file, log_and_emit},
@@ -81,7 +81,7 @@ pub async fn api_json_query_to_hashmap(
 pub async fn get_node_session_from_api(
     node_address: String, // eg. xe_7a65d81dC21E87d593aC30DFe0AcbC2622bbdAE8
     backend_communicator: BackendCommunicator,
-) -> Result<String, String> {
+) -> Result<HashMap<String, Value>, String> {
     let base_download_url = format!("https://index.xe.network/session/");
     let download_url = format!("{}{}", base_download_url, node_address);
 
@@ -104,7 +104,7 @@ pub async fn get_node_session_from_api(
                 format!("Node session info {}", ok_hashmap_str.clone()),
                 backend_communicator.clone(),
             );
-            return Ok(ok_hashmap_str);
+            return Ok(ok_hashmap);
         }
         Err(err_str) => return Err(err_str),
     }
@@ -208,3 +208,168 @@ pub async fn get_transaction_history_from_api(
         Err(err_str) => return Err(err_str),
     }
 }
+
+/// Parse the api hashmap using the object key. Key format supports nested lookups eg. "first:second:third"
+pub async fn lookup_value_from_api_hashmap(
+    api_hashmap: HashMap<String, Value>,
+    json_object_key: String,
+    backend_communicator: BackendCommunicator,
+) -> Result<String, String> {
+    // Parse JSON object key
+    log_and_emit(
+        format!("Parsing string from API: {}", json_object_key.clone()),
+        backend_communicator.clone(),
+    );
+    let nesting_limit = 5;
+    let mut parsed_strings_vector: VecDeque<String> = VecDeque::new(); // Contains parsed strings
+    let mut string_to_parse = json_object_key.clone();
+
+    for parse_json_loop_count in 0..nesting_limit.clone() {
+        match string_to_parse.find(":") {
+            Some(ok_colon_pos) => {
+                let colon_pos = ok_colon_pos;
+                let parsed_word = String::from(&string_to_parse[0..colon_pos]);
+                parsed_strings_vector.push_back(parsed_word.clone());
+                log_and_emit(
+                    format!("Parsed word: {}", parsed_word.clone()),
+                    backend_communicator.clone(),
+                );
+                if colon_pos < string_to_parse.len() - 1 {
+                    string_to_parse = String::from(&string_to_parse[colon_pos + 1..]);
+                    continue; // next loop
+                } else {
+                    // colon pos is last char, nothing left to parse.
+                    let error_message = format!(
+                        "Malformed json_object_key {} . Should not end with colon.",
+                        json_object_key
+                    );
+                    log_and_emit(error_message.clone(), backend_communicator.clone());
+                    return Err(error_message);
+                }
+            }
+            None => {
+                if parse_json_loop_count == 0 {
+                    log_and_emit(
+                        format!(
+                            "Json object key: {} is not nested.",
+                            json_object_key.clone()
+                        ),
+                        backend_communicator.clone(),
+                    );
+                } else {
+                    log_and_emit(
+                        format!(
+                            "Json object was nested. Nest count : {}",
+                            parse_json_loop_count
+                        ),
+                        backend_communicator.clone(),
+                    );
+                }
+                let parsed_word = String::from(&string_to_parse[0..]);
+                parsed_strings_vector.push_back(parsed_word.clone());
+                log_and_emit(
+                    format!("Parsed word: {}", parsed_word.clone()),
+                    backend_communicator.clone(),
+                );
+                break; // Break parsing loop.
+            }
+        }
+    }
+
+    let mut api_hashmap = api_hashmap;
+    let mut strings_left_to_traverse = parsed_strings_vector;
+    // Traverse hashmap until find final key.
+    log_and_emit(format!("Traversing hashmap."), backend_communicator.clone());
+    for traverse_hashmap_loop_count in 0..nesting_limit.clone() {
+        if strings_left_to_traverse.len() == 0 {
+            let error_message = format!("Error: Expected a non_empty parsed strings vector.");
+            log_and_emit(error_message.clone(), backend_communicator.clone());
+            return Err(error_message);
+        }
+
+        match strings_left_to_traverse.pop_front() {
+            Some(popped_front_str) => {
+                let ultimate_key_str = popped_front_str;
+                if strings_left_to_traverse.len() == 0 {
+                    log_and_emit(
+                        format!("No more strings in parsed_strings_vector. Reached final string? Nesting level: {}", traverse_hashmap_loop_count),
+                        backend_communicator.clone(),
+                    );
+                    match api_hashmap.get(&ultimate_key_str.clone()) {
+                        Some(ultimate_value) => {
+                            let ultimate_value_str = ultimate_value.to_string();
+                            log_and_emit(
+                                format!(
+                                    "Key: {} has value: {}",
+                                    ultimate_key_str.clone(),
+                                    ultimate_value_str.clone()
+                                ),
+                                backend_communicator.clone(),
+                            );
+                            return Ok(ultimate_value_str);
+                        }
+                        None => {
+                            let error_message =
+                                format!("Could not find value for key {}", ultimate_key_str);
+                            log_and_emit(error_message.clone(), backend_communicator.clone());
+                            return Err(error_message);
+                        }
+                    }
+                } else {
+                    let nested_key = ultimate_key_str;
+                    log_and_emit(
+                        format!("Traversing nested key: {}", nested_key),
+                        backend_communicator.clone(),
+                    );
+                    match api_hashmap.get(&nested_key) {
+                        Some(nested_api_hashmap) => {
+                            let potential_valid_json = nested_api_hashmap.to_string();
+                            match serde_json::from_str(&potential_valid_json) {
+                                Ok(ok_json) => {
+                                    let json_content_hashmap: HashMap<String, Value> = ok_json;
+                                    log_and_emit(
+                                        format!("Setting traversed hashmap as new hashmap."),
+                                        backend_communicator.clone(),
+                                    );
+                                    api_hashmap = json_content_hashmap;
+                                    continue;
+                                }
+
+                                Err(_) => {
+                                    let error_message =
+                                        format!("Could not parse traversed hashmap as JSON.");
+                                    log_and_emit(
+                                        error_message.clone(),
+                                        backend_communicator.clone(),
+                                    );
+                                    return Err(error_message);
+                                }
+                            }
+                        }
+                        None => {
+                            let error_message = format!(
+                                "Could not find nested_key: {} in api_hashmap.",
+                                nested_key
+                            );
+                            log_and_emit(error_message.clone(), backend_communicator.clone());
+                            return Err(error_message);
+                        }
+                    }
+                }
+            }
+            None => return Err(format!("Could not pop vector value of parsed string.")),
+        }
+
+        // Traverse hashmap. Parents are Hashmap<String, String>. Deepest level is <String, Value>
+        // Try to convert .into (casting? )
+    }
+
+    let error_message = format!("Did not execute parse_api_hashmap_to_field_value loops.");
+    log_and_emit(error_message.clone(), backend_communicator.clone());
+    return Err(error_message);
+}
+
+// get_wallet_id
+// parse_api_hasmap_to_field_value, check if correct value type.
+
+// char::is_whitespace
