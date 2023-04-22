@@ -81,21 +81,17 @@ pub async fn json_to_api_hashmap(
     // Convert parsed file to Hashmap
 }
 
-/// Parse the api hashmap using the object key. Key format supports nested lookups eg. "first:second:third"
-pub async fn lookup_value_from_api_hashmap(
-    api_hashmap: HashMap<String, Value>,
+fn helper_parse_json_object_key_to_parsed_strings_vector(
     json_object_key: String,
+    nesting_limit: i32,
     backend_communicator: BackendCommunicator,
-) -> Result<String, String> {
-    // Parse JSON object key
+) -> Result<VecDeque<String>, String> {
     log_and_emit(
         format!("Parsing string from API: {}", json_object_key.clone()),
         backend_communicator.clone(),
     );
-    let nesting_limit = 5;
-    let mut parsed_strings_vector: VecDeque<String> = VecDeque::new(); // Contains parsed strings
+    let mut parsed_strings_vector: VecDeque<String> = VecDeque::new();
     let mut string_to_parse = json_object_key.clone();
-
     for parse_json_loop_count in 0..nesting_limit.clone() {
         match string_to_parse.find(":") {
             Some(ok_colon_pos) => {
@@ -147,10 +143,17 @@ pub async fn lookup_value_from_api_hashmap(
             }
         }
     }
+    Ok(parsed_strings_vector)
+}
 
+fn helper_traverse_api_hashmap(
+    api_hashmap: HashMap<String, Value>,
+    parsed_strings_vector: VecDeque<String>,
+    nesting_limit: i32,
+    backend_communicator: BackendCommunicator,
+) -> Result<String, String> {
     let mut api_hashmap = api_hashmap;
     let mut strings_left_to_traverse = parsed_strings_vector;
-    // Traverse hashmap until find final key.
     log_and_emit(format!("Traversing hashmap."), backend_communicator.clone());
     for traverse_hashmap_loop_count in 0..nesting_limit.clone() {
         if strings_left_to_traverse.len() == 0 {
@@ -246,8 +249,35 @@ pub async fn lookup_value_from_api_hashmap(
             None => return Err(format!("Could not pop vector value of parsed string.")),
         }
     }
-
     let error_message = format!("Did not execute parse_api_hashmap_to_field_value loops.");
     log_and_emit(error_message.clone(), backend_communicator.clone());
     return Err(error_message);
+}
+
+/// Parse the api hashmap using the object key. Key format supports nested lookups eg. "first:second:third"
+pub async fn lookup_value_from_api_hashmap(
+    api_hashmap: HashMap<String, Value>,
+    json_object_key: String,
+    backend_communicator: BackendCommunicator,
+) -> Result<String, String> {
+    let nesting_limit = 5;
+    let parsed_strings_vector: VecDeque<String>;
+    match helper_parse_json_object_key_to_parsed_strings_vector(
+        json_object_key,
+        nesting_limit,
+        backend_communicator.clone(),
+    ) {
+        Ok(ok_vec_deque) => parsed_strings_vector = ok_vec_deque,
+        Err(err) => return Err(err),
+    };
+
+    match helper_traverse_api_hashmap(
+        api_hashmap,
+        parsed_strings_vector,
+        nesting_limit,
+        backend_communicator.clone(),
+    ) {
+        Ok(final_value) => return Ok(final_value),
+        Err(err) => return Err(err),
+    }
 }
