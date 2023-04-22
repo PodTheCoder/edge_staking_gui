@@ -11,7 +11,7 @@ use crate::{
 };
 
 /// Convenience function, download file from Edge Index API and conver it into a hashmap
-pub async fn api_json_query_to_hashmap(
+pub async fn json_to_api_hashmap(
     download_url: String,
     download_path_str: String,
     backend_communicator: BackendCommunicator,

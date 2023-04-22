@@ -3,7 +3,7 @@ use serde_json::Value;
 use crate::{utility::log_and_emit, BackendCommunicator};
 use std::collections::HashMap;
 
-use super::utility::api_json_query_to_hashmap;
+use super::utility::json_to_api_hashmap;
 
 /// Query Index API for session info based on node address
 pub async fn get_node_session_from_api(
@@ -19,7 +19,7 @@ pub async fn get_node_session_from_api(
         format!("node_session.json")
     );
 
-    match api_json_query_to_hashmap(
+    match json_to_api_hashmap(
         download_url,
         download_path_str,
         backend_communicator.clone(),
@@ -52,7 +52,7 @@ pub async fn get_node_snapshots_from_api(
         format!("node_snapshot.json")
     );
 
-    match api_json_query_to_hashmap(
+    match json_to_api_hashmap(
         download_url,
         download_path_str,
         backend_communicator.clone(),
@@ -85,7 +85,7 @@ pub async fn get_stake_info_from_api(
         format!("stake_info.json")
     );
 
-    match api_json_query_to_hashmap(
+    match json_to_api_hashmap(
         download_url,
         download_path_str,
         backend_communicator.clone(),
@@ -118,7 +118,7 @@ pub async fn get_transaction_history_from_api(
         format!("transaction_history.json")
     );
 
-    match api_json_query_to_hashmap(
+    match json_to_api_hashmap(
         download_url,
         download_path_str,
         backend_communicator.clone(),
