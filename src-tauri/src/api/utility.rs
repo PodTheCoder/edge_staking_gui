@@ -77,8 +77,6 @@ pub async fn json_to_api_hashmap(
             return Err(error_message);
         }
     }
-
-    // Convert parsed file to Hashmap
 }
 
 fn helper_parse_json_object_key_to_parsed_strings_vector(
@@ -106,7 +104,6 @@ fn helper_parse_json_object_key_to_parsed_strings_vector(
                     string_to_parse = String::from(&string_to_parse[colon_pos + 1..]);
                     continue; // next loop
                 } else {
-                    // colon pos is last char, nothing left to parse.
                     let error_message = format!(
                         "Malformed json_object_key {} . Should not end with colon.",
                         json_object_key
