@@ -1,6 +1,9 @@
-use crate::{api::lookup_value_from_api_hashmap, utility::log_and_emit, BackendCommunicator};
+use crate::{utility::log_and_emit, BackendCommunicator};
 
-use super::get::{get_node_session_from_api, get_stake_info_from_api};
+use super::{
+    get::{get_node_session_from_api, get_stake_info_from_api},
+    utility::lookup_value_from_api_hashmap,
+};
 
 /// Use the API to derive the stake token from node address
 pub async fn derive_stake_token_from_node_address(

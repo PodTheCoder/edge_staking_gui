@@ -3,7 +3,7 @@ use serde_json::Value;
 use crate::{utility::log_and_emit, BackendCommunicator};
 use std::collections::HashMap;
 
-use super::api_json_query_to_hashmap;
+use super::utility::api_json_query_to_hashmap;
 
 /// Query Index API for session info based on node address
 pub async fn get_node_session_from_api(
