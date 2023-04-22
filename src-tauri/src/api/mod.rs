@@ -1,4 +1,4 @@
-pub mod derivation;
+pub mod derive;
 pub mod get;
 pub mod utility;
 
