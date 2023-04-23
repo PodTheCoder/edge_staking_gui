@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import Query_Node_info from "./components/Query_Node_info.vue";
+import Query_Node_Info from "./components/Query_Node_info.vue";
 import Requirements from "./components/Requirements.vue";
 import Install_Edge_Cli from "./components/Install_Edge_Cli.vue";
 import Get_Edge_Cli_Download from "./components/Get_Edge_Cli_Download_Url.vue"
@@ -33,7 +33,7 @@ import Curstatus from "./components/Curstatus.vue";
     <Node_Control />
 
     <p>4. Check Node Info Through Index API</p>
-    <Query_Node_info />
+    <Query_Node_Info />
 
     <!-- TODO: Add checkbox for auto starting the staking GUI. -->
 
