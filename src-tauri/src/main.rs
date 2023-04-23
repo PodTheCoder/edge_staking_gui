@@ -112,14 +112,17 @@ async fn device_stop(window: Window, datadir: String) -> String {
 }
 
 #[tauri::command]
-async fn device_info(window: Window, datadir: String) -> String {
+async fn create_device_address(window: Window, datadir: String) -> String {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
 
-    return control_edge_cli::device_info(backend_communicator).await;
+    match control_edge_cli::create_node_address(backend_communicator).await {
+        Ok(ok_str) => return ok_str,
+        Err(err_str) => return err_str,
+    }
 }
 
 #[tauri::command]
@@ -145,7 +148,7 @@ fn main() {
             get_edge_cli_download_url,
             device_start,
             device_stop,
-            device_info,
+            create_device_address,
             emit_from_backend,
             load_config_frontend
         ])
