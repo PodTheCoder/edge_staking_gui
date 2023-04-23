@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import Query_Node_Info from "./components/Query_Node_info.vue";
+import Query_Node_Info from "./components/Query_Node_Info.vue";
 import Requirements from "./components/Requirements.vue";
 import Install_Edge_Cli from "./components/Install_Edge_Cli.vue";
 import Get_Edge_Cli_Download from "./components/Get_Edge_Cli_Download_Url.vue"
