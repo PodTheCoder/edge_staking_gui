@@ -31,15 +31,6 @@ async function device_info_emitter() {
     window: appWindow,
   });
 }
-
-async function device_address_creator_emitter() {
-  // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-  const appLocalDataDirPath = await appLocalDataDir();
-  Node_Control_Response.value = await invoke("create_device_address", {
-    datadir: appLocalDataDirPath,
-    window: appWindow,
-  });
-}
 </script>
 
 <template>
@@ -49,8 +40,6 @@ async function device_address_creator_emitter() {
     <button type="button" @click="device_stop_emitter()">Stop</button>
     <br />
     <button type="button" @click="device_info_emitter()">Info</button>
-    <br />
-    <button type="button" @click="device_address_creator_emitter()">Create Device Address</button>
   </div>
 
   <p>{{ Node_Control_Response }}</p>

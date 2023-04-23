@@ -20,7 +20,7 @@ async function get_node_session_from_index_api() {
 <template>
   <div class="card">
     <input id="node-address-input" v-model="node_address" placeholder="Enter node address..." />
-    <button type="button" @click="get_node_session_from_index_api()">Derive Node Wallet Address</button>
+    <button type="button" @click="get_node_session_from_index_api()">Derive Wallet Address</button>
   </div>
 
   <p>{{ api_response }}</p>

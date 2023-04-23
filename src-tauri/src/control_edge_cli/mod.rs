@@ -150,141 +150,20 @@ pub async fn device_start(backend_communicator: BackendCommunicator) -> String {
     }
 }
 
-/// Get info about node address
-pub async fn get_node_address_info(
-    throwaway_password: String,
-    backend_communicator: BackendCommunicator,
-) -> String {
-    let cli_command = format!("wallet info -p {}", throwaway_password);
+/// Get local Edge device info
+pub async fn device_info(backend_communicator: BackendCommunicator) -> String {
+    let cli_command = String::from("device info");
     let command_edge_cli_future = command_edge_cli(cli_command, backend_communicator.clone()).await;
-    match command_edge_cli_future {
-        Ok(stdout_str) => {
-            let ok_message = format!("Received node address info successfully");
-            log_and_emit(ok_message, backend_communicator.clone());
-            return stdout_str;
-        }
-        Err(stderr_str) => {
-            let err_message = format!("Failed to receive node address info.");
-            log_and_emit(err_message, backend_communicator.clone());
-            return stderr_str;
-        }
-    }
-}
-
-/// Create device address if not exists using throwaway password
-pub async fn create_node_address(
-    backend_communicator: BackendCommunicator,
-) -> Result<String, String> {
-    let throwaway_password = format!("ThrowawayPassDoNotUseAsWallet");
-    let node_info_output_pre_creation =
-        get_node_address_info(throwaway_password.clone(), backend_communicator.clone()).await;
-    let input_error_str = format!("InputError: tty required");
-    // Check if a node address already exists
-    match node_address_exists(node_info_output_pre_creation, backend_communicator.clone()) {
-        Ok(ok_str) => {
-            let ok_message = format!("Device address already exists and could be decoded.");
-            log_and_emit(ok_message, backend_communicator);
-            return Err(ok_str); // Error because you want to create a device address and are unable to.
-        }
-        Err(_) => {}
-    }
-
-    let cli_command = format!("wallet create -p {}", throwaway_password);
-    let command_edge_cli_future = command_edge_cli(cli_command, backend_communicator.clone()).await;
-
     match command_edge_cli_future {
         Ok(stdout_str) => {
             let ok_message = format!("Received device info successfully");
             log_and_emit(ok_message, backend_communicator.clone());
-            return Ok(stdout_str);
+            return stdout_str;
         }
         Err(stderr_str) => {
-            // TODO: Figure out how to interact with a programmatic interface.
-            if stderr_str.contains(&input_error_str) {
-                log_and_emit(
-                    format!(
-                        "Command requires user interaction. Checking if node address already exists on device."
-                    ),
-                    backend_communicator.clone(),
-                );
-                // Check if node address was created
-                let node_address_info_output_post_creation =
-                    get_node_address_info(throwaway_password, backend_communicator.clone()).await;
-
-                match node_address_exists(
-                    node_address_info_output_post_creation.clone(),
-                    backend_communicator.clone(),
-                ) {
-                    Ok(ok_str) => {
-                        let ok_message = format!("Node address created successfully!");
-                        log_and_emit(ok_message.clone(), backend_communicator.clone());
-                        return Ok(ok_str);
-                    }
-                    Err(err_str) => {
-                        let error_message = format!(
-                            "Unable to create new node address. Please contact support on Discord."
-                        );
-                        log_and_emit(error_message.clone(), backend_communicator.clone());
-                        return Err(err_str);
-                    }
-                }
-            } else {
-                let error_message = format!(
-                    "Unknown error. Expected to find {} in {}",
-                    input_error_str, stderr_str
-                );
-                log_and_emit(error_message.clone(), backend_communicator);
-                return Err(error_message);
-            }
+            let err_message = format!("Failed to receive device info.");
+            log_and_emit(err_message, backend_communicator.clone());
+            return stderr_str;
         }
-    }
-}
-
-/// Checks if node address exist and passphrase can be decoded, if it does returns the node_address_info_output.
-fn node_address_exists(
-    node_address_info_output: String,
-    backend_communicator: BackendCommunicator,
-) -> Result<String, String> {
-    let node_address_exists_str = format!("Address:");
-    let node_address_not_exists_str = format!("NotFoundError: node address not found");
-    let invalid_password_str = format!("Cannot display private key: invalid passphrase");
-    let valid_password_str = format!("Private key:");
-
-    // Case: Node address exists
-    if node_address_info_output.contains(&node_address_exists_str) {
-        // Case: Node address exists, Password invalid.
-        if node_address_info_output.contains(&invalid_password_str) {
-            let error_message = format!("Wallet already exists on device, but invalid throwaway password. Please contact support.");
-            log_and_emit(error_message.clone(), backend_communicator);
-            return Err(error_message);
-        }
-        // Case: Node address exists, Password valid.
-        if node_address_info_output.contains(&valid_password_str) {
-            let ok_message = format!(
-                "Node address already exists on device and could successfully decode throwaway password."
-            );
-            log_and_emit(ok_message, backend_communicator.clone());
-            return Ok(node_address_info_output);
-        } else {
-            let error_message = format!(
-                "Unknown error in node_address_exists: {}",
-                node_address_info_output
-            );
-            log_and_emit(error_message.clone(), backend_communicator.clone());
-            return Err(error_message);
-        }
-    }
-    // Case: Node address does not exist
-    else if node_address_info_output.contains(&node_address_not_exists_str) {
-        let error_message = format!("Node address does not exist: {}", node_address_info_output);
-        log_and_emit(error_message.clone(), backend_communicator.clone());
-        return Err(error_message);
-    } else {
-        let error_message = format!(
-            "Unknown error in node_address_exists: based on node_address_info_output {}",
-            node_address_info_output
-        );
-        log_and_emit(error_message.clone(), backend_communicator);
-        return Err(error_message);
     }
 }
