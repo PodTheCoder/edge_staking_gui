@@ -45,11 +45,54 @@ fn get_raw_os_name() -> String {
 }
 /// If supported, returns OS type eg. Windows
 fn is_os_name_supported(os_type: String) -> Result<String, String> {
-    //TODO: Add more supported OS types (eg. specific distros) https://crates.io/crates/os_info.
-    let mut supported_os_dict: HashMap<String, String> = HashMap::new();
-    supported_os_dict.insert(String::from("Windows"), String::from("windows"));
-    supported_os_dict.insert(String::from("Linux"), String::from("linux"));
-    supported_os_dict.insert(String::from("Mac OS"), String::from("macos"));
+    // Simple strings are used for downloading the correct Edge binary
+    let windows_simple_string = format!("windows");
+    let linux_simple_string = format!("linux");
+    let macos_simple_string = format!("macos");
+
+    // Assumption is that the Edge Binary functions the same on all linux distributions.
+
+    let supported_os_dict: HashMap<String, String> = HashMap::from([
+        (format!("Alpaquita"), linux_simple_string.clone()),
+        (format!("Alpine"), linux_simple_string.clone()),
+        (format!("Amazon"), linux_simple_string.clone()),
+        (format!("Arch"), linux_simple_string.clone()),
+        (format!("Artix"), linux_simple_string.clone()),
+        (format!("CentOS"), linux_simple_string.clone()),
+        (format!("Debian"), linux_simple_string.clone()),
+        (format!("DragonFly"), linux_simple_string.clone()),
+        (format!("Emscripten"), linux_simple_string.clone()),
+        (format!("EndeavourOS"), linux_simple_string.clone()),
+        (format!("Fedora"), linux_simple_string.clone()),
+        (format!("FreeBSD"), linux_simple_string.clone()),
+        (format!("Garuda"), linux_simple_string.clone()),
+        (format!("Gentoo"), linux_simple_string.clone()),
+        (format!("HardenedBSD"), linux_simple_string.clone()),
+        (format!("Illumos"), linux_simple_string.clone()),
+        (format!("Linux"), linux_simple_string.clone()),
+        (format!("Mabox"), linux_simple_string.clone()),
+        (format!("Mac OS"), macos_simple_string),
+        (format!("Manjaro"), linux_simple_string.clone()),
+        (format!("Mariner"), linux_simple_string.clone()),
+        (format!("MidnightBSD"), linux_simple_string.clone()),
+        (format!("Mint"), linux_simple_string.clone()),
+        (format!("NetBSD"), linux_simple_string.clone()),
+        (format!("NixOS"), linux_simple_string.clone()),
+        (format!("OpenBSD"), linux_simple_string.clone()),
+        (format!("OpenCloudOS"), linux_simple_string.clone()),
+        (format!("openEuler"), linux_simple_string.clone()),
+        (format!("openSUSE"), linux_simple_string.clone()),
+        (format!("OracleLinux"), linux_simple_string.clone()),
+        (format!("Pop"), linux_simple_string.clone()),
+        (format!("Raspbian"), linux_simple_string.clone()),
+        (format!("Redhat"), linux_simple_string.clone()),
+        (format!("RedHatEnterprise"), linux_simple_string.clone()),
+        (format!("Redox"), linux_simple_string.clone()),
+        (format!("Solus"), linux_simple_string.clone()),
+        (format!("SUSE"), linux_simple_string.clone()),
+        (format!("Ubuntu"), linux_simple_string.clone()),
+        (format!("Windows"), windows_simple_string),
+    ]);
 
     match supported_os_dict.get(&os_type) {
         Some(simple_name_value) => {
