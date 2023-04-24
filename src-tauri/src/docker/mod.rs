@@ -3,6 +3,64 @@ use crate::utility::log_and_emit;
 use crate::BackendCommunicator;
 use std::process::Command;
 
+/// Start a temporary docker container for the purpose of copying data
+pub(crate) fn start_docker_container_for_copying_data(
+    backend_communicator: BackendCommunicator,
+) -> Result<String, String> {
+    let output;
+    let args = [
+        "container",
+        "create",
+        "--name",
+        "temp_container_for_copying_edge_device_data",
+        "-v",
+        "edge-device-data:/data",
+        "alpine",
+    ];
+
+    match Command::new("docker").args(args).output() {
+        Ok(command_completed_result) => output = command_completed_result,
+        Err(command_not_completed) => {
+            let err_message = format!(
+                "Could not create temporary container. Error: {}",
+                command_not_completed.to_string()
+            );
+            log_and_emit(err_message.clone(), backend_communicator.clone());
+            return Err(err_message);
+        }
+    }
+
+    let exit_code;
+    let success_exit_code = 0;
+
+    match output.status.code() {
+        Some(code) => {
+            exit_code = code;
+            log_and_emit(
+                format!("Docker Exit code = {}", exit_code),
+                backend_communicator.clone(),
+            );
+            if exit_code == success_exit_code {
+                let ok_message = format!("Created temporary container for copying data.");
+                log_and_emit(ok_message.clone(), backend_communicator.clone());
+                return Ok(ok_message);
+            } else {
+                let err_message = format!(
+                    "Did not recognize error code for starting temporary container: {}",
+                    exit_code
+                );
+                log_and_emit(err_message.clone(), backend_communicator.clone());
+                return Err(err_message);
+            }
+        }
+        None => {
+            let error_message = format!("Could not find error code for Docker output.");
+            log_and_emit(error_message.clone(), backend_communicator.clone());
+            return Err(error_message);
+        }
+    }
+}
+
 /// Os-independent docker status check based on https://docs.docker.com/config/daemon/troubleshoot/#check-whether-docker-is-running
 pub(crate) fn get_docker_status(
     backend_communicator: BackendCommunicator,
