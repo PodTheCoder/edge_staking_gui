@@ -43,21 +43,6 @@ async fn query_node_session(window: Window, datadir: String, name: String) -> St
 }
 
 #[tauri::command]
-async fn check_requirements(window: Window, datadir: String) -> String {
-    let backend_communicator = BackendCommunicator {
-        status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
-        front_end_window: window,
-    };
-
-    let check_requirements_future = check_requirements::main(backend_communicator).await;
-    match check_requirements_future {
-        Ok(res) => return res,
-        Err(res) => return res,
-    }
-}
-
-#[tauri::command]
 async fn install_edge_cli(window: Window, datadir: String) -> String {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
@@ -163,7 +148,6 @@ fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             query_node_session,
-            check_requirements,
             install_edge_cli,
             get_edge_cli_download_url,
             device_start,
