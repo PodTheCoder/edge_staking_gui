@@ -25,8 +25,7 @@ import Add_Device from "./components/Add_Device.vue";
     <p>2. Get your <i>Device Code</i></p>
     <Add_Device />
 
-    <p>3. Control your node. Currently requires your device to already be setup. In a future version this setup will also
-      be automated.</p>
+    <p>3. Control your node. Requires that your device is assigned to a stake.</p>
     <Node_Control />
 
     <p>4. Check Your Node Earnings Through Index API. (First derives wallet address)</p>
