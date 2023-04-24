@@ -1,11 +1,9 @@
 use chrono::{DateTime, Utc};
 
+use crate::docker::get_docker_status;
 use crate::BackendCommunicator;
 use crate::{
-    check_requirements::{
-        check_docker::get_docker_status,
-        pretty_check_string::{pretty_err_str, pretty_ok_str},
-    },
+    check_requirements::pretty_check_string::{pretty_err_str, pretty_ok_str},
     utility::log_and_emit,
 };
 

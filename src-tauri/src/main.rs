@@ -10,6 +10,7 @@ mod check_requirements;
 mod control_edge_cli;
 mod device;
 mod utility;
+mod docker;
 
 // Note: Every tauri function requires the following boilerplate to enable communication with front-end:
 // datadir: &str

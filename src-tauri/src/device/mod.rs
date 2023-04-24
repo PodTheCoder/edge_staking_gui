@@ -46,7 +46,7 @@ pub fn add_device(
 
     return Ok(format!("Ran config file conversion"));
 
-    // Copy to files to Docker
+    // Copy files to Docker
 }
 
 fn helper_save_device_file(
