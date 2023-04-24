@@ -8,6 +8,7 @@ use utility::{load_config, log_and_emit};
 mod api;
 mod check_requirements;
 mod control_edge_cli;
+mod device;
 mod utility;
 
 // Note: Every tauri function requires the following boilerplate to enable communication with front-end:
@@ -134,6 +135,27 @@ fn emit_from_backend(window: Window, datadir: String) {
     log_and_emit(message, backend_communicator);
     return;
 }
+
+#[tauri::command]
+async fn add_device(
+    address: String,
+    privatekey: String,
+    publickey: String,
+    window: Window,
+    datadir: String,
+) -> String {
+    let backend_communicator = BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
+    match device::add_device(address, privatekey, publickey, backend_communicator) {
+        Ok(ok_str) => return ok_str,
+        Err(err_str) => return err_str,
+    }
+}
+
 //TODO: Add persistent boolean if initialization is completed.
 
 fn main() {
@@ -147,7 +169,8 @@ fn main() {
             device_stop,
             device_info,
             emit_from_backend,
-            load_config_frontend
+            load_config_frontend,
+            add_device
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

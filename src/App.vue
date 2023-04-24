@@ -7,6 +7,7 @@ import Install_Edge_Cli from "./components/Install_Edge_Cli.vue";
 import Get_Edge_Cli_Download from "./components/Get_Edge_Cli_Download_Url.vue"
 import Node_Control from "./components/Node_Control.vue";
 import Curstatus from "./components/Curstatus.vue";
+import Add_Device from "./components/Add_Device.vue";
 </script>
 
 <template>
@@ -27,12 +28,14 @@ import Curstatus from "./components/Curstatus.vue";
     <!-- <p>Option 2: Manually download Edge CLI and place in your staking GUI installation folder.</p>
                                 <Get_Edge_Cli_Download /> -->
 
+    <p>3. Add Device</p>
+    <Add_Device />
 
-    <p>3. Control your node. Currently requires your device to already be setup. In a future version this setup will also
+    <p>4. Control your node. Currently requires your device to already be setup. In a future version this setup will also
       be automated.</p>
     <Node_Control />
 
-    <p>4. Check Node Info Through Index API</p>
+    <p>5. Check Node Info Through Index API</p>
     <Query_Node_Info />
 
     <!-- TODO: Add checkbox for auto starting the staking GUI. -->

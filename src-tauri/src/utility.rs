@@ -12,6 +12,10 @@ use crate::BackendCommunicator;
 pub struct ConfigStruct {
     pub initialized: bool, // Has the device be initialized? Set to true when node launched successfully.
     pub index_api_last_contacted: String, // When did the index api last get contacted? datetime as rfc2822 string
+    pub network: String, // On which Edge network is the device, mainnet or testnet?
+    pub address: String, // What is the device XE address?
+    pub private_key: String, // What is the private key of the XE address?
+    pub public_key: String, // What is the public key of the XE address?
 }
 
 #[derive(Clone, serde::Serialize)]
@@ -223,6 +227,10 @@ pub fn create_default_config(backend_communicator: BackendCommunicator) -> Resul
     let default_config = ConfigStruct {
         initialized: false,
         index_api_last_contacted: dt_not_yet_downloaded.to_rfc2822(),
+        address: format!("Unset"),
+        network: format!("Unset"),
+        private_key: format!("Unset"),
+        public_key: format!("Unset"),
     };
     match confy::store_path(config_path, default_config) {
         Ok(_) => {
@@ -312,6 +320,50 @@ pub fn load_config(backend_communicator: BackendCommunicator) -> Result<ConfigSt
         }
     }
 }
+
+pub fn config_set_device_data(
+    network: &String,
+    address: &String,
+    private_key: &String,
+    public_key: &String,
+    backend_communicator: BackendCommunicator,
+) -> Result<String, String> {
+    let filepath = format!(
+        "{}{}",
+        backend_communicator.data_dir.clone(),
+        format!("config.txt")
+    );
+    let config_path = Path::new(&filepath);
+
+    match load_config(backend_communicator.clone()) {
+        Ok(ok_config) => {
+            let mut changed_config = ok_config;
+            changed_config.address = address.to_string();
+            changed_config.network = network.to_string();
+            changed_config.private_key = private_key.to_string();
+            changed_config.public_key = public_key.to_string();
+
+            match confy::store_path(config_path, changed_config) {
+                Ok(_) => {
+                    let ok_message = format!("Stored device data in config.");
+                    log_and_emit(ok_message.clone(), backend_communicator.clone());
+                    return Ok(ok_message);
+                }
+                Err(_) => return Err(format!("Unable to store config file at location")),
+            }
+        }
+        Err(err) => return Err(err),
+    }
+}
+
+// pub fn from_config_create_device_data_files(backend_communicator: BackendCommunicator) => Result<String, String> {
+//     let loaded_config;
+//     match load_config(backend_communicator){
+//         Ok(ok_config) => loaded_config = ok_config,
+//         Err(err) => return Err(err)
+//     }
+
+// }
 
 /// Write initialized value to config
 pub fn config_set_device_initialization_status(
