@@ -86,8 +86,8 @@ pub async fn create_device_code(
         }
     }
 
-    for (filename, file_value) in fields_hashmap {
-        match helper_delete_device_file(filename, file_value, backend_communicator.clone()) {
+    for (filename, _) in fields_hashmap {
+        match helper_delete_device_file(filename, backend_communicator.clone()) {
             Ok(_) => {}
             Err(err_str) => return Err(err_str),
         }
@@ -132,7 +132,6 @@ fn helper_save_device_file(
 /// Delete device file
 fn helper_delete_device_file(
     file_name: String,
-    field_value: String,
     backend_communicator: BackendCommunicator,
 ) -> Result<String, String> {
     let file_path = format!("{}{}", backend_communicator.data_dir, file_name);
