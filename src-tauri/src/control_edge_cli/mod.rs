@@ -12,7 +12,8 @@ async fn command_edge_cli(
     let output;
 
     // Requirements must first be met before commands can be run.
-    let check_requirements_future = check_requirements::main(backend_communicator.clone()).await;
+    let check_requirements_future =
+        check_requirements::main(true, true, true, true, backend_communicator.clone()).await;
     match check_requirements_future {
         Ok(_) => {}
         Err(err) => {

@@ -26,7 +26,7 @@ pub async fn create_device_code(
     // TODO: Check if input is correct.
 
     // Check requirements to see if Docker is running
-    match check_requirements::main(backend_communicator.clone()).await {
+    match check_requirements::main(false, false, true, false, backend_communicator.clone()).await {
         Ok(_) => {}
         Err(err_str) => return Err(err_str),
     }
