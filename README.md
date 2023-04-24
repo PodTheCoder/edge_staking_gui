@@ -8,18 +8,19 @@ In alpha.
 - Easy to use.
 - Minimal configuration.
 - No administrator permissions required for running.
+- Has no access to your XE wallet.
 - Run on Windows, Mac or Linux. Initial focus on Windows.
-- Don’t integrate wallet functionality into the GUI. The web Edge wallet already does that well. All a node needs is a stake. When correctly configured, version 1 of the Edge Staking GUI aims to have NO access to the wallet where your XE is held.
 
 ## Implemented Features
 - Check if your system is ready for staking.
 - Automatically intall the correct Edge CLI for your system.
 - Start & Stop staking.
 - Display current status & log for troubleshooting.
+- Set up staking using only your device code.
 
 ## Planned Features Ver 1.0
-- Set up staking using only your device code.
 - Check if your device is online.
+- Prettier interface.
 
 ## Planned Features Ver 1.5
 - Auto-launch application when your system starts.
