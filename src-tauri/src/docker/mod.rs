@@ -3,6 +3,57 @@ use crate::utility::log_and_emit;
 use crate::BackendCommunicator;
 use std::process::Command;
 
+pub(crate) fn remove_temporary_container(
+    backend_communicator: BackendCommunicator,
+) -> Result<String, String> {
+    let args = ["rm", "temp_container_for_copying_edge_device_data"];
+
+    let output;
+
+    match Command::new("docker").args(args).output() {
+        Ok(command_completed_result) => output = command_completed_result,
+        Err(command_not_completed) => {
+            let err_message = format!(
+                "Could not run docker close container command. Error: {}",
+                command_not_completed.to_string()
+            );
+            log_and_emit(err_message.clone(), backend_communicator.clone());
+            return Err(err_message);
+        }
+    }
+
+    let exit_code;
+    let success_exit_code = 0;
+
+    match output.status.code() {
+        Some(code) => {
+            exit_code = code;
+            log_and_emit(
+                format!("Docker Exit code = {}", exit_code),
+                backend_communicator.clone(),
+            );
+            if exit_code == success_exit_code {
+                let ok_message = format!("Closed docker container");
+                log_and_emit(ok_message.clone(), backend_communicator.clone());
+                return Ok(ok_message);
+            } else {
+                let err_message = format!(
+                    "Did not recognize error code for closing container: {}",
+                    exit_code
+                );
+                log_and_emit(err_message.clone(), backend_communicator.clone());
+                return Err(err_message);
+            }
+        }
+        None => {
+            let error_message = format!("Could not find error code for Docker output.");
+            log_and_emit(error_message.clone(), backend_communicator.clone());
+            return Err(error_message);
+        }
+    }
+}
+
+/// Copy the local edge-device-data files to the running container
 pub(crate) fn copy_data_to_running_container(
     file_to_copy_path: String,
     backend_communicator: BackendCommunicator,

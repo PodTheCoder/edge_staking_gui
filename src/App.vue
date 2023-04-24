@@ -15,27 +15,21 @@ import Add_Device from "./components/Add_Device.vue";
     <Suspense>
       <Curstatus />
     </Suspense>
-    <p>1. Check if your system is ready for staking.</p>
-
-
-    <Requirements />
-
-    <p>2. Install the latest Edge CLI.</p>
-    <p>Note: The automatic install can make the Edge Staking GUI temporarily unresponsive.</p>
+    <p>1. Install the latest Edge CLI.</p>
 
     <Install_Edge_Cli />
 
     <!-- <p>Option 2: Manually download Edge CLI and place in your staking GUI installation folder.</p>
                                 <Get_Edge_Cli_Download /> -->
 
-    <p>3. Add Device</p>
+    <p>2. Get your <i>Device Code</i></p>
     <Add_Device />
 
-    <p>4. Control your node. Currently requires your device to already be setup. In a future version this setup will also
+    <p>3. Control your node. Currently requires your device to already be setup. In a future version this setup will also
       be automated.</p>
     <Node_Control />
 
-    <p>5. Check Node Info Through Index API</p>
+    <p>4. Check Your Node Earnings Through Index API. (First derives wallet address)</p>
     <Query_Node_Info />
 
     <!-- TODO: Add checkbox for auto starting the staking GUI. -->

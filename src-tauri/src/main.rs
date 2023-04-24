@@ -9,8 +9,8 @@ mod api;
 mod check_requirements;
 mod control_edge_cli;
 mod device;
-mod utility;
 mod docker;
+mod utility;
 
 // Note: Every tauri function requires the following boilerplate to enable communication with front-end:
 // datadir: &str
@@ -64,7 +64,7 @@ async fn install_edge_cli(window: Window, datadir: String) -> String {
         data_dir: datadir.clone(),
         front_end_window: window,
     };
-    return check_requirements::check_edge::get_edge_cli(backend_communicator).await;
+    return check_requirements::check_edge::get_edge_cli_binary(backend_communicator).await;
 }
 
 #[tauri::command]
@@ -151,7 +151,7 @@ async fn add_device(
         front_end_window: window,
     };
 
-    match device::add_device(address, privatekey, publickey, backend_communicator) {
+    match device::create_device_code(address, privatekey, publickey, backend_communicator).await {
         Ok(ok_str) => return ok_str,
         Err(err_str) => return err_str,
     }

@@ -179,16 +179,12 @@ fn hash_file(file_path: &Path) -> Result<String, String> {
 }
 
 /// Download the fitting Edge CLI based on user's system.
-pub(crate) async fn get_edge_cli(backend_communicator: BackendCommunicator) -> String {
+pub(crate) async fn get_edge_cli_binary(backend_communicator: BackendCommunicator) -> String {
     let edge_binary_filename = String::from("edge.exe");
     let edge_binary_filepath = format!(
         "{}{}",
         backend_communicator.clone().data_dir.clone(),
         edge_binary_filename
-    );
-    println!(
-        "Hello, {:?}! You've been greeted from Rust!",
-        edge_binary_filepath
     );
 
     let is_edge_correctly_downloaded_future_pre_download_cli =

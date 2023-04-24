@@ -40,8 +40,6 @@ async function device_info_emitter() {
     <button type="button" @click="device_stop_emitter()">Stop</button>
     <br />
     <button type="button" @click="device_info_emitter()">Info</button>
-    <br />
-    <button type="button" @click="device_info_emitter()">Info</button>
   </div>
 
   <p>{{ Node_Control_Response }}</p>
