@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use tauri::Window;
-use utility::{create_config_if_not_exists, load_initialization_status, log_and_emit};
+use utility::{load_initialization_status, log_and_emit};
 
 mod check_requirements;
 mod control_edge_cli;
@@ -131,20 +131,6 @@ async fn add_device(
     }
 }
 
-#[tauri::command]
-async fn frontend_create_config_if_not_exists(window: Window, datadir: String) -> String {
-    let backend_communicator = BackendCommunicator {
-        status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
-        front_end_window: window,
-    };
-
-    match create_config_if_not_exists(backend_communicator.clone()) {
-        Ok(value) => return value,
-        Err(value) => return value,
-    };
-}
-
 //TODO: Add persistent boolean if initialization is completed.
 
 fn main() {
@@ -157,7 +143,6 @@ fn main() {
             device_info,
             emit_from_backend,
             load_device_initialization_status,
-            frontend_create_config_if_not_exists,
             add_device
         ])
         .run(tauri::generate_context!())

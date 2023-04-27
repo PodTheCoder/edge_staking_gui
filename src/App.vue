@@ -12,31 +12,24 @@ import { appLocalDataDir } from "@tauri-apps/api/path";
 import { appWindow } from "@tauri-apps/api/window";
 import { ref } from "vue";
 
-let deviceInitialized = false;
+let deviceInitialized: false;
 
-// Initialize default config
+// TODO: Fix bug with code. It returns correct boolean but does not render.
+// async function load_initialization_status() {
+//   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+//   const appLocalDataDirPath = await appLocalDataDir();
+//   deviceInitialized = await invoke("load_device_initialization_status", {
+//     datadir: appLocalDataDirPath,
+//     window: appWindow,
+//   });
 
-async function load_initialization_status() {
-  // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-  const appLocalDataDirPath = await appLocalDataDir();
-  deviceInitialized = await invoke("load_device_initialization_status", {
-    datadir: appLocalDataDirPath,
-    window: appWindow,
-  });
+//   console.log(deviceInitialized);
 
-}
+//   return deviceInitialized
+// }
 
-async function frontend_create_config_if_not_exists() {
-  const appLocalDataDirPath = await appLocalDataDir();
-  await invoke("frontend_load_config_if_not_exists", {
-    datadir: appLocalDataDirPath,
-    window: appWindow,
-  });
-
-}
-
-frontend_create_config_if_not_exists();
-const IsDeviceInitialized = load_initialization_status()
+// deviceInitialized = await load_initialization_status(); // This is bugged.
+// console.log(deviceInitialized);
 
 
 </script>
@@ -70,7 +63,7 @@ const IsDeviceInitialized = load_initialization_status()
 
   </div>
 
-  <div v-else="deviceInitializationStatus" class="container">
+  <div v-else="deviceInitialized" class="container">
     <div class="step">
       <h2>Control your node</h2>
       <Start_Node />
