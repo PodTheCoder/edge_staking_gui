@@ -22,17 +22,6 @@
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: 0.75s;
-}
-
-.logo.tauri:hover {
-  filter: drop-shadow(0 0 2em #24c8db);
-}
-
 .sticky {
   position: sticky;
   top: 0;
@@ -54,11 +43,6 @@
 
 .statusbarp {
   color: #e8e8e8
-}
-
-.row {
-  display: flex;
-  justify-content: center;
 }
 
 a {
@@ -105,8 +89,4 @@ button:active {
 input,
 button {
   outline: none;
-}
-
-#greet-input {
-  margin-right: 5px;
 }
