@@ -1,28 +1,15 @@
-# Unofficial Edge Staking GUI
+# Pod's Edge Staking GUI
+In beta. Easy Edge Host Setup.
 
-In alpha.
+<img width="599" alt="Edge-Staking-Gui-v-0-5-0 - Copy" src="https://user-images.githubusercontent.com/113918164/234863196-63f22076-6c0c-45fc-aea5-450de2e08fb9.PNG">
 
-<img width="599" alt="staking_gui_0_3_0" src="https://user-images.githubusercontent.com/113918164/233075945-ed3ed2dc-4069-495c-b29d-c95625e125d3.PNG">
-
-## Design Goals
-- Easy to use.
-- Minimal configuration.
-- No administrator permissions required for running.
-- Has no access to your XE wallet.
-- Run on Windows, Mac or Linux. Initial focus on Windows.
-
-## Implemented Features
-- Check if your system is ready for staking.
-- Automatically intall the correct Edge CLI for your system.
-- Start & Stop staking.
-- Display current status & log for troubleshooting.
-- Set up staking using only your device token.
+## Features
+- Easily setup your Edge host with a GUI (Graphical User Interface)
+- Uses the *device token* staking method. Has no access to your XE wallet. 
+- Runs on Windows. (Mac and Linux planned)
 
 ## Planned Features Ver 1.0
 - Check if your device is online.
-- Prettier interface.
-
-## Planned Features Ver 1.5
 - Auto-launch application when your system starts.
 - Minimize application to tray.
 
@@ -39,6 +26,16 @@ Prerequisites: https://tauri.app/v1/guides/getting-started/prerequisites
 Development & build commands can be found in the Makefile.
 
 ## Troubleshooting
+
+
+Logs can be found in:
+
+Windows = C:\Users\{YourUserName}\AppData\Local\EdgeStakingGUI
+
+MacOS: Resolves to $HOME/Library/Application Support.
+
+Linux = $XDG_DATA_HOME or $HOME/.local/share.
+
 On Linux, you need the libraries:
 OpenSSL 1.0.1, 1.0.2, 1.1.0, or 1.1.1 with headers (see https://github.com/sfackler/rust-openssl)
 
