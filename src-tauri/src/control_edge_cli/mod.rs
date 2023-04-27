@@ -123,29 +123,29 @@ pub async fn device_stop(backend_communicator: BackendCommunicator) -> String {
     }
 }
 
-/// Start Edge device
-pub async fn device_start(backend_communicator: BackendCommunicator) -> String {
+/// Start Edge device; true if started successfully, otherwise false
+pub async fn device_start(backend_communicator: BackendCommunicator) -> bool {
     let cli_command = String::from("device start");
     let command_edge_cli_future = command_edge_cli(cli_command, backend_communicator.clone()).await;
     match command_edge_cli_future {
         Ok(stdout_str) => {
             match config_set_device_initialization_status(true, backend_communicator.clone()) {
                 Ok(_) => {
-                    let ok_message = format!("Started device!");
+                    let ok_message = format!("Started device! {}", stdout_str);
                     log_and_emit(ok_message, backend_communicator.clone());
-                    return stdout_str;
+                    return true;
                 }
                 Err(_) => {
                     let error_message = format!("{}, however could not change config. This has no impact on your running node.", stdout_str);
                     log_and_emit(error_message.clone(), backend_communicator.clone());
-                    return error_message;
+                    return false;
                 }
             }
         }
         Err(stderr_str) => {
-            let error_message = format!("Could not start device.");
+            let error_message = format!("Could not start device. Err: {}", stderr_str);
             log_and_emit(error_message, backend_communicator.clone());
-            return stderr_str;
+            return false;
         }
     }
 }

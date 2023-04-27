@@ -346,7 +346,6 @@ pub fn create_config_if_not_exists(
 
     //
     let ok_message = format!("Default config already exists.");
-    log_and_emit(ok_message.clone(), backend_communicator.clone());
     Ok(ok_message)
 }
 
@@ -438,5 +437,33 @@ pub fn load_initialization_status(backend_communicator: BackendCommunicator) -> 
         return initialized_code;
     } else {
         return not_initialied_code;
+    }
+}
+
+/// Returns Initialization status codes
+pub fn load_node_address(backend_communicator: BackendCommunicator) -> String {
+    let no_node_found = format!("Unset");
+    let config;
+    match load_config(backend_communicator.clone()) {
+        Ok(ok_config) => {
+            config = ok_config;
+            let node_address = config.address;
+
+            if node_address == no_node_found {
+                let err = format!("Node not found in config.");
+                log_and_emit(err.clone(), backend_communicator.clone());
+                return no_node_found;
+            } else {
+                let ok_message =
+                    format!("Loaded node address successfully: {}", node_address.clone());
+                log_and_emit(ok_message, backend_communicator.clone());
+                return node_address;
+            }
+        }
+        Err(err) => {
+            let err_message = format!("Could not load node address config. Err: {}", err);
+            log_and_emit(err_message.clone(), backend_communicator.clone());
+            return no_node_found;
+        }
     }
 }
