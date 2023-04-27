@@ -1,11 +1,9 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use api::derive::derive_wallet_address_from_node_address;
 use tauri::Window;
 use utility::{load_config, log_and_emit};
 
-mod api;
 mod check_requirements;
 mod control_edge_cli;
 mod device;
@@ -23,23 +21,6 @@ pub struct BackendCommunicator {
     status_listener: String,
     data_dir: String,
     front_end_window: Window,
-}
-
-#[tauri::command]
-async fn query_node_session(window: Window, datadir: String, name: String) -> String {
-    let backend_communicator = BackendCommunicator {
-        status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
-        front_end_window: window,
-    };
-
-    match derive_wallet_address_from_node_address(name, backend_communicator.clone()).await {
-        Ok(ok_wallet_address) => return ok_wallet_address,
-        Err(err_str) => {
-            return err_str;
-        }
-    }
-    // format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
 #[tauri::command]
@@ -147,7 +128,6 @@ async fn add_device(
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
-            query_node_session,
             install_edge_cli,
             get_edge_cli_download_url,
             device_start,
