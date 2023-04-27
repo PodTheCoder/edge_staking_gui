@@ -6,6 +6,33 @@ import Install_Edge_Cli from "./components/Install_Edge_Cli.vue";
 import Node_Control from "./components/Node_Control.vue";
 import Curstatus from "./components/Curstatus.vue";
 import Add_Device from "./components/Add_Device.vue";
+import { invoke } from "@tauri-apps/api/tauri";
+import { appLocalDataDir } from "@tauri-apps/api/path";
+import { appWindow } from "@tauri-apps/api/window";
+
+// Initialize default config
+async function load_config_frontend() {
+  // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+  const appLocalDataDirPath = await appLocalDataDir();
+  await invoke("load_config_frontend", {
+    datadir: appLocalDataDirPath,
+    window: appWindow,
+  });
+
+}
+
+async function frontend_create_config_if_not_exists() {
+  const appLocalDataDirPath = await appLocalDataDir();
+  await invoke("frontend_load_config_if_not_exists", {
+    datadir: appLocalDataDirPath,
+    window: appWindow,
+  });
+
+}
+
+frontend_create_config_if_not_exists();
+const IsDeviceInitialized = load_config_frontend()
+
 </script>
 
 <template>

@@ -261,13 +261,11 @@ pub fn load_config(backend_communicator: BackendCommunicator) -> Result<ConfigSt
         format!("config.txt")
     );
     let config_path = Path::new(&filepath);
-    // Create default config if not yet exists
-    if !config_path.exists() {
-        match create_default_config(backend_communicator.clone()) {
-            Ok(_) => {}
-            Err(err_string) => return Err(err_string),
-        }
-    }
+
+    match create_config_if_not_exists(backend_communicator.clone()) {
+        Ok(value) => value,
+        Err(value) => return Err(value),
+    };
 
     // Load config from file
     match confy::load_path(config_path) {
@@ -319,6 +317,35 @@ pub fn load_config(backend_communicator: BackendCommunicator) -> Result<ConfigSt
             }
         }
     }
+}
+
+pub fn create_config_if_not_exists(
+    backend_communicator: BackendCommunicator,
+) -> Result<String, String> {
+    let filepath = format!(
+        "{}{}",
+        backend_communicator.data_dir.clone(),
+        format!("config.txt")
+    );
+    let config_path = Path::new(&filepath);
+    if !config_path.exists() {
+        match create_default_config(backend_communicator.clone()) {
+            Ok(_) => {
+                let ok_message = format!("Created default config.");
+                log_and_emit(ok_message.clone(), backend_communicator.clone());
+                return Ok(ok_message);
+            }
+            Err(err_string) => {
+                log_and_emit(err_string.clone(), backend_communicator);
+                return Err(err_string);
+            }
+        }
+    }
+
+    //
+    let ok_message = format!("Default config already exists.");
+    log_and_emit(ok_message.clone(), backend_communicator.clone());
+    Ok(ok_message)
 }
 
 pub fn config_set_device_data(
