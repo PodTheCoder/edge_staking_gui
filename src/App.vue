@@ -3,7 +3,8 @@
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import Query_Node_Info from "./components/Query_Node_Info.vue";
 import Install_Edge_Cli from "./components/Install_Edge_Cli.vue";
-import Node_Control from "./components/Node_Control.vue";
+import Start_Node from "./components/Start_Node.vue";
+import Stop_Node from "./components/Stop_Node.vue";
 import Curstatus from "./components/Curstatus.vue";
 import Add_Device from "./components/Add_Device.vue";
 import { invoke } from "@tauri-apps/api/tauri";
@@ -11,7 +12,7 @@ import { appLocalDataDir } from "@tauri-apps/api/path";
 import { appWindow } from "@tauri-apps/api/window";
 import { ref } from "vue";
 
-let deviceInitialized = true;
+let deviceInitialized = false;
 
 // Initialize default config
 
@@ -54,13 +55,19 @@ const IsDeviceInitialized = load_initialization_status()
     <p>2. Get your <i>Device Code</i></p>
     <Add_Device />
 
-    <p>3. Control your node. Requires that your device is assigned to a stake.</p>
-    <Node_Control />
+    <p>3. Wait 5-10 minutes for device code assignment.</p>
+
+    <p>4. Start your node.</p>
+    <Start_Node />
 
 
   </div>
 
   <div v-else="deviceInitializationStatus" class="container">
+    <h2>Control your node</h2>
+    <Start_Node />
+    <Stop_Node />
+
     <p>4. Check Your Node Earnings Through Index API. (First derives wallet address)</p>
     <Query_Node_Info />
     <!-- TODO: Add button to return to device initialization. -->
