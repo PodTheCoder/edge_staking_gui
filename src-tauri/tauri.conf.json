@@ -7,7 +7,7 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "Pod's Edge Staking Gui",
+    "productName": "Edge Staking Gui",
     "version": "0.5.0"
   },
   "tauri": {
