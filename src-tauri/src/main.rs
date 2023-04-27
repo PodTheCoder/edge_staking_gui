@@ -124,7 +124,9 @@ async fn add_device(
     };
 
     match device::create_device_code(address, privatekey, publickey, backend_communicator).await {
-        Ok(ok_str) => return ok_str,
+        Ok(ok_str) => {
+            return check_requirements::pretty_check_string::pretty_ok_str(&ok_str, false)
+        }
         Err(err_str) => return err_str,
     }
 }

@@ -178,7 +178,7 @@ pub(crate) fn get_docker_status(
         Ok(command_completed_result) => output = command_completed_result,
         Err(command_not_completed) => {
             let errormessage = format!(
-                "Docker command was not completed. Is Docker installed & did you restart your computer? Docker installation link: https://www.docker.com/products/docker-desktop/ Error = {}",
+                "Is Docker installed & did you restart your computer? Docker installation link: https://www.docker.com/products/docker-desktop/ Error = {}",
                 command_not_completed.to_string()
             );
             utility::log_and_emit(errormessage.clone(), backend_communicator);
@@ -202,7 +202,7 @@ pub(crate) fn get_docker_status(
                 log_and_emit(ok_string.clone(), backend_communicator.clone());
                 return Ok(ok_string);
             } else if exit_code == docker_installed_not_running_code {
-                let err_string = format!("Docker installed but not running");
+                let err_string = format!("Docker installed but not running/ready. Docker loading time can be several minutes.");
                 log_and_emit(err_string.clone(), backend_communicator.clone());
                 return Err(err_string);
             } else {

@@ -12,7 +12,7 @@ use self::check_edge::is_edge_correctly_downloaded;
 mod check_docker;
 pub mod check_edge;
 mod check_specifications;
-mod pretty_check_string;
+pub mod pretty_check_string;
 
 /// Runs all system requirement checks
 pub async fn main(
@@ -39,13 +39,13 @@ pub async fn main(
         let os_info = check_specifications::get_os_info(backend_communicator.clone());
         if os_info.os_name_supported {
             let ok_os_name_str = &os_info.cli_os_name;
-            let pretty_ok_os_name_str = pretty_check_string::pretty_ok_str(ok_os_name_str);
+            let pretty_ok_os_name_str = pretty_check_string::pretty_ok_str(ok_os_name_str, true);
             log_and_emit(pretty_ok_os_name_str.clone(), backend_communicator.clone());
             result_string.push_str(&pretty_ok_os_name_str);
         } else {
             all_requirements_passed = false;
             let err_os_name_str = &os_info.cli_os_name;
-            let pretty_err_os_name = pretty_check_string::pretty_err_str(err_os_name_str);
+            let pretty_err_os_name = pretty_check_string::pretty_err_str(err_os_name_str, true);
             log_and_emit(pretty_err_os_name.clone(), backend_communicator.clone());
             result_string.push_str(&pretty_err_os_name);
         }
@@ -60,7 +60,7 @@ pub async fn main(
         let processor_info = check_specifications::get_processor_info(backend_communicator.clone());
         if processor_info.full_architecture_supported {
             let ok_cli_arch_str = &processor_info.cli_architecture_name;
-            let pretty_ok_cli_arch_str = pretty_check_string::pretty_ok_str(ok_cli_arch_str);
+            let pretty_ok_cli_arch_str = pretty_check_string::pretty_ok_str(ok_cli_arch_str, true);
             log_and_emit(pretty_ok_cli_arch_str.clone(), backend_communicator.clone());
             result_string.push_str(&pretty_ok_cli_arch_str);
         } else {
@@ -69,7 +69,8 @@ pub async fn main(
                 "Processor Architecture not supported. Processor = {} Bitness = {}",
                 processor_info.raw_processor_brand, processor_info.bitness
             );
-            let pretty_err_cli_arch_str = pretty_check_string::pretty_err_str(&err_cli_arch_str);
+            let pretty_err_cli_arch_str =
+                pretty_check_string::pretty_err_str(&err_cli_arch_str, true);
             log_and_emit(
                 pretty_err_cli_arch_str.clone(),
                 backend_communicator.clone(),
@@ -86,7 +87,8 @@ pub async fn main(
         );
         match get_docker_status(backend_communicator.clone()) {
             Ok(docker_ok_string) => {
-                let pretty_docker_ok_string = pretty_check_string::pretty_ok_str(&docker_ok_string);
+                let pretty_docker_ok_string =
+                    pretty_check_string::pretty_ok_str(&docker_ok_string, true);
                 log_and_emit(
                     pretty_docker_ok_string.clone(),
                     backend_communicator.clone(),
@@ -96,7 +98,7 @@ pub async fn main(
             Err(docker_not_ok_string) => {
                 all_requirements_passed = false;
                 let pretty_docker_not_ok_string =
-                    pretty_check_string::pretty_err_str(&docker_not_ok_string);
+                    pretty_check_string::pretty_err_str(&docker_not_ok_string, true);
                 log_and_emit(
                     pretty_docker_not_ok_string.clone(),
                     backend_communicator.clone(),
@@ -116,7 +118,8 @@ pub async fn main(
             is_edge_correctly_downloaded(backend_communicator.clone()).await;
         match is_edge_downloaded_correctly_future {
             Ok(edge_downloaded_correctly) => {
-                let pretty_edge_downloaded_correctly = pretty_ok_str(&edge_downloaded_correctly);
+                let pretty_edge_downloaded_correctly =
+                    pretty_ok_str(&edge_downloaded_correctly, false);
                 log_and_emit(
                     pretty_edge_downloaded_correctly.clone(),
                     backend_communicator.clone(),
@@ -126,7 +129,7 @@ pub async fn main(
             Err(edge_not_downloaded_correctly) => {
                 all_requirements_passed = false;
                 let pretty_edge_not_downloaded_correctly =
-                    pretty_err_str(&edge_not_downloaded_correctly.clone());
+                    pretty_err_str(&edge_not_downloaded_correctly.clone(), false);
                 log_and_emit(
                     pretty_edge_not_downloaded_correctly.clone(),
                     backend_communicator.clone(),
@@ -159,7 +162,7 @@ pub async fn main(
 
     if all_requirements_passed {
         let ok_all_requirements_passed = format!("Passed requirements.");
-        let pretty_ok_all_requirements_passed = pretty_ok_str(&ok_all_requirements_passed);
+        let pretty_ok_all_requirements_passed = pretty_ok_str(&ok_all_requirements_passed, false);
         log_and_emit(
             pretty_ok_all_requirements_passed.clone(),
             backend_communicator.clone(),
@@ -167,7 +170,8 @@ pub async fn main(
         return Ok(result_string);
     } else {
         let err_all_requirements_passed = format!("Did not pass all requirements.");
-        let pretty_err_all_requirements_passed = pretty_err_str(&err_all_requirements_passed);
+        let pretty_err_all_requirements_passed =
+            pretty_err_str(&err_all_requirements_passed, false);
         log_and_emit(
             pretty_err_all_requirements_passed.clone(),
             backend_communicator.clone(),
