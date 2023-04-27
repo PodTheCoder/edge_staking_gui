@@ -11,11 +11,11 @@ use crate::BackendCommunicator;
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
 pub struct ConfigStruct {
     pub initialized: bool, // Has the device be initialized? Set to true when node launched successfully.
-    pub index_api_last_contacted: String, // When did the index api last get contacted? datetime as rfc2822 string
-    pub network: String, // On which Edge network is the device, mainnet or testnet?
-    pub address: String, // What is the device XE address?
-    pub private_key: String, // What is the private key of the XE address?
-    pub public_key: String, // What is the public key of the XE address?
+    pub last_node_payment: String, // When was the last node earnings payment to the user? datetime as rfc2822 string
+    pub network: String,           // On which Edge network is the device, mainnet or testnet?
+    pub address: String,           // What is the device XE address?
+    pub private_key: String,       // What is the private key of the XE address?
+    pub public_key: String,        // What is the public key of the XE address?
 }
 
 #[derive(Clone, serde::Serialize)]
@@ -227,7 +227,7 @@ pub fn create_default_config(backend_communicator: BackendCommunicator) -> Resul
     }
     let default_config = ConfigStruct {
         initialized: false,
-        index_api_last_contacted: dt_not_yet_downloaded.to_rfc2822(),
+        last_node_payment: dt_not_yet_downloaded.to_rfc2822(),
         address: format!("Unset"),
         network: format!("Unset"),
         private_key: format!("Unset"),
