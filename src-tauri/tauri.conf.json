@@ -23,7 +23,7 @@
     },
     "bundle": {
       "active": true,
-      "identifier": "unofficial-edge-staking-gui",
+      "identifier": "EdgeStakingGUI",
       "targets": "all"
     },
     "security": {
@@ -36,7 +36,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "Pod's Edge Staking Gui",
+        "title": "Pod's Edge Staking GUI",
         "width": 800,
         "height": 750
       }
