@@ -19,7 +19,7 @@ async function device_stop_emitter() {
 
 <template>
   <div class="card">
-    <button type="button" @click="device_stop_emitter()">Stop</button>
+    <button type="button" @click="device_stop_emitter()">Stop Node</button>
   </div>
 
   <p>{{ Node_Control_Response }}</p>

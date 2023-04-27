@@ -1,11 +1,11 @@
 :root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Inter, system-ui, -apple-system, Arial, Noto Sans;
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
 
   color: #0f0f0f;
-  background-color: #f6f6f6;
+  background-color: #f2f2f2;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -36,9 +36,24 @@
 .sticky {
   position: sticky;
   top: 0;
-  background-color: #e8e8e8;
+  background-color: #1d1d1d;
   padding: 0;
   margin: 0;
+  border-radius: 0.25rem;
+}
+
+.step {
+  border-radius: 0.25rem;
+  background-color: #ffffff;
+  margin-top: 0.75rem;
+}
+
+.statusbarh1 {
+  color: #ffffff
+}
+
+.statusbarp {
+  color: #e8e8e8
 }
 
 .row {
@@ -79,11 +94,11 @@ button {
 }
 
 button:hover {
-  border-color: #396cd8;
+  border-color: #0ecc5f;
 }
 
 button:active {
-  border-color: #396cd8;
+  border-color: #0ecc5f;
   background-color: #e8e8e8;
 }
 
@@ -94,25 +109,4 @@ button {
 
 #greet-input {
   margin-right: 5px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f6f6f6;
-    background-color: #2f2f2f;
-  }
-
-  a:hover {
-    color: #24c8db;
-  }
-
-  input,
-  button {
-    color: #ffffff;
-    background-color: #0f0f0f98;
-  }
-
-  button:active {
-    background-color: #0f0f0f69;
-  }
 }

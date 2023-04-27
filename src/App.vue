@@ -42,32 +42,40 @@ const IsDeviceInitialized = load_initialization_status()
 </script>
 
 <template>
-  <div class="container">
+  <div class="sticky container">
     <Suspense>
       <Curstatus />
     </Suspense>
   </div>
   <div v-if="!deviceInitialized" class="container">
     <!-- Initialize device -->
-    <p>1. Install the latest Edge CLI.</p>
-    <Install_Edge_Cli />
+    <div class="step">
+      <p>1. Install the latest Edge CLI.</p>
+      <Install_Edge_Cli />
+    </div>
+    <div class="step">
+      <p>2. Get your <i>Device Code</i></p>
+      <Add_Device />
+    </div>
 
-    <p>2. Get your <i>Device Code</i></p>
-    <Add_Device />
+    <div class="step">
+      <p>3. Wait 5-10 minutes for device code assignment.</p>
+    </div>
 
-    <p>3. Wait 5-10 minutes for device code assignment.</p>
-
-    <p>4. Start your node.</p>
-    <Start_Node />
+    <div class="step">
+      <p>4. Start your node.</p>
+      <Start_Node />
+    </div>
 
 
   </div>
 
   <div v-else="deviceInitializationStatus" class="container">
-    <h2>Control your node</h2>
-    <Start_Node />
-    <Stop_Node />
-
+    <div class="step">
+      <h2>Control your node</h2>
+      <Start_Node />
+      <Stop_Node />
+    </div>
     <p>4. Check Your Node Earnings Through Index API. (First derives wallet address)</p>
     <Query_Node_Info />
     <!-- TODO: Add button to return to device initialization. -->
