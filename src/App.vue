@@ -12,25 +12,20 @@ import { appLocalDataDir } from "@tauri-apps/api/path";
 import { appWindow } from "@tauri-apps/api/window";
 import { ref } from "vue";
 
-let deviceInitialized: false;
+const deviceInitialized = ref(false); // default state is uninitialized
 
-// TODO: Fix bug with frontend code. It returns correct boolean but does not render.
-// async function load_initialization_status() {
-//   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-//   const appLocalDataDirPath = await appLocalDataDir();
-//   deviceInitialized = await invoke("load_device_initialization_status", {
-//     datadir: appLocalDataDirPath,
-//     window: appWindow,
-//   });
+async function load_initialization_status() {
+  // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+  const appLocalDataDirPath = await appLocalDataDir();
+  deviceInitialized.value = await invoke("load_device_initialization_status", {
+    datadir: appLocalDataDirPath,
+    window: appWindow,
+  });
 
-//   console.log(deviceInitialized);
+  console.log(deviceInitialized);
+}
 
-//   return deviceInitialized
-// }
-
-// deviceInitialized = await load_initialization_status(); // This is bugged.
-// console.log(deviceInitialized);
-
+load_initialization_status(); // load actual initialization status
 
 </script>
 
