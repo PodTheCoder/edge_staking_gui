@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, ubuntu-20.04, windows-latest]
+        platform: [macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -45,7 +45,7 @@ jobs:
         run: npm install # Change this to npm, yarn or pnpm.
 
       - name: Build the app
-        uses: tauri-apps/tauri-action@dev
+        uses: tauri-apps/tauri-action@v0.3
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
