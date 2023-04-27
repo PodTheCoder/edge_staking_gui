@@ -383,15 +383,6 @@ pub fn config_set_device_data(
     }
 }
 
-// pub fn from_config_create_device_data_files(backend_communicator: BackendCommunicator) => Result<String, String> {
-//     let loaded_config;
-//     match load_config(backend_communicator){
-//         Ok(ok_config) => loaded_config = ok_config,
-//         Err(err) => return Err(err)
-//     }
-
-// }
-
 /// Write initialized value to config
 pub fn config_set_device_initialization_status(
     device_initialization_status: bool,
@@ -423,5 +414,26 @@ pub fn config_set_device_initialization_status(
             }
         }
         Err(err) => return Err(err),
+    }
+}
+
+/// Returns Initialization status codes
+pub fn load_initialization_status(backend_communicator: BackendCommunicator) -> u64 {
+    let initialized_code: u64 = 0;
+    let not_initialied_code: u64 = 1;
+    let failed_to_load_code: u64 = 2;
+    let config;
+    match load_config(backend_communicator.clone()) {
+        Ok(ok_config) => config = ok_config,
+        Err(err) => {
+            let err_message = format!("Could not load initialization status. Err {}", err);
+            log_and_emit(err_message.clone(), backend_communicator.clone());
+            return failed_to_load_code;
+        }
+    }
+    if config.initialized {
+        return initialized_code;
+    } else {
+        return not_initialied_code;
     }
 }

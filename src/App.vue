@@ -9,12 +9,16 @@ import Add_Device from "./components/Add_Device.vue";
 import { invoke } from "@tauri-apps/api/tauri";
 import { appLocalDataDir } from "@tauri-apps/api/path";
 import { appWindow } from "@tauri-apps/api/window";
+import { ref } from "vue";
+
+let deviceInitialized = true;
 
 // Initialize default config
-async function load_config_frontend() {
+
+async function load_initialization_status() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   const appLocalDataDirPath = await appLocalDataDir();
-  await invoke("load_config_frontend", {
+  deviceInitialized = await invoke("load_device_initialization_status", {
     datadir: appLocalDataDirPath,
     window: appWindow,
   });
@@ -31,17 +35,19 @@ async function frontend_create_config_if_not_exists() {
 }
 
 frontend_create_config_if_not_exists();
-const IsDeviceInitialized = load_config_frontend()
+const IsDeviceInitialized = load_initialization_status()
+
 
 </script>
 
 <template>
   <div class="container">
-
-    <!-- Initialization -->
     <Suspense>
       <Curstatus />
     </Suspense>
+  </div>
+  <div v-if="!deviceInitialized" class="container">
+    <!-- Initialize device -->
     <p>1. Install the latest Edge CLI.</p>
     <Install_Edge_Cli />
 
@@ -51,13 +57,13 @@ const IsDeviceInitialized = load_config_frontend()
     <p>3. Control your node. Requires that your device is assigned to a stake.</p>
     <Node_Control />
 
-    <!-- Completed initialization -->
 
+  </div>
+
+  <div v-else="deviceInitializationStatus" class="container">
     <p>4. Check Your Node Earnings Through Index API. (First derives wallet address)</p>
     <Query_Node_Info />
-
+    <!-- TODO: Add button to return to device initialization. -->
     <!-- TODO: Add checkbox for auto starting the staking GUI. -->
-
-
   </div>
 </template>

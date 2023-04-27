@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use tauri::Window;
-use utility::{create_config_if_not_exists, load_config, log_and_emit};
+use utility::{create_config_if_not_exists, load_initialization_status, log_and_emit};
 
 mod check_requirements;
 mod control_edge_cli;
@@ -55,16 +55,22 @@ async fn device_start(window: Window, datadir: String) -> String {
     return control_edge_cli::device_start(backend_communicator).await;
 }
 
+/// Returns true if initialization is complete, false if not.
 #[tauri::command]
-fn load_config_frontend(window: Window, datadir: String) -> String {
+fn load_device_initialization_status(window: Window, datadir: String) -> bool {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
-    match load_config(backend_communicator.clone()) {
-        Ok(_) => return format!("Config initialized successfully."),
-        Err(_) => return format!("Config failed to initialize."),
+
+    let initialization_status = load_initialization_status(backend_communicator);
+
+    // Frontend div hide needs a bool.
+    if initialization_status == 0 {
+        return true; // Show the setup divs
+    } else {
+        return false; // Hide the setup divs
     }
 }
 
@@ -148,7 +154,7 @@ fn main() {
             device_stop,
             device_info,
             emit_from_backend,
-            load_config_frontend,
+            load_device_initialization_status,
             frontend_create_config_if_not_exists,
             add_device
         ])
