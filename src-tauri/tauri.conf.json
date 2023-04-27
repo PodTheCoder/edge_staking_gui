@@ -7,8 +7,8 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "unofficial_edge_staking_gui",
-    "version": "0.4.0"
+    "productName": "Pod's Edge Staking Gui",
+    "version": "0.5.0"
   },
   "tauri": {
     "allowlist": {
@@ -23,13 +23,6 @@
     },
     "bundle": {
       "active": true,
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
       "identifier": "unofficial-edge-staking-gui",
       "targets": "all"
     },
@@ -43,9 +36,9 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "unofficial_edge_staking_gui",
+        "title": "Pod's Edge Staking Gui",
         "width": 800,
-        "height": 600
+        "height": 750
       }
     ]
   }

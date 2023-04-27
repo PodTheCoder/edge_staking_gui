@@ -10,8 +10,8 @@ use crate::docker::{
 use crate::utility::{config_set_device_data, log_and_emit};
 use crate::{check_requirements, BackendCommunicator};
 
-/// Flow for creating a device code. If successful displays the next step.
-/// Can be rerun multiple times to generate a different device code.
+/// Flow for creating a device token. If successful displays the next step.
+/// Can be rerun multiple times to generate a different device token.
 pub async fn create_device_code(
     address: String,
     private_key: String,
@@ -100,7 +100,7 @@ pub async fn create_device_code(
 
     let url_safe_device_code = general_purpose::URL_SAFE_NO_PAD.encode(address.as_bytes());
     let next_step = format!(
-        "Please assign your device code at https://xe.network/stakes. Your device code is : {}",
+        "Please assign your device token at https://xe.network/stakes. Your device token is : {}",
         url_safe_device_code
     );
     return Ok(next_step);

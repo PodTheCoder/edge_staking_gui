@@ -37,7 +37,7 @@ async function emit_event_from_backend() {
 
 <template>
   <div class="sticky">
-    <h1 class="statusbarh1">Edge Staking GUI</h1>
+    <h1 class="statusbarh1">Pod's Edge Staking GUI</h1>
     <p class="statusbarp">Status: {{ Status_Response }}</p>
   </div>
 

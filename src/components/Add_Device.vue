@@ -36,7 +36,7 @@ async function add_device() {
 
 <template>
   <div class="card">
-    <button type="button" @click="add_device()">Create & Display Device Code</button>
+    <button type="button" @click="add_device()">Create & Display Device Token</button>
   </div>
 
   <p>{{ deviceMsg }}</p>

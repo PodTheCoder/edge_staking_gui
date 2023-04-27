@@ -54,12 +54,12 @@ const IsDeviceInitialized = load_initialization_status()
       <Install_Edge_Cli />
     </div>
     <div class="step">
-      <p>2. Get your <i>Device Code</i></p>
+      <p>2. Get your <i>Device Token</i></p>
       <Add_Device />
     </div>
 
     <div class="step">
-      <p>3. Wait 5-10 minutes for device code assignment.</p>
+      <p>3. Wait 5-10 minutes for device token assignment.</p>
     </div>
 
     <div class="step">
