@@ -18,7 +18,6 @@ pub struct ProcessorInfo {
     pub full_architecture_supported: bool,
 }
 
-// TODO: Find bitness with sysinfo library
 /// Gets bitness eg. 64
 fn get_os_bitness() -> String {
     let info = os_info::get();
@@ -36,7 +35,6 @@ fn is_bitness_supported(bitness: String) -> bool {
     }
 }
 
-// TODO: Recreate get os type using sysinfo lib
 /// Gets OS name eg. Windows
 fn get_raw_os_name() -> String {
     let info = os_info::get();
@@ -213,65 +211,3 @@ pub fn get_processor_info(_backend_communicator: BackendCommunicator) -> Process
     };
     return processor_info;
 }
-
-// TODO: Check System Infrastructure using sysinfo
-
-// use sysinfo::{CpuExt, CpuRefreshKind, DiskExt, RefreshKind, System, SystemExt};
-// Min specs of Edge:
-
-// CPU: 1x quad-core 1.2 GHZ+
-// RAM: 1GB RAM
-// Disk: 50GB HDD+
-// result_string.push_str(&format!("OS: {} | ", &os_type));
-// result_string.push_str(&format!(
-//     "Requirements last checked on: {} ",
-//     dt.format("%d %B %Y %H:%M:%S %Z").to_string()
-// ));
-
-// // Testing sysinfo
-// // Please note that we use "new_all" to ensure that all list of
-// // components, network interfaces, disks and users are already
-// // filled!
-
-// // Choose what to refresh
-// let refresh_kind_specific = RefreshKind::new(); // starts with all flags disabled
-
-// let refresh_kind_specific = refresh_kind_specific.with_disks();
-// let refresh_kind_specific = refresh_kind_specific.with_disks_list();
-// let refresh_kind_specific = refresh_kind_specific.with_memory();
-
-// let cpu_refresh_kind_specific = CpuRefreshKind::new();
-// let cpu_refresh_kind_specific = cpu_refresh_kind_specific.with_frequency();
-
-// let refresh_kind_specific = refresh_kind_specific.with_cpu(cpu_refresh_kind_specific);
-
-// let mut sys = System::new_with_specifics(refresh_kind_specific);
-
-// sys.refresh_specifics(refresh_kind_specific);
-
-// // We display all disks' information:
-// println!("=> disks:");
-// for disk in sys.disks() {
-//     println!("{:?}", disk.name());
-//     println!("{:?}", disk.type_());
-//     println!("{}", disk.available_space());
-// }
-
-// // RAM information:
-// println!("=> memory:");
-// println!("total RAM memory: {} bytes", sys.total_memory());
-
-// // CPU information (lists each core)
-// // TODO: Check how many cores meet the requirement.
-// println!("=> cpu");
-// for cpu in sys.cpus() {
-//     println!("{}", cpu.vendor_id()); //TODO: Check if all same vendor. Then convert.
-//     println!("{}", cpu.frequency()); // in MegaHertz (Ghz * 1000)
-// }
-
-// // Number of CPUs:
-// println!("NB CPUs: {}", sys.cpus().len());
-
-// // Display system information:
-// println!("OS name: {:?}", sys.name());
-// println!("System OS version: {:?}", sys.os_version());

@@ -138,10 +138,6 @@ pub async fn main(
             }
         }
     }
-    // TODO: Implement more system checks.
-    // Check Memory
-    // Check CPU
-    // Check Disks
 
     // OS info
 

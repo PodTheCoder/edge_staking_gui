@@ -14,7 +14,7 @@ import { ref } from "vue";
 
 let deviceInitialized: false;
 
-// TODO: Fix bug with code. It returns correct boolean but does not render.
+// TODO: Fix bug with frontend code. It returns correct boolean but does not render.
 // async function load_initialization_status() {
 //   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 //   const appLocalDataDirPath = await appLocalDataDir();

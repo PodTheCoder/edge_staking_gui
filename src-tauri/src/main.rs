@@ -131,8 +131,6 @@ async fn add_device(
     }
 }
 
-//TODO: Add persistent boolean if initialization is completed.
-
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![

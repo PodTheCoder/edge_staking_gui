@@ -142,7 +142,6 @@ pub async fn download_file(
     return Ok(());
 }
 
-// TODO: Add more logging.
 /// Convenience function, logs a message and emits an event with the message as payload.
 pub fn log_and_emit(message: String, backend_communicator: BackendCommunicator) {
     match log_message(message.clone(), backend_communicator.clone()) {

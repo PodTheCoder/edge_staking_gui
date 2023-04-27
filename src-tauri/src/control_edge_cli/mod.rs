@@ -26,7 +26,6 @@ async fn command_edge_cli(
         format!("Invoking command in Edge CLI = {}", cli_command),
         backend_communicator.clone(),
     );
-    // TODO: Add edge binary program path as arg
     let bin_name = "edge.exe";
     let bin_path = format!("{}{}", backend_communicator.data_dir.clone(), bin_name);
 

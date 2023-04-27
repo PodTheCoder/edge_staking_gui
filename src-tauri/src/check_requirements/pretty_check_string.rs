@@ -1,4 +1,3 @@
-// TODO: Add setting to append " | "
 /// Prepend string with nice green checkmark
 pub fn pretty_ok_str(ok_str: &String, add_v_bar: bool) -> String {
     let mut prettified_string = String::from("✔️");
