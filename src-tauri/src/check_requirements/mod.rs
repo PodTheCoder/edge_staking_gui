@@ -9,7 +9,6 @@ use crate::{
 
 use self::check_edge::is_edge_correctly_downloaded;
 
-mod check_docker;
 pub mod check_edge;
 mod check_specifications;
 pub mod pretty_check_string;
