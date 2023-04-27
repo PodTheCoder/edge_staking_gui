@@ -100,7 +100,7 @@ pub async fn create_device_code(
 
     let url_safe_device_code = general_purpose::URL_SAFE_NO_PAD.encode(address.as_bytes());
     let next_step = format!(
-        "Please assign your device token at https://xe.network/stakes. Your device token is : {}",
+        "Please assign your device token at https://wallet.xe.network/staking. Your device token is : {}",
         url_safe_device_code
     );
     return Ok(next_step);

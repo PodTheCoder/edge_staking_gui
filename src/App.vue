@@ -59,7 +59,7 @@ const IsDeviceInitialized = load_initialization_status()
     </div>
 
     <div class="step">
-      <p>3. Wait 5-10 minutes for device token assignment.</p>
+      <p>3. Wait 5-10 minutes until your device token assignment is confirmed.</p>
     </div>
 
     <div class="step">
