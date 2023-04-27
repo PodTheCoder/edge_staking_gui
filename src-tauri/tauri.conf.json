@@ -7,7 +7,7 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "Edge Staking Gui",
+    "productName": "Edge Staking GUI",
     "version": "0.5.0"
   },
   "tauri": {
