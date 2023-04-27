@@ -23,7 +23,6 @@ struct Payload {
     message: String,
 }
 
-// TODO: Add caching via config file. Lookup timestamp if exist, check if beyond caching time arg, save timestamp when file fully downloaded.
 /// Download a file from a url to a local download path
 pub async fn download_file(
     download_url: String,
@@ -152,6 +151,7 @@ pub fn log_and_emit(message: String, backend_communicator: BackendCommunicator) 
     return {};
 }
 
+/// Log a message locally
 pub fn log_message(
     message: String,
     backend_communicator: BackendCommunicator,
@@ -186,6 +186,7 @@ pub fn log_message(
     }
 }
 
+/// Emit an event to the main window
 pub fn emit_event(message: String, backend_communicator: BackendCommunicator) {
     // window.center();
     backend_communicator
@@ -202,6 +203,7 @@ pub fn emit_event(message: String, backend_communicator: BackendCommunicator) {
     return {};
 }
 
+/// Create the default config file locally
 pub fn create_default_config(backend_communicator: BackendCommunicator) -> Result<(), String> {
     let filepath = format!(
         "{}{}",
@@ -318,6 +320,7 @@ pub fn load_config(backend_communicator: BackendCommunicator) -> Result<ConfigSt
     }
 }
 
+/// Create config file if it does not yet exist.
 pub fn create_config_if_not_exists(
     backend_communicator: BackendCommunicator,
 ) -> Result<String, String> {
@@ -347,6 +350,7 @@ pub fn create_config_if_not_exists(
     Ok(ok_message)
 }
 
+/// Save device data into the config file.
 pub fn config_set_device_data(
     network: &String,
     address: &String,

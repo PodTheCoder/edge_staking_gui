@@ -88,6 +88,7 @@ fn get_edge_file_url(filename: String, backend_communicator: BackendCommunicator
     return edge_url;
 }
 
+/// Returns the checksum url
 fn get_edge_cli_checksum_url(backend_communicator: BackendCommunicator) -> String {
     let filename = String::from("checksum");
     let checksum_url = get_edge_file_url(filename, backend_communicator);
@@ -154,6 +155,7 @@ pub async fn is_edge_correctly_downloaded(
     }
 }
 
+/// Hash file with SHA256
 fn hash_file(file_path: &Path) -> Result<String, String> {
     let mut file_binary: File;
     match fs::File::open(file_path) {

@@ -23,10 +23,6 @@ pub async fn main(
 ) -> Result<String, String> {
     let mut result_string = String::from("");
     let dt: DateTime<Utc> = Utc::now();
-
-    // Type inference lets us omit an explicit type signature (which
-    // would be `HashMap<String, String>` in this example).
-
     let mut all_requirements_passed = true; // stays true unless at least one does not pass
 
     // Check OS
@@ -137,8 +133,6 @@ pub async fn main(
             }
         }
     }
-
-    // OS info
 
     log_and_emit(
         format!("Checked requirements."),

@@ -25,6 +25,7 @@ fn get_os_bitness() -> String {
     return os_bitness_str;
 }
 
+/// Check if the bitness is supported
 fn is_bitness_supported(bitness: String) -> bool {
     let supported_bitness = String::from("64");
 
@@ -104,6 +105,7 @@ fn is_os_name_supported(os_type: String) -> Result<String, String> {
     }
 }
 
+/// Get Operating System info
 pub fn get_os_info(_backend_communicator: BackendCommunicator) -> OsInfo {
     let raw_os_name = get_raw_os_name();
     let os_name_supported: bool;
@@ -128,8 +130,6 @@ pub fn get_os_info(_backend_communicator: BackendCommunicator) -> OsInfo {
 
     return os_info;
 }
-//
-// get raw brand, check if raw brand supported, convert raw to simple brand, get bitness, check bitness supported, compose full_arch name
 
 /// Gets the raw brand name of the processor. eg. GenuineIntel
 fn get_raw_processor_brand() -> String {
