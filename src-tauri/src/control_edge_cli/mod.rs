@@ -106,19 +106,16 @@ async fn command_edge_cli(
 }
 
 /// Stop Edge device
-pub async fn device_stop(backend_communicator: BackendCommunicator) -> String {
+pub async fn device_stop(backend_communicator: BackendCommunicator) {
     let cli_command = String::from("device stop");
     let command_edge_cli_future = command_edge_cli(cli_command, backend_communicator.clone()).await;
     match command_edge_cli_future {
-        Ok(stdout_str) => {
+        Ok(_) => {
             let ok_message = format!("Device stopped successfully.");
             log_and_emit(ok_message, backend_communicator.clone());
-            return stdout_str;
         }
         Err(stderr_str) => {
-            let err_message = format!("Error in running device stop command.");
-            log_and_emit(err_message, backend_communicator.clone());
-            return stderr_str;
+            log_and_emit(stderr_str, backend_communicator.clone());
         }
     }
 }

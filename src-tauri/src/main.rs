@@ -141,14 +141,14 @@ fn load_node_online_status(window: Window, datadir: String) -> String {
 }
 
 #[tauri::command]
-async fn device_stop(window: Window, datadir: String) -> String {
+async fn device_stop(window: Window, datadir: String) {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
 
-    return control_edge_cli::device_stop(backend_communicator).await;
+    control_edge_cli::device_stop(backend_communicator).await;
 }
 
 #[tauri::command]

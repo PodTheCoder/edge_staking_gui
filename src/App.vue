@@ -3,7 +3,7 @@
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import Query_Node_Info from "./components/Query_Node_Info.vue";
 import Install_Edge_Cli from "./components/Install_Edge_Cli.vue";
-import Stop_Node from "./components/Stop_Node.vue";
+import Node_Control from "./components/Node_Control.vue";
 import Curstatus from "./components/Curstatus.vue";
 import Add_Device from "./components/Add_Device.vue";
 import Autostart from "./components/Autostart.vue";
@@ -234,17 +234,13 @@ load_and_set_initialization_status();
 
       <h2>Your Node Setup Is Complete!</h2>
       <p>From now on, this is your node control panel: </p>
-      <div class="card">
-        <button type="button" @click="start_device()">Start Node</button>
-      </div>
-      <Stop_Node />
+      <Node_Control />
+
     </div>
-    <div class="step">
+    <!-- <div class="step">
       <p>4. Check Your Node Earnings Through Index API. (First derives wallet address)</p>
       <Query_Node_Info />
-      <!-- TODO: Add button to return to device initialization. -->
-      <!-- TODO: Add checkbox for auto starting the staking GUI. -->
-    </div>
+    </div> -->
     <div class="step">
       <p>Automatically launch your node when your computer starts.</p>
       <Autostart />
