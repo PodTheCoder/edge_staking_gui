@@ -3,6 +3,7 @@
 
 use check_requirements::pretty_check_string::{self, pretty_err_str};
 use tauri::Window;
+use tauri_plugin_autostart::MacosLauncher;
 use utility::{load_initialization_status, load_node_address, log_and_emit};
 
 mod check_requirements;
@@ -211,6 +212,10 @@ fn main() {
             load_node_online_status,
             add_device
         ])
+        .plugin(tauri_plugin_autostart::init(
+            MacosLauncher::LaunchAgent,
+            Some(vec!["--flag1", "--flag2"]), /* arbitrary number of args to pass to your app */
+        ))
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

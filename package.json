@@ -13,6 +13,7 @@
     "@edge/index-utils": "^0.7.1",
     "@edge/xe-utils": "^1.8.1",
     "@tauri-apps/api": "^1.2.0",
+    "tauri-plugin-autostart-api": "github:tauri-apps/tauri-plugin-autostart",
     "vue": "^3.2.45"
   },
   "devDependencies": {

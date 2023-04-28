@@ -6,6 +6,7 @@ import Install_Edge_Cli from "./components/Install_Edge_Cli.vue";
 import Stop_Node from "./components/Stop_Node.vue";
 import Curstatus from "./components/Curstatus.vue";
 import Add_Device from "./components/Add_Device.vue";
+import Autostart from "./components/Autostart.vue";
 import { invoke } from "@tauri-apps/api/tauri";
 import { appLocalDataDir } from "@tauri-apps/api/path";
 import { appWindow } from "@tauri-apps/api/window";
@@ -243,6 +244,10 @@ load_and_set_initialization_status();
       <Query_Node_Info />
       <!-- TODO: Add button to return to device initialization. -->
       <!-- TODO: Add checkbox for auto starting the staking GUI. -->
+    </div>
+    <div class="step">
+      <p>Automatically launch your node when your computer starts.</p>
+      <Autostart />
     </div>
     <div class="step">
       <p>Anything went wrong? You can go back to the setup.</p>
