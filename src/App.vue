@@ -73,7 +73,7 @@ async function helper_check_node_online_status(node_address: string) {
 
   } catch (e) {
     let error_string = JSON.stringify(e);
-    Node_Online_Message.value = "Node not seen yet. Will automatically recheck."
+    Node_Online_Message.value = "Node not seen yet. The Staking GUI automatically rechecks the online status. If you start your node for the first time this can take up to an hour."
     let error_message = "Node not found http error code:" + error_string;
 
     await invoke("log_and_emit_from_frontend", {
