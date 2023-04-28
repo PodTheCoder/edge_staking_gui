@@ -1,7 +1,6 @@
 <script setup lang="ts">
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import Query_Node_Info from "./components/Query_Node_Info.vue";
 import Install_Edge_Cli from "./components/Install_Edge_Cli.vue";
 import Node_Control from "./components/Node_Control.vue";
 import Curstatus from "./components/Curstatus.vue";
@@ -237,10 +236,6 @@ load_and_set_initialization_status();
       <Node_Control />
 
     </div>
-    <!-- <div class="step">
-      <p>4. Check Your Node Earnings Through Index API. (First derives wallet address)</p>
-      <Query_Node_Info />
-    </div> -->
     <div class="step">
       <p>Automatically launch your node when your computer starts.</p>
       <Autostart />
