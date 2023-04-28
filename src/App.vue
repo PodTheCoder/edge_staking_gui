@@ -14,13 +14,15 @@ import { ref } from "vue";
 
 import { session } from '@edge/index-utils';
 
-
+// Initialize consts
 const deviceInitialized = ref(false); // default state is uninitialized
-
 const Node_Online_Message = ref();
 
-async function load_initialization_status() {
-  // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+
+/**
+ * Load and set node initialization status.
+ */
+async function load_and_set_initialization_status() {
   const appLocalDataDirPath = await appLocalDataDir();
   deviceInitialized.value = await invoke("load_device_initialization_status", {
     datadir: appLocalDataDirPath,
@@ -28,6 +30,9 @@ async function load_initialization_status() {
   });
 }
 
+/**
+ * Start the node. Returns a boolean whether the device has successfully started.
+ */
 async function start_device() {
   const appLocalDataDirPath = await appLocalDataDir();
   let has_device_started_successfully: boolean = await invoke("device_start", {
@@ -39,10 +44,11 @@ async function start_device() {
 
 }
 
+/**
+ * Initial startup of device.
+ */
 async function start_device_for_first_time() {
-  // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   let has_device_started_successfully = await start_device();
-
   if (has_device_started_successfully == true) {
     Node_Online_Message.value = "Initializing node for the first time. Check the status bar at the top for the latest progress."
     complete_initialization_flow();
@@ -62,9 +68,7 @@ async function helper_check_node_online_status(node_address: string) {
     const sess = await session.session('https://index.xe.network', node_address)
     console.log(JSON.stringify(sess))
     console.log(sess.lastActive)
-
     // TODO: Check online value
-
     return true
 
   } catch (e) {
@@ -72,7 +76,6 @@ async function helper_check_node_online_status(node_address: string) {
     Node_Online_Message.value = "Node not seen yet. Will automatically recheck."
     let error_message = "Node not found http error code:" + error_string;
 
-    // log and emit to backend.
     await invoke("log_and_emit_from_frontend", {
       message: error_message,
       datadir: appLocalDataDirPath,
@@ -89,7 +92,6 @@ async function helper_check_node_online_status(node_address: string) {
 
 
 }
-
 
 /**
  * Flow for checking the node online status. 
@@ -116,7 +118,6 @@ async function complete_initialization_flow() {
     });
 
     await auto_recheck_node_online(appLocalDataDirPath, node_address);
-
   }
   else {
     let error_message = "Node address is not set. Please complete the other setup steps.";
@@ -130,11 +131,16 @@ async function complete_initialization_flow() {
 }
 
 let isNodeOnlineAutocheckActive = false;
-async function auto_recheck_node_online(appLocalDataDirPath: string, node_address: string) {
-  let timer_seconds_delay = 60; // every min
+/**
+ * Automatically check if the node online. If it is, marks initialization as completed.
+ * 
+ * @param appLocalDataDirPath 
+ * @param node_address 
+ * @param timer_seconds_delay 
+ * @param recheck_limit 
+ */
+async function auto_recheck_node_online(appLocalDataDirPath: string, node_address: string, timer_seconds_delay: number = 60, recheck_limit: number = 120) {
   let recheck_count = 0;
-  let recheck_limit = 120; // If node is not online after x rechecks, stop checking.
-
   if (!isNodeOnlineAutocheckActive) {
     isNodeOnlineAutocheckActive = true;
     let AutoCheckNodeOnline = setInterval(async () => {
@@ -154,7 +160,7 @@ async function auto_recheck_node_online(appLocalDataDirPath: string, node_addres
           datadir: appLocalDataDirPath,
           window: appWindow,
         });
-        load_initialization_status();
+        load_and_set_initialization_status();
         clearInterval(AutoCheckNodeOnline); // Stop autochecking
       }
 
@@ -167,12 +173,10 @@ async function auto_recheck_node_online(appLocalDataDirPath: string, node_addres
         });
         clearInterval(AutoCheckNodeOnline); // Stop autochecking
       }
-
     }, timer_seconds_delay * 1000);
 
 
   }
-
 }
 
 /**
@@ -184,11 +188,10 @@ async function back_to_setup() {
     datadir: appLocalDataDirPath,
     window: appWindow,
   });
-  load_initialization_status();
-
+  load_and_set_initialization_status();
 }
 
-load_initialization_status(); 
+load_and_set_initialization_status(); 
 </script>
 
 <template>
