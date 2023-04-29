@@ -32,13 +32,15 @@ pub struct BackendCommunicator {
 }
 
 #[tauri::command]
-async fn install_edge_cli(window: Window, datadir: String) -> String {
+async fn install_edge_cli(window: Window, datadir: String) -> bool {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
-    return check_requirements::check_edge::get_edge_cli_binary(backend_communicator).await;
+    let is_edge_cli_binary_installed_correctly =
+        check_requirements::check_edge::get_edge_cli_binary(backend_communicator).await;
+    return is_edge_cli_binary_installed_correctly;
 }
 
 #[tauri::command]
@@ -158,14 +160,25 @@ async fn device_stop(window: Window, datadir: String) {
 }
 
 #[tauri::command]
-async fn device_info(window: Window, datadir: String) -> String {
+async fn update_edge_cli_from_frontend(window: Window, datadir: String) -> bool {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
 
-    return control_edge_cli::device_info(backend_communicator).await;
+    let mut is_edge_cli_latest_ver =
+        control_edge_cli::update_edge_cli(backend_communicator.clone()).await;
+
+    if !is_edge_cli_latest_ver {
+        // Update failed via CLI. Trying fallback.
+        let err_msg = format!("Unable to update Edge CLI via update command. Trying fallback method using get_cli_binary.");
+        log_and_emit(err_msg, backend_communicator.clone());
+        is_edge_cli_latest_ver =
+            check_requirements::check_edge::get_edge_cli_binary(backend_communicator.clone()).await;
+    }
+
+    return is_edge_cli_latest_ver;
 }
 
 #[tauri::command]
@@ -210,7 +223,7 @@ fn main() {
             get_edge_cli_download_url,
             device_start,
             device_stop,
-            device_info,
+            update_edge_cli_from_frontend,
             log_and_emit_from_frontend,
             load_device_initialization_status,
             set_device_fully_initialized,

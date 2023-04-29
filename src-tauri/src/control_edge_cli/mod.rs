@@ -1,5 +1,5 @@
 use crate::check_requirements;
-use crate::utility::{config_set_device_initialization_status, log_and_emit};
+use crate::utility::log_and_emit;
 use crate::BackendCommunicator;
 use std::process::Command;
 
@@ -7,7 +7,7 @@ use std::process::Command;
 /// You can choose whether the edge binary must be the latest version to run the command.
 async fn command_edge_cli(
     cli_command: String,
-    check_edge_binary: bool,
+    check_edge_binary_latest_version: bool,
     backend_communicator: BackendCommunicator,
 ) -> Result<String, String> {
     let arglist: Vec<&str> = cli_command.split(' ').collect();
@@ -18,7 +18,7 @@ async fn command_edge_cli(
         true,
         true,
         true,
-        check_edge_binary,
+        check_edge_binary_latest_version,
         backend_communicator.clone(),
     )
     .await;
@@ -136,18 +136,9 @@ pub async fn device_start(backend_communicator: BackendCommunicator) -> bool {
         command_edge_cli(cli_command, true, backend_communicator.clone()).await;
     match command_edge_cli_future {
         Ok(stdout_str) => {
-            match config_set_device_initialization_status(true, backend_communicator.clone()) {
-                Ok(_) => {
-                    let ok_message = format!("Started device! {}", stdout_str);
-                    log_and_emit(ok_message, backend_communicator.clone());
-                    return true;
-                }
-                Err(_) => {
-                    let error_message = format!("{}, however could not change config. This has no impact on your running node.", stdout_str);
-                    log_and_emit(error_message.clone(), backend_communicator.clone());
-                    return false;
-                }
-            }
+            let ok_message = format!("Device successfully started! Ok msg: {}", stdout_str);
+            log_and_emit(ok_message, backend_communicator.clone());
+            return true;
         }
         Err(stderr_str) => {
             let error_message = format!("Could not start device. Err: {}", stderr_str);
@@ -157,20 +148,21 @@ pub async fn device_start(backend_communicator: BackendCommunicator) -> bool {
     }
 }
 
-/// Get local Edge device info
-pub async fn device_info(backend_communicator: BackendCommunicator) -> String {
-    let cli_command = String::from("device info");
-let command_edge_cli_future = command_edge_cli(cli_command, false, backend_communicator.clone()).await;
+/// Update Edge CLI to latest version via CMD
+pub async fn update_edge_cli(backend_communicator: BackendCommunicator) -> bool {
+    let cli_command = String::from("update");
+    let command_edge_cli_future =
+        command_edge_cli(cli_command, false, backend_communicator.clone()).await;
     match command_edge_cli_future {
-        Ok(stdout_str) => {
-            let ok_message = format!("Received device info successfully");
+        Ok(ok_msg) => {
+            let ok_message = format!("Edge CLI updated successfully: {}", ok_msg);
             log_and_emit(ok_message, backend_communicator.clone());
-            return stdout_str;
+            return true;
         }
-        Err(stderr_str) => {
-            let err_message = format!("Failed to receive device info.");
+        Err(err_msg) => {
+            let err_message = format!("Edge CLI failed to update: {}", err_msg);
             log_and_emit(err_message, backend_communicator.clone());
-            return stderr_str;
+            return false;
         }
     }
 }
