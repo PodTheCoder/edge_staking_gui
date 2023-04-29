@@ -160,17 +160,6 @@ async fn device_stop(window: Window, datadir: String) {
 }
 
 #[tauri::command]
-async fn device_info(window: Window, datadir: String) -> String {
-    let backend_communicator = BackendCommunicator {
-        status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
-        front_end_window: window,
-    };
-
-    return control_edge_cli::device_info(backend_communicator).await;
-}
-
-#[tauri::command]
 async fn update_edge_cli_from_frontend(window: Window, datadir: String) -> bool {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
@@ -234,7 +223,6 @@ fn main() {
             get_edge_cli_download_url,
             device_start,
             device_stop,
-            device_info,
             update_edge_cli_from_frontend,
             log_and_emit_from_frontend,
             load_device_initialization_status,

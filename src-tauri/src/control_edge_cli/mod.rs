@@ -1,5 +1,5 @@
 use crate::check_requirements;
-use crate::utility::{config_set_device_initialization_status, log_and_emit};
+use crate::utility::log_and_emit;
 use crate::BackendCommunicator;
 use std::process::Command;
 
@@ -143,25 +143,6 @@ pub async fn device_start(backend_communicator: BackendCommunicator) -> bool {
             let error_message = format!("Could not start device. Err: {}", stderr_str);
             log_and_emit(error_message, backend_communicator.clone());
             return false;
-        }
-    }
-}
-
-/// Get local Edge device info
-pub async fn device_info(backend_communicator: BackendCommunicator) -> String {
-    let cli_command = String::from("device info");
-    let command_edge_cli_future =
-        command_edge_cli(cli_command, false, backend_communicator.clone()).await;
-    match command_edge_cli_future {
-        Ok(stdout_str) => {
-            let ok_message = format!("Received device info successfully");
-            log_and_emit(ok_message, backend_communicator.clone());
-            return stdout_str;
-        }
-        Err(stderr_str) => {
-            let err_message = format!("Failed to receive device info.");
-            log_and_emit(err_message, backend_communicator.clone());
-            return stderr_str;
         }
     }
 }
