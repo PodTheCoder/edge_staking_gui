@@ -2,7 +2,7 @@
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import Install_Edge_Cli from "./components/Install_Edge_Cli.vue";
-import Node_Control from "./components/Node_Control.vue";
+import Post_Initialization_Node_Control from "./components/Post_Initialization_Node_Control.vue";
 import Curstatus from "./components/Curstatus.vue";
 import Add_Device from "./components/Add_Device.vue";
 import Autostart from "./components/Autostart.vue";
@@ -233,7 +233,7 @@ load_and_set_initialization_status();
 
       <h2>Your Node Setup Is Complete!</h2>
       <p>From now on, this is your node control panel: </p>
-      <Node_Control />
+      <Post_Initialization_Node_Control />
 
     </div>
     <div class="step">
