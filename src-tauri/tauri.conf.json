@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "Edge Staking GUI",
-    "version": "0.5.2"
+    "version": "0.5.3"
   },
   "tauri": {
     "allowlist": {
@@ -18,6 +18,9 @@
         "open": true
       },
       "path": {
+        "all": true
+      },
+      "notification": {
         "all": true
       }
     },

@@ -4,6 +4,8 @@ import { enable, isEnabled, disable } from "tauri-plugin-autostart-api";
 import { appLocalDataDir } from '@tauri-apps/api/path';
 import { appWindow } from '@tauri-apps/api/window';
 import { invoke } from "@tauri-apps/api/tauri";
+import { send_notification } from './notification';
+
 
 // Initialize consts
 const auto_start_enabled = ref(false); // Default state, gets overwritten through get_autostart_status
@@ -107,6 +109,7 @@ async function auto_start_node(timer_seconds_delay: number = 60, recheck_limit: 
           datadir: appLocalDataDirPath,
           window: appWindow,
         });
+        send_notification("Node autostarted", "Your Edge node has successfully autostarted!");
         clearInterval(AutoStartNode); // Stop autochecking
       }
 

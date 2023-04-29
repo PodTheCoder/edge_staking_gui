@@ -13,6 +13,7 @@ import { ref } from "vue";
 
 
 import { session } from '@edge/index-utils';
+import { send_notification } from "./components/notification";
 
 // Initialize consts
 const deviceInitialized = ref(false); // default state is uninitialized
@@ -161,6 +162,7 @@ async function auto_recheck_node_online(appLocalDataDirPath: string, node_addres
           window: appWindow,
         });
         load_and_set_initialization_status();
+        send_notification("Node Setup Completed", "Your Edge node setup has completed!");
         clearInterval(AutoCheckNodeOnline); // Stop autochecking
       }
 
