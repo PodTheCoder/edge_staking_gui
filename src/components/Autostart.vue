@@ -76,6 +76,7 @@ async function auto_start_node(timer_seconds_delay: number = 60, recheck_limit: 
     window: appWindow,
   });
 
+  let is_node_latest_version = false;
   let recheck_count = 0;
   if (!isNodeAutostartIntervalActive) {
     isNodeAutostartIntervalActive = true;
@@ -89,6 +90,15 @@ async function auto_start_node(timer_seconds_delay: number = 60, recheck_limit: 
       });
 
       let has_node_started_successfully = await start_device();
+
+      // First update node to latest version.
+      if (!is_node_latest_version) {
+        const appLocalDataDirPath = await appLocalDataDir();
+        is_node_latest_version = await invoke("update_edge_cli_from_frontend", {
+          datadir: appLocalDataDirPath,
+          window: appWindow,
+        });
+      }
 
       if (has_node_started_successfully) {
         let ok_node_started_message = "Your node has successfully autostarted! You can now close the staking GUI.";

@@ -181,7 +181,8 @@ fn hash_file(file_path: &Path) -> Result<String, String> {
 }
 
 /// Download the fitting Edge CLI based on user's system.
-pub(crate) async fn get_edge_cli_binary(backend_communicator: BackendCommunicator) -> String {
+/// Returns true if latest binary installed.
+pub(crate) async fn get_edge_cli_binary(backend_communicator: BackendCommunicator) -> bool {
     let edge_binary_filename = String::from("edge.exe");
     let edge_binary_filepath = format!(
         "{}{}",
@@ -193,11 +194,12 @@ pub(crate) async fn get_edge_cli_binary(backend_communicator: BackendCommunicato
         is_edge_correctly_downloaded(backend_communicator.clone()).await;
     match is_edge_correctly_downloaded_future_pre_download_cli {
         Ok(_) => {
-            let result_string = pretty_check_string::pretty_ok_str(
+            let ok_msg = pretty_check_string::pretty_ok_str(
                 &String::from("Latest Edge CLI is already correctly installed."),
                 false,
             );
-            return result_string;
+            log_and_emit(ok_msg, backend_communicator);
+            return true;
         }
         Err(_) => {}
     }
@@ -218,26 +220,39 @@ pub(crate) async fn get_edge_cli_binary(backend_communicator: BackendCommunicato
     match download_file_future {
         Ok(_) => {}
         Err(err) => {
-            let error_message = String::from(err);
-            return error_message;
+            let err_msg = String::from(err);
+            log_and_emit(err_msg, backend_communicator);
+            return false;
         }
     }
 
     let is_edge_correctly_downloaded_future_post_download_cli =
-        is_edge_correctly_downloaded(backend_communicator).await;
+        is_edge_correctly_downloaded(backend_communicator.clone()).await;
     match is_edge_correctly_downloaded_future_post_download_cli {
         Ok(_) => {
-            let result_string = pretty_check_string::pretty_ok_str(
+            let ok_msg = pretty_check_string::pretty_ok_str(
                 &String::from("Latest Edge CLI downloaded & correctly installed."),
                 false,
             );
-            return result_string;
+            log_and_emit(ok_msg, backend_communicator);
+            return true;
         }
         Err(_) => {
-            let errormessage = format!("File was not downloaded correctly. Please remove the edge.exe file from your directory.");
-            fs::remove_file(edge_binary_filepath.clone())
-                .expect("Could not remove downloaded file.");
-            return errormessage;
+            let err_msg =
+                format!("File was not downloaded correctly. Attempting to remove automatically.");
+            log_and_emit(err_msg, backend_communicator.clone());
+            match fs::remove_file(edge_binary_filepath.clone()) {
+                Ok(_) => {
+                    let ok_msg = format!("Removed incorrect downloaded file automatically.");
+                    log_and_emit(ok_msg, backend_communicator);
+                }
+                Err(_) => {
+                    let err_msg =
+                        format!("Failed to remove incorrect downloaded file. Try rerunning.");
+                    log_and_emit(err_msg, backend_communicator);
+                }
+            }
+            return false;
         }
     }
 }
