@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use check_requirements::pretty_check_string::{self, pretty_err_str};
-use tauri::Window;
+use tauri::{Manager, Window};
 use tauri_plugin_autostart::MacosLauncher;
 use utility::{load_initialization_status, load_node_address, log_and_emit};
 
@@ -11,6 +11,12 @@ mod control_edge_cli;
 mod device;
 mod docker;
 mod utility;
+
+#[derive(Clone, serde::Serialize)]
+struct Payload {
+    args: Vec<String>,
+    cwd: String,
+}
 
 // Note: Every tauri function requires the following boilerplate to enable communication with front-end:
 // datadir: &str
@@ -217,6 +223,12 @@ fn main() {
             Some(vec!["--flag1", "--flag2"]), /* arbitrary number of args to pass to your app */
         ))
         .plugin(tauri_plugin_window_state::Builder::default().build())
+        .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
+            println!("{}, {argv:?}, {cwd}", app.package_info().name);
+
+            app.emit_all("single-instance", Payload { args: argv, cwd })
+                .unwrap();
+        }))
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
