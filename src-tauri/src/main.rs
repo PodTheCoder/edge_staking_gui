@@ -2,11 +2,16 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use check_requirements::pretty_check_string::{self, pretty_err_str};
+use config::{
+    getters::{get_initialization_status, get_node_address},
+    setters::set_device_initialization_status,
+};
 use tauri::{Manager, Window};
 use tauri_plugin_autostart::MacosLauncher;
-use utility::{load_initialization_status, load_node_address, log_and_emit};
+use utility::log_and_emit;
 
 mod check_requirements;
+mod config;
 mod control_edge_cli;
 mod device;
 mod docker;
@@ -74,7 +79,7 @@ fn load_device_initialization_status(window: Window, datadir: String) -> bool {
         front_end_window: window,
     };
 
-    let initialization_status = load_initialization_status(backend_communicator);
+    let initialization_status = get_initialization_status(backend_communicator);
 
     // Frontend div hide needs a bool.
     if initialization_status == 0 {
@@ -93,7 +98,7 @@ fn set_device_fully_initialized(window: Window, datadir: String) -> bool {
         front_end_window: window,
     };
 
-    match utility::config_set_device_initialization_status(true, backend_communicator.clone()) {
+    match set_device_initialization_status(true, backend_communicator.clone()) {
         Ok(_) => {
             let ok_message = format!("Congratulations! Your device has fully started! You can now close the Staking GUI.");
             let ok_message_pretty = pretty_check_string::pretty_ok_str(&ok_message, false);
@@ -119,7 +124,7 @@ fn set_device_not_initialized(window: Window, datadir: String) -> bool {
         front_end_window: window,
     };
 
-    match utility::config_set_device_initialization_status(false, backend_communicator.clone()) {
+    match set_device_initialization_status(false, backend_communicator.clone()) {
         Ok(_) => {
             let ok_message = format!("Reset program to setup stage.");
             log_and_emit(ok_message.clone(), backend_communicator.clone());
@@ -144,7 +149,7 @@ fn load_node_address_from_frontend(window: Window, datadir: String) -> String {
     };
 
     // let no_node_found = format!("Unset"); // "Unset" is the error String.
-    let node_address = load_node_address(backend_communicator);
+    let node_address = get_node_address(backend_communicator);
     return node_address;
 }
 

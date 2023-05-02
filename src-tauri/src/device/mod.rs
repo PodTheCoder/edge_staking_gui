@@ -3,11 +3,12 @@ use std::collections::HashMap;
 use std::fs::{self, OpenOptions};
 use std::io::Write;
 
+use crate::config::setters::set_device_data;
 use crate::docker::{
     copy_data_to_running_container, remove_temporary_container,
     start_docker_container_for_copying_data,
 };
-use crate::utility::{config_set_device_data, log_and_emit};
+use crate::utility::log_and_emit;
 use crate::{check_requirements, BackendCommunicator};
 
 /// Flow for creating a device token. If successful displays the next step.
@@ -33,7 +34,7 @@ pub async fn create_device_code(
 
     // Save info to config file.
 
-    match config_set_device_data(
+    match set_device_data(
         &network,
         &address,
         &private_key,
