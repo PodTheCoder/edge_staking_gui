@@ -103,7 +103,7 @@ let isNodeAutostartIntervalActive = false;
  * @param timer_seconds_delay 
  * @param recheck_limit 
  */
-async function auto_start_node(timer_seconds_delay: number = 60, recheck_limit: number = 60) {
+async function auto_start_node(timer_seconds_delay: number = 30, recheck_limit: number = 60) {
   const appLocalDataDirPath = await appLocalDataDir();
 
   let node_starts_automatically = await sync_autostart_status();
@@ -126,6 +126,11 @@ async function auto_start_node(timer_seconds_delay: number = 60, recheck_limit: 
     isNodeAutostartIntervalActive = true;
     let AutoStartNode = setInterval(async () => {
       recheck_count += 1;
+
+      if (recheck_count == 4) {
+        send_notification("Node Autostart Failing", "Will keep trying. Are you connected to the internet and is Docker running?");
+      }
+
       let recheck_message = "Trying to launch node automatically. Attempt:" + recheck_count;
       await invoke("log_and_emit_from_frontend", {
         message: recheck_message,
@@ -133,7 +138,6 @@ async function auto_start_node(timer_seconds_delay: number = 60, recheck_limit: 
         window: appWindow,
       });
 
-      let has_node_started_successfully = await start_device();
 
       // First update node to latest version.
       if (!is_node_latest_version) {
@@ -142,7 +146,18 @@ async function auto_start_node(timer_seconds_delay: number = 60, recheck_limit: 
           datadir: appLocalDataDirPath,
           window: appWindow,
         });
+
+        if (is_node_latest_version) {
+          let node_updated_msg = "Your Edge CLI is the latest version. Attempting to start your node."
+          await invoke("log_and_emit_from_frontend", {
+            message: node_updated_msg,
+            datadir: appLocalDataDirPath,
+            window: appWindow,
+          });
+        }
       }
+
+      let has_node_started_successfully = await start_device();
 
       if (has_node_started_successfully) {
         let ok_node_started_message = "Your node has successfully autostarted! You can now close the staking GUI.";
@@ -151,10 +166,8 @@ async function auto_start_node(timer_seconds_delay: number = 60, recheck_limit: 
           datadir: appLocalDataDirPath,
           window: appWindow,
         });
-        send_notification("Node autostarted", "Your Edge node has successfully autostarted!");
+        send_notification("Node Autostarted", "Your Edge node has successfully autostarted!");
         clearInterval(AutoStartNode); // Stop autochecking
-        appWindow.minimize();
-        appWindow.hide();
       }
 
       if (recheck_count >= recheck_limit) {
