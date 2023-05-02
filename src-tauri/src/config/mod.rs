@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::{utility::log_and_emit, BackendCommunicator};
 
+use self::getters::get_config_path;
+
 pub mod getters;
 pub mod setters;
 
@@ -20,12 +22,7 @@ pub struct ConfigStruct {
 
 /// Create the default config file locally
 pub fn create_default_config(backend_communicator: BackendCommunicator) -> Result<(), String> {
-    let filepath = format!(
-        "{}{}",
-        backend_communicator.data_dir.clone(),
-        format!("config.txt")
-    );
-    let config_path = Path::new(&filepath);
+    let config_path = get_config_path(backend_communicator.clone());
 
     let dt_not_yet_downloaded;
     match DateTime::parse_from_str("1970 Jan 19 14:04:0.000 +0000", "%Y %b %d %H:%M:%S%.3f %z") {
@@ -48,10 +45,10 @@ pub fn create_default_config(backend_communicator: BackendCommunicator) -> Resul
         private_key: format!("Unset"),
         public_key: format!("Unset"),
     };
-    match confy::store_path(config_path, default_config) {
+    match confy::store_path(config_path.clone(), default_config) {
         Ok(_) => {
             log_and_emit(
-                format!("Created initial config file at location: {}", filepath),
+                format!("Created initial config file at location: {}", config_path),
                 backend_communicator.clone(),
             );
             log_and_emit(
@@ -63,7 +60,7 @@ pub fn create_default_config(backend_communicator: BackendCommunicator) -> Resul
         Err(_) => {
             return Err(format!(
                 "Unable to store default config at path {}",
-                config_path.display()
+                config_path
             ))
         }
     }

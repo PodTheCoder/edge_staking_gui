@@ -2,6 +2,15 @@ use crate::{utility::log_and_emit, BackendCommunicator};
 
 use super::load_config;
 
+pub fn get_config_path(backend_communicator: BackendCommunicator) -> String {
+    let config_path = format!(
+        "{}{}",
+        backend_communicator.data_dir.clone(),
+        format!("config.txt")
+    );
+    return config_path;
+}
+
 /// Returns Initialization status codes
 pub fn get_node_address(backend_communicator: BackendCommunicator) -> String {
     let no_node_found = format!("Unset");

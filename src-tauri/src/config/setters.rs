@@ -1,20 +1,13 @@
-use std::path::Path;
-
 use crate::{utility::log_and_emit, BackendCommunicator};
 
-use super::load_config;
+use super::{getters::get_config_path, load_config};
 
 /// Write initialized value to config
 pub fn set_device_initialization_status(
     device_initialization_status: bool,
     backend_communicator: BackendCommunicator,
 ) -> Result<(), std::string::String> {
-    let filepath = format!(
-        "{}{}",
-        backend_communicator.data_dir.clone(),
-        format!("config.txt")
-    );
-    let config_path = Path::new(&filepath);
+    let config_path = get_config_path(backend_communicator.clone());
 
     match load_config(backend_communicator.clone()) {
         Ok(ok_config) => {
@@ -46,12 +39,7 @@ pub fn set_device_data(
     public_key: &String,
     backend_communicator: BackendCommunicator,
 ) -> Result<String, String> {
-    let filepath = format!(
-        "{}{}",
-        backend_communicator.data_dir.clone(),
-        format!("config.txt")
-    );
-    let config_path = Path::new(&filepath);
+    let config_path = get_config_path(backend_communicator.clone());
 
     match load_config(backend_communicator.clone()) {
         Ok(ok_config) => {
