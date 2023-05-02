@@ -163,7 +163,7 @@ async function auto_recheck_node_online(appLocalDataDirPath: string, node_addres
         });
         load_and_set_initialization_status();
         send_notification("Node Setup Completed", "Your Edge node setup has completed!");
-        clearInterval(AutoCheckNodeOnline); // Stop autochecking
+        Disable_Autocheck_Node_online(AutoCheckNodeOnline); // Stop autochecking
       }
 
       if (recheck_count >= recheck_limit) {
@@ -173,11 +173,16 @@ async function auto_recheck_node_online(appLocalDataDirPath: string, node_addres
           datadir: appLocalDataDirPath,
           window: appWindow,
         });
-        clearInterval(AutoCheckNodeOnline); // Stop autochecking
+        Disable_Autocheck_Node_online(AutoCheckNodeOnline); // Stop autochecking
       }
     }, timer_seconds_delay * 1000);
 
 
+  }
+
+  function Disable_Autocheck_Node_online(AutoCheckNodeOnline: NodeJS.Timer) {
+    isNodeOnlineAutocheckActive = false;
+    clearInterval(AutoCheckNodeOnline);
   }
 }
 
