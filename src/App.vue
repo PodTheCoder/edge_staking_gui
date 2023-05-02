@@ -239,8 +239,7 @@ sync_initialization_status();
   <div v-else="deviceInitialized" class="container">
     <div class="step">
 
-      <h2>Your Node Setup Is Complete!</h2>
-      <p>From now on, this is your node control panel: </p>
+      <h2>Node Control Panel</h2>
       <Post_Initialization_Node_Control />
 
     </div>
