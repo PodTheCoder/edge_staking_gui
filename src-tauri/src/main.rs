@@ -3,8 +3,8 @@
 
 use check_requirements::pretty_check_string::{self, pretty_err_str};
 use config::{
-    getters::{get_initialization_status, get_node_address},
-    setters::set_device_initialization_status,
+    getters::{get_autostart_status, get_initialization_status, get_node_address},
+    setters::{set_autostart_status, set_device_initialization_status},
 };
 use tauri::{Manager, Window};
 use tauri_plugin_autostart::MacosLauncher;
@@ -221,6 +221,31 @@ async fn add_device(
     }
 }
 
+#[tauri::command]
+fn get_autostart_status_from_frontend(window: Window, datadir: String) -> bool {
+    let backend_communicator = BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
+    return get_autostart_status(backend_communicator);
+}
+
+#[tauri::command]
+fn set_autostart_status_from_frontend(autostartstatus: bool, window: Window, datadir: String) {
+    let backend_communicator = BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
+    match set_autostart_status(autostartstatus, backend_communicator) {
+        Ok(_) => return (),
+        Err(_) => return (),
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
@@ -234,6 +259,8 @@ fn main() {
             set_device_fully_initialized,
             set_device_not_initialized,
             load_node_address_from_frontend,
+            get_autostart_status_from_frontend,
+            set_autostart_status_from_frontend,
             add_device
         ])
         .plugin(tauri_plugin_autostart::init(

@@ -13,6 +13,7 @@ pub mod setters;
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
 pub struct ConfigStruct {
     pub initialized: bool, // Has the device be initialized? Set to true when node launched successfully.
+    pub is_auto_start_enabled: bool, // Does the node auto start?
     pub last_node_payment: String, // When was the last node earnings payment to the user? datetime as rfc2822 string
     pub network: String,           // On which Edge network is the device, mainnet or testnet?
     pub address: String,           // What is the device XE address?
@@ -39,6 +40,7 @@ pub fn create_default_config(backend_communicator: BackendCommunicator) -> Resul
     }
     let default_config = ConfigStruct {
         initialized: false,
+        is_auto_start_enabled: false,
         last_node_payment: dt_not_yet_downloaded.to_rfc2822(),
         address: format!("Unset"),
         network: format!("Unset"),

@@ -10,36 +10,78 @@ import { send_notification } from './notification';
 // Initialize consts
 const auto_start_enabled = ref(false); // Default state, gets overwritten through get_autostart_status
 
-async function get_autostart_status() {
-  auto_start_enabled.value = await isEnabled();
-  return auto_start_enabled.value;
-}
 
+/// Syncronizes the frontend and backend based on config. Returns the frontend state.
+async function sync_autostart_status() {
 
-async function enable_autostart() {
-  // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-  await enable();
+  /// Change autostart status in frontend. 
+  async function set_autostart_status_in_frontend(autostart_status_to_set: boolean) {
+    if (autostart_status_to_set === true) {
+      await enable();
+    }
+    else {
+      await disable();
+    }
+    return await isEnabled();
+  }
   const appLocalDataDirPath = await appLocalDataDir();
-  let ok_enable_autostart = "Your node will automatically launch when you login. Make sure to also automatically start Docker Desktop when you log in. (https://docs.docker.com/desktop/settings/windows/#general).";
-  await invoke("log_and_emit_from_frontend", {
-    message: ok_enable_autostart,
+
+  // get status from config
+  let config_autostart_status: boolean = await invoke("get_autostart_status_from_frontend", {
     datadir: appLocalDataDirPath,
     window: appWindow,
   });
-  get_autostart_status(); // to update reference status
+  let frontend_autostart_status = await isEnabled();
+
+  // check if config matches frontend state
+  if (config_autostart_status != frontend_autostart_status) {
+    if (config_autostart_status === true) {
+      frontend_autostart_status = await set_autostart_status_in_frontend(config_autostart_status);
+    }
+    else {
+      frontend_autostart_status = await set_autostart_status_in_frontend(config_autostart_status);
+    }
+
+    // Make frontend reflect actual status
+    if (frontend_autostart_status === true) {
+      let ok_enable_autostart = "Your node will automatically launch when you login. Make sure to also automatically start Docker Desktop when you log in. (https://docs.docker.com/desktop/settings/windows/#general).";
+      await invoke("log_and_emit_from_frontend", {
+        message: ok_enable_autostart,
+        datadir: appLocalDataDirPath,
+        window: appWindow,
+      });
+    } else {
+      let ok_disable_autostart = "Your node will not automatically launch at system startup.";
+      await invoke("log_and_emit_from_frontend", {
+        message: ok_disable_autostart,
+        datadir: appLocalDataDirPath,
+        window: appWindow,
+      });
+    }
+  }
+
+  auto_start_enabled.value = frontend_autostart_status;
+  return frontend_autostart_status;
+}
+
+/// Set autostart in config, and sync up config and backend
+async function change_autostart_in_config_and_sync(set_autostart_status_to: boolean) {
+  const appLocalDataDirPath = await appLocalDataDir();
+  await invoke("set_autostart_status_from_frontend", {
+    autostartstatus: set_autostart_status_to,
+    datadir: appLocalDataDirPath,
+    window: appWindow,
+  });
+  await sync_autostart_status();
+
+}
+
+async function enable_autostart() {
+  change_autostart_in_config_and_sync(true);
 }
 
 async function disable_autostart() {
-  // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-  await disable();
-  const appLocalDataDirPath = await appLocalDataDir();
-  let ok_disable_autostart = "Your node will not automatically launch at system startup.";
-  await invoke("log_and_emit_from_frontend", {
-    message: ok_disable_autostart,
-    datadir: appLocalDataDirPath,
-    window: appWindow,
-  });
-  get_autostart_status(); // to update reference status
+  change_autostart_in_config_and_sync(false);
 }
 
 async function check_device_initialization() {
@@ -64,7 +106,7 @@ let isNodeAutostartIntervalActive = false;
 async function auto_start_node(timer_seconds_delay: number = 60, recheck_limit: number = 60) {
   const appLocalDataDirPath = await appLocalDataDir();
 
-  let node_starts_automatically = await get_autostart_status();
+  let node_starts_automatically = await sync_autostart_status();
   let device_is_initialized = await check_device_initialization();
 
   if (!node_starts_automatically || !device_is_initialized) {

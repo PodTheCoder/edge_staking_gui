@@ -59,3 +59,22 @@ pub fn get_initialization_status(backend_communicator: BackendCommunicator) -> u
         return not_initialied_code;
     }
 }
+
+/// Returns autostart status
+pub fn get_autostart_status(backend_communicator: BackendCommunicator) -> bool {
+    let config;
+    match load_config(backend_communicator.clone()) {
+        Ok(ok_config) => {
+            config = ok_config;
+            return config.is_auto_start_enabled;
+        }
+        Err(err) => {
+            let err_message = format!(
+                "Could not load autostart status. Assuming false. Err {}",
+                err
+            );
+            log_and_emit(err_message.clone(), backend_communicator.clone());
+            return false;
+        }
+    }
+}
