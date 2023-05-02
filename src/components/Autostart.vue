@@ -20,7 +20,7 @@ async function enable_autostart() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   await enable();
   const appLocalDataDirPath = await appLocalDataDir();
-  let ok_enable_autostart = "Your node will automatically launch at system startup.";
+  let ok_enable_autostart = "Your node will automatically launch when you login. Make sure to also automatically start Docker Desktop when you log in. (https://docs.docker.com/desktop/settings/windows/#general).";
   await invoke("log_and_emit_from_frontend", {
     message: ok_enable_autostart,
     datadir: appLocalDataDirPath,
