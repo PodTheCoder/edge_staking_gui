@@ -238,7 +238,7 @@ fn main() {
         ])
         .plugin(tauri_plugin_autostart::init(
             MacosLauncher::LaunchAgent,
-            Some(vec!["--flag1", "--flag2"]), /* arbitrary number of args to pass to your app */
+            Some(vec![]), /* arbitrary number of args to pass to your app */
         ))
         .plugin(tauri_plugin_window_state::Builder::default().build())
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
