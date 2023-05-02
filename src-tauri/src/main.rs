@@ -136,7 +136,7 @@ fn set_device_not_initialized(window: Window, datadir: String) -> bool {
 }
 
 #[tauri::command]
-fn load_node_online_status(window: Window, datadir: String) -> String {
+fn load_node_address_from_frontend(window: Window, datadir: String) -> String {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
@@ -228,7 +228,7 @@ fn main() {
             load_device_initialization_status,
             set_device_fully_initialized,
             set_device_not_initialized,
-            load_node_online_status,
+            load_node_address_from_frontend,
             add_device
         ])
         .plugin(tauri_plugin_autostart::init(

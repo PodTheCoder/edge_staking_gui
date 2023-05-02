@@ -102,7 +102,7 @@ async function helper_check_node_online_status(node_address: string) {
 // Check node and set initialization status. If the node is online once, it is assumed to be correctly initialized.
 async function complete_initialization_flow() {
   const appLocalDataDirPath = await appLocalDataDir();
-  let node_address: string = await invoke("load_node_online_status", {
+  let node_address: string = await invoke("load_node_address_from_frontend", {
     datadir: appLocalDataDirPath,
     window: appWindow,
   });
