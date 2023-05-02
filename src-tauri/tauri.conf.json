@@ -36,6 +36,10 @@
       "identifier": "EdgeStakingGUI",
       "targets": "all"
     },
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
+    },
     "security": {
       "csp": null
     },

@@ -153,6 +153,8 @@ async function auto_start_node(timer_seconds_delay: number = 60, recheck_limit: 
         });
         send_notification("Node autostarted", "Your Edge node has successfully autostarted!");
         clearInterval(AutoStartNode); // Stop autochecking
+        appWindow.minimize();
+        appWindow.hide();
       }
 
       if (recheck_count >= recheck_limit) {

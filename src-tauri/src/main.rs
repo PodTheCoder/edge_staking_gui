@@ -1,6 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use tauri::{CustomMenuItem, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem};
+
 use check_requirements::pretty_check_string::{self, pretty_err_str};
 use config::{
     getters::{get_autostart_status, get_initialization_status, get_node_address},
@@ -247,6 +249,14 @@ fn set_autostart_status_from_frontend(autostartstatus: bool, window: Window, dat
 }
 
 fn main() {
+    let show = CustomMenuItem::new("show".to_string(), "Show");
+    let quit = CustomMenuItem::new("quit".to_string(), "Quit");
+    let tray_menu = SystemTrayMenu::new()
+        .add_item(show)
+        .add_item(quit)
+        .add_native_item(SystemTrayMenuItem::Separator);
+    let tray = SystemTray::new().with_menu(tray_menu);
+
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             install_edge_cli,
@@ -263,6 +273,31 @@ fn main() {
             set_autostart_status_from_frontend,
             add_device
         ])
+        .system_tray(tray)
+        .on_system_tray_event(|app, event| match event {
+            SystemTrayEvent::DoubleClick {
+                position: _,
+                size: _,
+                ..
+            } => {
+                println!("system tray received a double click");
+                let window = app.get_window("main").unwrap();
+                window.show().unwrap();
+                window.unminimize().unwrap();
+            }
+            SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
+                "show" => {
+                    let window = app.get_window("main").unwrap();
+                    window.show().unwrap();
+                    window.unminimize().unwrap();
+                }
+                "quit" => {
+                    std::process::exit(0);
+                }
+                _ => {}
+            },
+            _ => {}
+        })
         .plugin(tauri_plugin_autostart::init(
             MacosLauncher::LaunchAgent,
             Some(vec![]), /* arbitrary number of args to pass to your app */
