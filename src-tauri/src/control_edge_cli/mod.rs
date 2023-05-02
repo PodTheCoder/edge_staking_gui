@@ -130,10 +130,17 @@ pub async fn device_stop(backend_communicator: BackendCommunicator) {
 }
 
 /// Start Edge device; true if started successfully, otherwise false
-pub async fn device_start(backend_communicator: BackendCommunicator) -> bool {
+pub async fn device_start(
+    check_is_edge_binary_latest_version: bool,
+    backend_communicator: BackendCommunicator,
+) -> bool {
     let cli_command = String::from("device start");
-    let command_edge_cli_future =
-        command_edge_cli(cli_command, true, backend_communicator.clone()).await;
+    let command_edge_cli_future = command_edge_cli(
+        cli_command,
+        check_is_edge_binary_latest_version,
+        backend_communicator.clone(),
+    )
+    .await;
     match command_edge_cli_future {
         Ok(stdout_str) => {
             let ok_message = format!("Device successfully started! Ok msg: {}", stdout_str);

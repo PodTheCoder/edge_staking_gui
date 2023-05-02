@@ -23,7 +23,7 @@ const Node_Online_Message = ref();
 /**
  * Load and set node initialization status.
  */
-async function load_and_set_initialization_status() {
+async function sync_initialization_status() {
   const appLocalDataDirPath = await appLocalDataDir();
   deviceInitialized.value = await invoke("load_device_initialization_status", {
     datadir: appLocalDataDirPath,
@@ -34,9 +34,10 @@ async function load_and_set_initialization_status() {
 /**
  * Start the node. Returns a boolean whether the device has successfully started.
  */
-async function start_device() {
+async function initial_device_start() {
   const appLocalDataDirPath = await appLocalDataDir();
   let has_device_started_successfully: boolean = await invoke("device_start", {
+    checklatestbinary: true,
     datadir: appLocalDataDirPath,
     window: appWindow,
   });
@@ -49,7 +50,7 @@ async function start_device() {
  * Initial startup of device.
  */
 async function start_device_for_first_time() {
-  let has_device_started_successfully = await start_device();
+  let has_device_started_successfully = await initial_device_start();
   if (has_device_started_successfully == true) {
     Node_Online_Message.value = "Initializing node for the first time. Check the status bar at the top for the latest progress."
     complete_initialization_flow();
@@ -161,7 +162,7 @@ async function auto_recheck_node_online(appLocalDataDirPath: string, node_addres
           datadir: appLocalDataDirPath,
           window: appWindow,
         });
-        load_and_set_initialization_status();
+        sync_initialization_status();
         send_notification("Node Setup Completed", "Your Edge node setup has completed!");
         Disable_Autocheck_Node_online(AutoCheckNodeOnline); // Stop autochecking
       }
@@ -195,10 +196,10 @@ async function back_to_setup() {
     datadir: appLocalDataDirPath,
     window: appWindow,
   });
-  load_and_set_initialization_status();
+  sync_initialization_status();
 }
 
-load_and_set_initialization_status(); 
+sync_initialization_status(); 
 </script>
 
 <template>

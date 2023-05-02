@@ -10,6 +10,7 @@ async function device_start_emitter() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   const appLocalDataDirPath = await appLocalDataDir();
   await invoke("device_start", {
+    checklatestbinary: true,
     datadir: appLocalDataDirPath,
     window: appWindow,
   });

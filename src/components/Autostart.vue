@@ -188,6 +188,7 @@ async function auto_start_node(timer_seconds_delay: number = 30, recheck_limit: 
 async function start_device() {
   const appLocalDataDirPath = await appLocalDataDir();
   let has_device_started_successfully: boolean = await invoke("device_start", {
+    checklatestbinary: false,
     datadir: appLocalDataDirPath,
     window: appWindow,
   });

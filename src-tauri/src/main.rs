@@ -62,14 +62,14 @@ fn get_edge_cli_download_url(window: Window, datadir: String) -> String {
 }
 
 #[tauri::command]
-async fn device_start(window: Window, datadir: String) -> bool {
+async fn device_start(checklatestbinary: bool, window: Window, datadir: String) -> bool {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
 
-    return control_edge_cli::device_start(backend_communicator).await;
+    return control_edge_cli::device_start(checklatestbinary, backend_communicator).await;
 }
 
 /// Returns true if initialization is complete, false if not.
