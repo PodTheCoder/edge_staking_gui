@@ -6,12 +6,12 @@ use tauri::{CustomMenuItem, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemT
 use check_requirements::pretty_check_string::{self, pretty_err_str};
 use config::{
     getters::{
-        get_autostart_status, get_initialization_status, get_launch_minimized_status,
-        get_node_address, get_wallet_address,
+        get_autostart_status, get_initialization_status, get_last_node_payment,
+        get_launch_minimized_status, get_node_address, get_wallet_address,
     },
     setters::{
-        set_autostart_status, set_device_initialization_status, set_launch_minimized_status,
-        set_wallet_address,
+        set_autostart_status, set_device_initialization_status, set_last_node_payment,
+        set_launch_minimized_status, set_wallet_address,
     },
 };
 use tauri::{Manager, Window};
@@ -315,6 +315,31 @@ fn set_wallet_address_from_frontend(walletaddress: String, window: Window, datad
     }
 }
 
+#[tauri::command]
+fn get_last_node_payment_from_frontend(window: Window, datadir: String) -> u64 {
+    let backend_communicator = BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
+    return get_last_node_payment(backend_communicator);
+}
+
+#[tauri::command]
+fn set_last_node_payment_from_frontend(lastnodepayment: u64, window: Window, datadir: String) {
+    let backend_communicator = BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
+    match set_last_node_payment(lastnodepayment, backend_communicator) {
+        Ok(_) => return (),
+        Err(_) => return (),
+    }
+}
+
 fn main() {
     let show = CustomMenuItem::new("show".to_string(), "Show");
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
@@ -342,6 +367,8 @@ fn main() {
             set_launch_minimized_status_from_frontend,
             get_wallet_address_from_frontend,
             set_wallet_address_from_frontend,
+            get_last_node_payment_from_frontend,
+            set_last_node_payment_from_frontend,
             add_device_from_frontend
         ])
         .system_tray(tray)

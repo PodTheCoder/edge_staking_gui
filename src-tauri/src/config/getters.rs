@@ -113,3 +113,19 @@ pub fn get_wallet_address(backend_communicator: BackendCommunicator) -> String {
         }
     }
 }
+
+/// Returns last node payment timestamp. Default & error is 0.
+pub fn get_last_node_payment(backend_communicator: BackendCommunicator) -> u64 {
+    let config;
+    match get_config(backend_communicator.clone()) {
+        Ok(ok_config) => {
+            config = ok_config;
+            return config.last_node_payment;
+        }
+        Err(err) => {
+            let err_message = format!("Could not load last node payment. Err {}", err);
+            log_and_emit(err_message.clone(), backend_communicator.clone());
+            return 0;
+        }
+    }
+}

@@ -14,9 +14,9 @@ export async function set_wallet_address(deviceInitializedref: Ref<boolean>) {
 }
 
 
-async function get_node_wallet_from_config() {
+export async function get_node_wallet_from_config() {
     const appLocalDataDirPath = await appLocalDataDir();
-    let wallet_addr_from_config = await invoke("get_wallet_address_from_frontend", {
+    let wallet_addr_from_config: string = await invoke("get_wallet_address_from_frontend", {
         datadir: appLocalDataDirPath,
         window: appWindow,
     });
