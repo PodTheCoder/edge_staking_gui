@@ -9,6 +9,7 @@ export async function get_launch_minimized_status() {
         datadir: appLocalDataDirPath,
         window: appWindow,
     });
+
     return launch_minimized_status
 }
 
@@ -18,6 +19,13 @@ export async function get_launch_minimized_status() {
 export async function sync_launch_minimized_status() {
     let window_must_be_minimized = await get_launch_minimized_status();
     if (window_must_be_minimized) {
+        const appLocalDataDirPath = await appLocalDataDir();
+        let ok_message = "App was launched in a minimized state."
+        await invoke("log_and_emit_from_frontend", {
+            message: ok_message,
+            datadir: appLocalDataDirPath,
+            window: appWindow,
+        });
         await appWindow.hide();
         await appWindow.minimize();
     } else {
