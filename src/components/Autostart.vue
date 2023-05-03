@@ -202,6 +202,7 @@ auto_start_node();
 </script>
 
 <template>
+  <p>Automatically launch your node when your computer starts.</p>
   <div v-if="!auto_start_enabled" class="card">
     <button type="button" @click="enable_autostart()">Enable Autostart</button>
   </div>

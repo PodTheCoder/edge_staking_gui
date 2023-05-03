@@ -232,7 +232,6 @@ sync_launch_minimized_status();
       <p>4. Start your node.</p>
       <div class="card">
         <button type="button" @click="start_device_for_first_time()">Start Node</button>
-
         <p>{{ Node_Online_Message }}</p>
       </div>
     </div>
@@ -241,13 +240,9 @@ sync_launch_minimized_status();
 
   <div v-else="deviceInitialized" class="container">
     <div class="step">
-
-      <h2>Node Control Panel</h2>
       <Post_Initialization_Node_Control />
-
     </div>
     <div class="step">
-      <p>Automatically launch your node when your computer starts.</p>
       <Autostart />
     </div>
     <div class="step">

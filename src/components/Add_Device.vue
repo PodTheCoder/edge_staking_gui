@@ -38,6 +38,5 @@ async function add_device_from_frontend() {
   <div class="card">
     <button type="button" @click="add_device_from_frontend()">Create & Display Device Token</button>
   </div>
-
   <p>{{ deviceMsg }}</p>
 </template>

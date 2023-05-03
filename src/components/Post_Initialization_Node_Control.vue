@@ -37,6 +37,7 @@ async function update_cli_emitter() {
 </script>
 
 <template>
+  <h2>Node Control Panel</h2>
   <div class="card">
     <button type="button" @click="device_start_from_frontend_emitter()">Start Node</button>
     <button type="button" @click="device_stop_from_frontend_emitter()">Stop Node</button>
