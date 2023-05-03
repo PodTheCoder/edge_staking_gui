@@ -125,3 +125,35 @@ pub fn set_launch_minimized_status(
         Err(err) => return Err(err),
     }
 }
+
+pub fn set_wallet_address(
+    wallet_address: String,
+    backend_communicator: BackendCommunicator,
+) -> Result<(), std::string::String> {
+    let config_path = get_config_path(backend_communicator.clone());
+
+    match get_config(backend_communicator.clone()) {
+        Ok(ok_config) => {
+            let mut changed_config = ok_config;
+            changed_config.wallet_address = wallet_address;
+
+            log_and_emit(
+                format!(
+                    "Set wallet address in config: {}",
+                    changed_config.wallet_address.to_string()
+                ),
+                backend_communicator.clone(),
+            );
+
+            match confy::store_path(config_path, changed_config) {
+                Ok(_) => return Ok({}),
+                Err(_) => {
+                    let err_msg = format!("Unable to store config file at location");
+                    log_and_emit(err_msg.clone(), backend_communicator.clone());
+                    return Err(err_msg);
+                }
+            }
+        }
+        Err(err) => return Err(err),
+    }
+}

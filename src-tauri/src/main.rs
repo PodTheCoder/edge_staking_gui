@@ -7,10 +7,11 @@ use check_requirements::pretty_check_string::{self, pretty_err_str};
 use config::{
     getters::{
         get_autostart_status, get_initialization_status, get_launch_minimized_status,
-        get_node_address,
+        get_node_address, get_wallet_address,
     },
     setters::{
         set_autostart_status, set_device_initialization_status, set_launch_minimized_status,
+        set_wallet_address,
     },
 };
 use tauri::{Manager, Window};
@@ -289,6 +290,31 @@ fn set_launch_minimized_status_from_frontend(
     }
 }
 
+#[tauri::command]
+fn get_wallet_address_from_frontend(window: Window, datadir: String) -> String {
+    let backend_communicator = BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
+    return get_wallet_address(backend_communicator);
+}
+
+#[tauri::command]
+fn set_wallet_address_from_frontend(walletaddress: String, window: Window, datadir: String) {
+    let backend_communicator = BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
+    match set_wallet_address(walletaddress, backend_communicator) {
+        Ok(_) => return (),
+        Err(_) => return (),
+    }
+}
+
 fn main() {
     let show = CustomMenuItem::new("show".to_string(), "Show");
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
@@ -314,6 +340,8 @@ fn main() {
             set_autostart_status_from_frontend,
             get_launch_minimized_status_from_frontend,
             set_launch_minimized_status_from_frontend,
+            get_wallet_address_from_frontend,
+            set_wallet_address_from_frontend,
             add_device_from_frontend
         ])
         .system_tray(tray)

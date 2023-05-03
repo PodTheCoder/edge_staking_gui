@@ -16,6 +16,7 @@ pub struct ConfigStruct {
     pub is_auto_start_enabled: bool, // Does the node auto start?
     pub launch_minimized: bool, // Does the program start minimized?
     pub last_node_payment: String, // When was the last node earnings payment to the user? datetime as rfc2822 string
+    pub wallet_address: String,    // What is the wallet address from which the device was assigned?
     pub network: String,           // On which Edge network is the device, mainnet or testnet?
     pub address: String,           // What is the device XE address?
     pub private_key: String,       // What is the private key of the XE address?
@@ -44,6 +45,7 @@ pub fn create_default_config(backend_communicator: BackendCommunicator) -> Resul
         is_auto_start_enabled: false,
         launch_minimized: false,
         last_node_payment: dt_not_yet_downloaded.to_rfc2822(),
+        wallet_address: format!("Unset"),
         address: format!("Unset"),
         network: format!("Unset"),
         private_key: format!("Unset"),

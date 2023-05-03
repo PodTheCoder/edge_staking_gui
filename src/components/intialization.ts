@@ -3,7 +3,78 @@ import { appLocalDataDir } from "@tauri-apps/api/path";
 import { appWindow } from "@tauri-apps/api/window";
 import { Ref } from "vue";
 import { send_notification } from "./notification";
-import { session } from "@edge/index-utils";
+import { session, stake } from "@edge/index-utils";
+
+export async function set_wallet_address(deviceInitializedref: Ref<boolean>) {
+    const appLocalDataDirPath = await appLocalDataDir();
+    deviceInitializedref.value = await invoke("get_device_initialization_status_from_frontend", {
+        datadir: appLocalDataDirPath,
+        window: appWindow,
+    });
+}
+
+
+async function get_node_wallet_from_config() {
+    const appLocalDataDirPath = await appLocalDataDir();
+    let wallet_addr_from_config = await invoke("get_wallet_address_from_frontend", {
+        datadir: appLocalDataDirPath,
+        window: appWindow,
+    });
+    return wallet_addr_from_config
+}
+
+/**
+ * get the node wallet. Returns true if successful
+ */
+async function derive_and_set_node_wallet_based_on_node_address(node_address: string) {
+    const appLocalDataDirPath = await appLocalDataDir();
+
+    const sess = await session.session('https://index.xe.network', node_address)
+
+    const node_stake = sess.node.stake;
+
+    const myStake = await stake.stake('https://index.xe.network', node_stake)
+
+    const derived_wallet_addr = myStake.wallet;
+
+    let err_str_1 = "Unset";
+    let err_str_2 = "CouldNotLoadWalletAddressFromConfig";
+
+    if (derived_wallet_addr === err_str_1 || derived_wallet_addr === err_str_2) {
+        return false //error
+    }
+
+    console.log(JSON.stringify(derived_wallet_addr))
+    await invoke("set_wallet_address_from_frontend", {
+        walletaddress: derived_wallet_addr,
+        datadir: appLocalDataDirPath,
+        window: appWindow,
+    });
+
+    let wallet_from_config = await get_node_wallet_from_config();
+
+    if (wallet_from_config === derived_wallet_addr) {
+        let ok_message = "Wallet address derived based on node address:" + wallet_from_config;
+        await invoke("log_and_emit_from_frontend", {
+            message: ok_message,
+            datadir: appLocalDataDirPath,
+            window: appWindow,
+        });
+        return true
+    }
+    else {
+        let err_message = "Config wallet different from derived wallet after setting. Config: " + wallet_from_config + "Derived:" + derived_wallet_addr;
+        await invoke("log_and_emit_from_frontend", {
+            message: err_message,
+            datadir: appLocalDataDirPath,
+            window: appWindow,
+        });
+        return false
+    }
+
+
+
+}
 
 /**
  * Load and set node initialization status.
@@ -102,16 +173,26 @@ async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>, node
             });
 
             let is_node_online = await helper_check_node_online_status(nodeOnlineMessageref, node_address);
-
             if (is_node_online) {
-                // set initialized flag
-                await invoke("set_device_fully_initialized_from_frontend", {
-                    datadir: appLocalDataDirPath,
-                    window: appWindow,
-                });
-                sync_initialization_status(deviceInitializedref);
-                send_notification("Node Setup Completed", "Your Edge node setup has completed!");
-                Disable_Autocheck_Node_online(AutoCheckNodeOnline); // Stop autochecking
+                let could_wallet_address_be_derived = await derive_and_set_node_wallet_based_on_node_address(node_address);
+
+                if (could_wallet_address_be_derived) {
+                    // set initialized flag
+                    await invoke("set_device_fully_initialized_from_frontend", {
+                        datadir: appLocalDataDirPath,
+                        window: appWindow,
+                    });
+                    sync_initialization_status(deviceInitializedref);
+                    send_notification("Node Setup Completed", "Your Edge node setup has completed!");
+                    Disable_Autocheck_Node_online(AutoCheckNodeOnline); // Stop autochecking
+                } else {
+                    let online_but_could_not_derive_msg = "Node is viewed as online, but unable to derive wallet addreses which is needed for node earning notifications.";
+                    await invoke("log_and_emit_from_frontend", {
+                        message: online_but_could_not_derive_msg,
+                        datadir: appLocalDataDirPath,
+                        window: appWindow,
+                    });
+                }
             }
 
             if (recheck_count >= recheck_limit) {

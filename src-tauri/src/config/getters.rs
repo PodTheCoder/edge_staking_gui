@@ -97,3 +97,19 @@ pub fn get_launch_minimized_status(backend_communicator: BackendCommunicator) ->
         }
     }
 }
+
+/// Returns autostart status
+pub fn get_wallet_address(backend_communicator: BackendCommunicator) -> String {
+    let config;
+    match get_config(backend_communicator.clone()) {
+        Ok(ok_config) => {
+            config = ok_config;
+            return config.wallet_address;
+        }
+        Err(err) => {
+            let err_message = format!("Could not load wallet address. Assuming false. Err {}", err);
+            log_and_emit(err_message.clone(), backend_communicator.clone());
+            return format!("CouldNotLoadWalletAddressFromConfig");
+        }
+    }
+}
