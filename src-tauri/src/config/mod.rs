@@ -1,6 +1,5 @@
 use std::{fs, path::Path};
 
-use chrono::DateTime;
 use serde::{Deserialize, Serialize};
 
 use crate::{utility::log_and_emit, BackendCommunicator};
@@ -15,36 +14,23 @@ pub struct ConfigStruct {
     pub initialized: bool, // Has the device be initialized? Set to true when node launched successfully.
     pub is_auto_start_enabled: bool, // Does the node auto start?
     pub launch_minimized: bool, // Does the program start minimized?
-    pub last_node_payment: String, // When was the last node earnings payment to the user? datetime as rfc2822 string
-    pub wallet_address: String,    // What is the wallet address from which the device was assigned?
-    pub network: String,           // On which Edge network is the device, mainnet or testnet?
-    pub address: String,           // What is the device XE address?
-    pub private_key: String,       // What is the private key of the XE address?
-    pub public_key: String,        // What is the public key of the XE address?
+    pub last_node_payment: u64, // When was the last node earnings payment to the user?
+    pub wallet_address: String, // What is the wallet address from which the device was assigned?
+    pub network: String,   // On which Edge network is the device, mainnet or testnet?
+    pub address: String,   // What is the device XE address?
+    pub private_key: String, // What is the private key of the XE address?
+    pub public_key: String, // What is the public key of the XE address?
 }
 
 /// Create the default config file locally
 pub fn create_default_config(backend_communicator: BackendCommunicator) -> Result<(), String> {
     let config_path = get_config_path(backend_communicator.clone());
 
-    let dt_not_yet_downloaded;
-    match DateTime::parse_from_str("1970 Jan 19 14:04:0.000 +0000", "%Y %b %d %H:%M:%S%.3f %z") {
-        Ok(the_internet_belongs_to_everyone) => {
-            dt_not_yet_downloaded = the_internet_belongs_to_everyone
-        }
-        Err(_) => {
-            let error_message = format!(
-                "Unable to parse the beginning of greatness. The Edge genesis date string."
-            );
-            log_and_emit(error_message.clone(), backend_communicator.clone());
-            return Err(error_message);
-        }
-    }
     let default_config = ConfigStruct {
         initialized: false,
         is_auto_start_enabled: false,
         launch_minimized: false,
-        last_node_payment: dt_not_yet_downloaded.to_rfc2822(),
+        last_node_payment: 0,
         wallet_address: format!("Unset"),
         address: format!("Unset"),
         network: format!("Unset"),
