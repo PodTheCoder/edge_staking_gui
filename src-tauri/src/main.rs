@@ -5,8 +5,13 @@ use tauri::{CustomMenuItem, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemT
 
 use check_requirements::pretty_check_string::{self, pretty_err_str};
 use config::{
-    getters::{get_autostart_status, get_initialization_status, get_node_address},
-    setters::{set_autostart_status, set_device_initialization_status},
+    getters::{
+        get_autostart_status, get_initialization_status, get_launch_minimized_status,
+        get_node_address,
+    },
+    setters::{
+        set_autostart_status, set_device_initialization_status, set_launch_minimized_status,
+    },
 };
 use tauri::{Manager, Window};
 use tauri_plugin_autostart::MacosLauncher;
@@ -248,6 +253,35 @@ fn set_autostart_status_from_frontend(autostartstatus: bool, window: Window, dat
     }
 }
 
+#[tauri::command]
+fn get_launch_minimized_status_from_frontend(window: Window, datadir: String) -> bool {
+    let backend_communicator = BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
+    return get_launch_minimized_status(backend_communicator);
+}
+
+#[tauri::command]
+fn set_launch_minimized_status_from_frontend(
+    launchminimized: bool,
+    window: Window,
+    datadir: String,
+) {
+    let backend_communicator = BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
+    match set_launch_minimized_status(launchminimized, backend_communicator) {
+        Ok(_) => return (),
+        Err(_) => return (),
+    }
+}
+
 fn main() {
     let show = CustomMenuItem::new("show".to_string(), "Show");
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
@@ -271,6 +305,8 @@ fn main() {
             load_node_address_from_frontend,
             get_autostart_status_from_frontend,
             set_autostart_status_from_frontend,
+            get_launch_minimized_status_from_frontend,
+            set_launch_minimized_status_from_frontend,
             add_device
         ])
         .system_tray(tray)

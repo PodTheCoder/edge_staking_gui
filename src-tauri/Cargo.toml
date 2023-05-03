@@ -13,7 +13,7 @@ edition = "2021"
 tauri-build = { version = "1.2", features = [] }
 
 [dependencies]
-tauri = { version = "1.2", features = ["notification-all", "path-all", "shell-open", "system-tray"] }
+tauri = { version = "1.2", features = ["notification-all", "path-all", "shell-open", "system-tray", "window-minimize", "window-set-focus", "window-show", "window-unminimize"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 raw-cpuid = "10.7.0"

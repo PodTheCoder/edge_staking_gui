@@ -78,3 +78,22 @@ pub fn get_autostart_status(backend_communicator: BackendCommunicator) -> bool {
         }
     }
 }
+
+/// Returns whether the window should be launched hidden (minimized) or not.
+pub fn get_launch_minimized_status(backend_communicator: BackendCommunicator) -> bool {
+    let config;
+    match load_config(backend_communicator.clone()) {
+        Ok(ok_config) => {
+            config = ok_config;
+            return config.launch_minimized;
+        }
+        Err(err) => {
+            let err_message = format!(
+                "Could not load minimized status. Assuming false. Err {}",
+                err
+            );
+            log_and_emit(err_message.clone(), backend_communicator.clone());
+            return false;
+        }
+    }
+}

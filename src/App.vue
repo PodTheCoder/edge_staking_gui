@@ -14,6 +14,8 @@ import { ref } from "vue";
 
 import { session } from '@edge/index-utils';
 import { send_notification } from "./components/notification";
+import { sync_launch_minimized_status } from "./components/window_visibility";
+import LaunchWindowVisibility from "./components/LaunchWindowVisibility.vue";
 
 // Initialize consts
 const deviceInitialized = ref(false); // default state is uninitialized
@@ -199,7 +201,8 @@ async function back_to_setup() {
   sync_initialization_status();
 }
 
-sync_initialization_status(); 
+sync_initialization_status();
+sync_launch_minimized_status();
 </script>
 
 <template>
@@ -246,6 +249,9 @@ sync_initialization_status();
     <div class="step">
       <p>Automatically launch your node when your computer starts.</p>
       <Autostart />
+    </div>
+    <div class="step">
+      <LaunchWindowVisibility />
     </div>
     <div class="step">
       <p>Anything went wrong? You can go back to the setup.</p>
