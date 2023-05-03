@@ -145,9 +145,24 @@ async function helper_check_node_online_status(Node_Online_Message_ref: Ref<any>
         const sess = await session.session('https://index.xe.network', node_address)
         console.log(JSON.stringify(sess))
         console.log(sess.lastActive)
-        sess.online
-        // TODO: Check online value
-        return true
+        let is_node_online = sess.online;
+
+        if (typeof is_node_online === 'boolean') {
+            if (is_node_online) {
+                return true
+            }
+        } else {
+            let error_message = "Node session exists. However, node is not online.";
+
+            await invoke("log_and_emit_from_frontend", {
+                message: error_message,
+                datadir: appLocalDataDirPath,
+                window: appWindow,
+            });
+
+
+            return false
+        }
 
     } catch (e) {
         let error_string = JSON.stringify(e);
