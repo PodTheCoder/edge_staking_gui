@@ -193,6 +193,13 @@ async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>, node
                         window: appWindow,
                     });
                 }
+            } else {
+                let err_msg_node_not_found_yet = "Node not seen yet. The Staking GUI automatically rechecks the online status. If you start your node for the first time this can take up to an hour."
+                await invoke("log_and_emit_from_frontend", {
+                    message: err_msg_node_not_found_yet,
+                    datadir: appLocalDataDirPath,
+                    window: appWindow,
+                });
             }
 
             if (recheck_count >= recheck_limit) {
@@ -228,39 +235,35 @@ async function helper_check_node_online_status(Node_Online_Message_ref: Ref<any>
         console.log(sess.lastActive)
         let is_node_online = sess.online;
 
-        if (typeof is_node_online === 'boolean') {
-            if (is_node_online) {
-                return true
-            }
+        if ((typeof is_node_online === 'boolean') && is_node_online) {
+            let ok_message = "Node session exists. However, node is not online.";
+            await invoke("log_and_emit_from_frontend", {
+                message: ok_message,
+                datadir: appLocalDataDirPath,
+                window: appWindow,
+            });
+            return true
         } else {
             let error_message = "Node session exists. However, node is not online.";
-
             await invoke("log_and_emit_from_frontend", {
                 message: error_message,
                 datadir: appLocalDataDirPath,
                 window: appWindow,
             });
-
-
             return false
         }
 
     } catch (e) {
         let error_string = JSON.stringify(e);
-        Node_Online_Message_ref.value = "Node not seen yet. The Staking GUI automatically rechecks the online status. If you start your node for the first time this can take up to an hour."
-        let error_message = "Node not found http error code:" + error_string;
+        let err_msg_1 = "Node not found http error code:" + error_string;
 
         await invoke("log_and_emit_from_frontend", {
-            message: error_message,
+            message: err_msg_1,
             datadir: appLocalDataDirPath,
             window: appWindow,
         });
 
-        await invoke("log_and_emit_from_frontend", {
-            message: Node_Online_Message_ref.value,
-            datadir: appLocalDataDirPath,
-            window: appWindow,
-        });
+
         return false
     }
 
