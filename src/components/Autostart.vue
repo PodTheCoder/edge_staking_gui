@@ -86,7 +86,7 @@ async function disable_autostart() {
 
 async function check_device_initialization() {
   const appLocalDataDirPath = await appLocalDataDir();
-  let has_device_been_initialized = await invoke("get_device_initialization_status", {
+  let has_device_been_initialized = await invoke("get_device_initialization_status_from_frontend", {
     datadir: appLocalDataDirPath,
     window: appWindow,
   });
@@ -187,13 +187,13 @@ async function auto_start_node(timer_seconds_delay: number = 30, recheck_limit: 
 
 async function start_device() {
   const appLocalDataDirPath = await appLocalDataDir();
-  let has_device_started_successfully: boolean = await invoke("device_start", {
+  let has_device_start_from_frontended_successfully: boolean = await invoke("device_start_from_frontend", {
     checklatestbinary: false,
     datadir: appLocalDataDirPath,
     window: appWindow,
   });
 
-  return has_device_started_successfully
+  return has_device_start_from_frontended_successfully
 
 }
 

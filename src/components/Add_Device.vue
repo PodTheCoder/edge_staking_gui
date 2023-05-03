@@ -12,7 +12,7 @@ async function create_wallet() {
 
 const deviceMsg = ref("");
 
-async function add_device() {
+async function add_device_from_frontend() {
   // Create wallet in frontend 
 
   const DeviceWallet = create_wallet();
@@ -23,7 +23,7 @@ async function add_device() {
   const appLocalDataDirPath = await appLocalDataDir();
 
 
-  deviceMsg.value = await invoke("add_device", {
+  deviceMsg.value = await invoke("add_device_from_frontend", {
     address: address,
     privatekey: privatekey,
     publickey: publickey,
@@ -36,7 +36,7 @@ async function add_device() {
 
 <template>
   <div class="card">
-    <button type="button" @click="add_device()">Create & Display Device Token</button>
+    <button type="button" @click="add_device_from_frontend()">Create & Display Device Token</button>
   </div>
 
   <p>{{ deviceMsg }}</p>

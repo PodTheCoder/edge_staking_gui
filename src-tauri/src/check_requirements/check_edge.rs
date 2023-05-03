@@ -95,7 +95,9 @@ fn get_edge_cli_checksum_url(backend_communicator: BackendCommunicator) -> Strin
     return checksum_url;
 }
 /// Creates URL to Edge CLI based on user's system. eg. windows user will get link to windows binary.
-pub fn get_edge_cli_download_url(backend_communicator: BackendCommunicator) -> String {
+pub fn get_edge_cli_download_url_from_frontend(
+    backend_communicator: BackendCommunicator,
+) -> String {
     let filename = String::from("edge.exe");
     let edge_cli_url = get_edge_file_url(filename, backend_communicator);
 
@@ -204,7 +206,7 @@ pub(crate) async fn get_edge_cli_binary(backend_communicator: BackendCommunicato
         Err(_) => {}
     }
 
-    let cli_download_url = get_edge_cli_download_url(backend_communicator.clone());
+    let cli_download_url = get_edge_cli_download_url_from_frontend(backend_communicator.clone());
     log_and_emit(
         format!("Download Url: {}", cli_download_url),
         backend_communicator.clone(),

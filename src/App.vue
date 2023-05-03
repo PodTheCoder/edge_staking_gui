@@ -27,7 +27,7 @@ const Node_Online_Message = ref();
  */
 async function sync_initialization_status() {
   const appLocalDataDirPath = await appLocalDataDir();
-  deviceInitialized.value = await invoke("get_device_initialization_status", {
+  deviceInitialized.value = await invoke("get_device_initialization_status_from_frontend", {
     datadir: appLocalDataDirPath,
     window: appWindow,
   });
@@ -36,15 +36,15 @@ async function sync_initialization_status() {
 /**
  * Start the node. Returns a boolean whether the device has successfully started.
  */
-async function initial_device_start() {
+async function initial_device_start_from_frontend() {
   const appLocalDataDirPath = await appLocalDataDir();
-  let has_device_started_successfully: boolean = await invoke("device_start", {
+  let has_device_start_from_frontended_successfully: boolean = await invoke("device_start_from_frontend", {
     checklatestbinary: true,
     datadir: appLocalDataDirPath,
     window: appWindow,
   });
 
-  return has_device_started_successfully
+  return has_device_start_from_frontended_successfully
 
 }
 
@@ -52,8 +52,8 @@ async function initial_device_start() {
  * Initial startup of device.
  */
 async function start_device_for_first_time() {
-  let has_device_started_successfully = await initial_device_start();
-  if (has_device_started_successfully == true) {
+  let has_device_start_from_frontended_successfully = await initial_device_start_from_frontend();
+  if (has_device_start_from_frontended_successfully == true) {
     Node_Online_Message.value = "Initializing node for the first time. Check the status bar at the top for the latest progress."
     complete_initialization_flow();
   } else {
@@ -160,7 +160,7 @@ async function auto_recheck_node_online(appLocalDataDirPath: string, node_addres
 
       if (is_node_online) {
         // set initialized flag
-        await invoke("set_device_fully_initialized", {
+        await invoke("set_device_fully_initialized_from_frontend", {
           datadir: appLocalDataDirPath,
           window: appWindow,
         });
@@ -194,7 +194,7 @@ async function auto_recheck_node_online(appLocalDataDirPath: string, node_addres
  */
 async function back_to_setup() {
   const appLocalDataDirPath = await appLocalDataDir();
-  await invoke("set_device_not_initialized", {
+  await invoke("set_device_not_initialized_from_frontend", {
     datadir: appLocalDataDirPath,
     window: appWindow,
   });

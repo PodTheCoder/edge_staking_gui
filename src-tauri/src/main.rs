@@ -44,7 +44,7 @@ pub struct BackendCommunicator {
 }
 
 #[tauri::command]
-async fn install_edge_cli(window: Window, datadir: String) -> bool {
+async fn install_edge_cli_from_frontend(window: Window, datadir: String) -> bool {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
@@ -56,30 +56,37 @@ async fn install_edge_cli(window: Window, datadir: String) -> bool {
 }
 
 #[tauri::command]
-fn get_edge_cli_download_url(window: Window, datadir: String) -> String {
+fn get_edge_cli_download_url_from_frontend(window: Window, datadir: String) -> String {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
 
-    return check_requirements::check_edge::get_edge_cli_download_url(backend_communicator);
+    return check_requirements::check_edge::get_edge_cli_download_url_from_frontend(
+        backend_communicator,
+    );
 }
 
 #[tauri::command]
-async fn device_start(checklatestbinary: bool, window: Window, datadir: String) -> bool {
+async fn device_start_from_frontend(
+    checklatestbinary: bool,
+    window: Window,
+    datadir: String,
+) -> bool {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
 
-    return control_edge_cli::device_start(checklatestbinary, backend_communicator).await;
+    return control_edge_cli::device_start_from_frontend(checklatestbinary, backend_communicator)
+        .await;
 }
 
 /// Returns true if initialization is complete, false if not.
 #[tauri::command]
-fn get_device_initialization_status(window: Window, datadir: String) -> bool {
+fn get_device_initialization_status_from_frontend(window: Window, datadir: String) -> bool {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
@@ -98,7 +105,7 @@ fn get_device_initialization_status(window: Window, datadir: String) -> bool {
 
 /// Returns true if initialization is complete, false if not.
 #[tauri::command]
-fn set_device_fully_initialized(window: Window, datadir: String) -> bool {
+fn set_device_fully_initialized_from_frontend(window: Window, datadir: String) -> bool {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
@@ -124,7 +131,7 @@ fn set_device_fully_initialized(window: Window, datadir: String) -> bool {
 }
 
 #[tauri::command]
-fn set_device_not_initialized(window: Window, datadir: String) -> bool {
+fn set_device_not_initialized_from_frontend(window: Window, datadir: String) -> bool {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
@@ -161,14 +168,14 @@ fn get_node_address_from_frontend(window: Window, datadir: String) -> String {
 }
 
 #[tauri::command]
-async fn device_stop(window: Window, datadir: String) {
+async fn device_stop_from_frontend(window: Window, datadir: String) {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
 
-    control_edge_cli::device_stop(backend_communicator).await;
+    control_edge_cli::device_stop_from_frontend(backend_communicator).await;
 }
 
 #[tauri::command]
@@ -207,7 +214,7 @@ fn log_and_emit_from_frontend(message: String, window: Window, datadir: String) 
 }
 
 #[tauri::command]
-async fn add_device(
+async fn add_device_from_frontend(
     address: String,
     privatekey: String,
     publickey: String,
@@ -293,21 +300,21 @@ fn main() {
 
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
-            install_edge_cli,
-            get_edge_cli_download_url,
-            device_start,
-            device_stop,
+            install_edge_cli_from_frontend,
+            get_edge_cli_download_url_from_frontend,
+            device_start_from_frontend,
+            device_stop_from_frontend,
             update_edge_cli_from_frontend,
             log_and_emit_from_frontend,
-            get_device_initialization_status,
-            set_device_fully_initialized,
-            set_device_not_initialized,
+            get_device_initialization_status_from_frontend,
+            set_device_fully_initialized_from_frontend,
+            set_device_not_initialized_from_frontend,
             get_node_address_from_frontend,
             get_autostart_status_from_frontend,
             set_autostart_status_from_frontend,
             get_launch_minimized_status_from_frontend,
             set_launch_minimized_status_from_frontend,
-            add_device
+            add_device_from_frontend
         ])
         .system_tray(tray)
         .on_window_event(|event| match event.event() {

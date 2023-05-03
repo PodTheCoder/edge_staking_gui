@@ -7,7 +7,7 @@ import { appWindow } from '@tauri-apps/api/window';
 async function get_latest_edge_cli() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   const appLocalDataDirPath = await appLocalDataDir();
-  await invoke("install_edge_cli", {
+  await invoke("install_edge_cli_from_frontend", {
     datadir: appLocalDataDirPath,
     window: appWindow,
   });

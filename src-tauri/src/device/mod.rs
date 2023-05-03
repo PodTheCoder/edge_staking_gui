@@ -21,7 +21,7 @@ pub async fn create_device_code(
 ) -> Result<String, String> {
     let network = format!("mainnet");
     println!(
-        "add_device function called. address {}, private_key {}, public_key {}",
+        "add_device_from_frontend function called. address {}, private_key {}, public_key {}",
         address, private_key, public_key
     );
     // TODO: Check if input is correct.

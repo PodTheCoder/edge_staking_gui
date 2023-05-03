@@ -6,20 +6,20 @@ import { appWindow } from '@tauri-apps/api/window';
 
 const Node_Control_Response = ref("");
 
-async function device_start_emitter() {
+async function device_start_from_frontend_emitter() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   const appLocalDataDirPath = await appLocalDataDir();
-  await invoke("device_start", {
+  await invoke("device_start_from_frontend", {
     checklatestbinary: true,
     datadir: appLocalDataDirPath,
     window: appWindow,
   });
 }
 
-async function device_stop_emitter() {
+async function device_stop_from_frontend_emitter() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   const appLocalDataDirPath = await appLocalDataDir();
-  Node_Control_Response.value = await invoke("device_stop", {
+  Node_Control_Response.value = await invoke("device_stop_from_frontend", {
     datadir: appLocalDataDirPath,
     window: appWindow,
   });
@@ -38,8 +38,8 @@ async function update_cli_emitter() {
 
 <template>
   <div class="card">
-    <button type="button" @click="device_start_emitter()">Start Node</button>
-    <button type="button" @click="device_stop_emitter()">Stop Node</button>
+    <button type="button" @click="device_start_from_frontend_emitter()">Start Node</button>
+    <button type="button" @click="device_stop_from_frontend_emitter()">Stop Node</button>
     <button type="button" @click="update_cli_emitter()">Update Node</button>
   </div>
 </template>
