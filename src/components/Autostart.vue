@@ -86,7 +86,7 @@ async function disable_autostart() {
 
 async function check_device_initialization() {
   const appLocalDataDirPath = await appLocalDataDir();
-  let has_device_been_initialized = await invoke("load_device_initialization_status", {
+  let has_device_been_initialized = await invoke("get_device_initialization_status", {
     datadir: appLocalDataDirPath,
     window: appWindow,
   });

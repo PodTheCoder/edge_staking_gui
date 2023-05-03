@@ -1,6 +1,6 @@
 use crate::{utility::log_and_emit, BackendCommunicator};
 
-use super::load_config;
+use super::get_config;
 
 pub fn get_config_path(backend_communicator: BackendCommunicator) -> String {
     let config_path = format!(
@@ -15,7 +15,7 @@ pub fn get_config_path(backend_communicator: BackendCommunicator) -> String {
 pub fn get_node_address(backend_communicator: BackendCommunicator) -> String {
     let no_node_found = format!("Unset");
     let config;
-    match load_config(backend_communicator.clone()) {
+    match get_config(backend_communicator.clone()) {
         Ok(ok_config) => {
             config = ok_config;
             let node_address = config.address;
@@ -42,28 +42,28 @@ pub fn get_node_address(backend_communicator: BackendCommunicator) -> String {
 /// Returns Initialization status codes
 pub fn get_initialization_status(backend_communicator: BackendCommunicator) -> u64 {
     let initialized_code: u64 = 0;
-    let not_initialied_code: u64 = 1;
-    let failed_to_load_code: u64 = 2;
+    let not_initialized_code: u64 = 1;
+    let failed_to_get_code: u64 = 2;
     let config;
-    match load_config(backend_communicator.clone()) {
+    match get_config(backend_communicator.clone()) {
         Ok(ok_config) => config = ok_config,
         Err(err) => {
             let err_message = format!("Could not load initialization status. Err {}", err);
             log_and_emit(err_message.clone(), backend_communicator.clone());
-            return failed_to_load_code;
+            return failed_to_get_code;
         }
     }
     if config.initialized {
         return initialized_code;
     } else {
-        return not_initialied_code;
+        return not_initialized_code;
     }
 }
 
 /// Returns autostart status
 pub fn get_autostart_status(backend_communicator: BackendCommunicator) -> bool {
     let config;
-    match load_config(backend_communicator.clone()) {
+    match get_config(backend_communicator.clone()) {
         Ok(ok_config) => {
             config = ok_config;
             return config.is_auto_start_enabled;
@@ -82,7 +82,7 @@ pub fn get_autostart_status(backend_communicator: BackendCommunicator) -> bool {
 /// Returns whether the window should be launched hidden (minimized) or not.
 pub fn get_launch_minimized_status(backend_communicator: BackendCommunicator) -> bool {
     let config;
-    match load_config(backend_communicator.clone()) {
+    match get_config(backend_communicator.clone()) {
         Ok(ok_config) => {
             config = ok_config;
             return config.launch_minimized;

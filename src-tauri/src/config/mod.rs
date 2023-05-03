@@ -100,7 +100,7 @@ pub fn create_config_if_not_exists(
 }
 
 /// Load config file
-pub fn load_config(backend_communicator: BackendCommunicator) -> Result<ConfigStruct, String> {
+pub fn get_config(backend_communicator: BackendCommunicator) -> Result<ConfigStruct, String> {
     let filepath = format!(
         "{}{}",
         backend_communicator.data_dir.clone(),

@@ -79,7 +79,7 @@ async fn device_start(checklatestbinary: bool, window: Window, datadir: String) 
 
 /// Returns true if initialization is complete, false if not.
 #[tauri::command]
-fn load_device_initialization_status(window: Window, datadir: String) -> bool {
+fn get_device_initialization_status(window: Window, datadir: String) -> bool {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
@@ -148,7 +148,7 @@ fn set_device_not_initialized(window: Window, datadir: String) -> bool {
 }
 
 #[tauri::command]
-fn load_node_address_from_frontend(window: Window, datadir: String) -> String {
+fn get_node_address_from_frontend(window: Window, datadir: String) -> String {
     let backend_communicator = BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
@@ -299,10 +299,10 @@ fn main() {
             device_stop,
             update_edge_cli_from_frontend,
             log_and_emit_from_frontend,
-            load_device_initialization_status,
+            get_device_initialization_status,
             set_device_fully_initialized,
             set_device_not_initialized,
-            load_node_address_from_frontend,
+            get_node_address_from_frontend,
             get_autostart_status_from_frontend,
             set_autostart_status_from_frontend,
             get_launch_minimized_status_from_frontend,

@@ -27,7 +27,7 @@ const Node_Online_Message = ref();
  */
 async function sync_initialization_status() {
   const appLocalDataDirPath = await appLocalDataDir();
-  deviceInitialized.value = await invoke("load_device_initialization_status", {
+  deviceInitialized.value = await invoke("get_device_initialization_status", {
     datadir: appLocalDataDirPath,
     window: appWindow,
   });
@@ -105,7 +105,7 @@ async function helper_check_node_online_status(node_address: string) {
 // Check node and set initialization status. If the node is online once, it is assumed to be correctly initialized.
 async function complete_initialization_flow() {
   const appLocalDataDirPath = await appLocalDataDir();
-  let node_address: string = await invoke("load_node_address_from_frontend", {
+  let node_address: string = await invoke("get_node_address_from_frontend", {
     datadir: appLocalDataDirPath,
     window: appWindow,
   });

@@ -1,6 +1,6 @@
 use crate::{utility::log_and_emit, BackendCommunicator};
 
-use super::{getters::get_config_path, load_config};
+use super::{get_config, getters::get_config_path};
 
 /// Write initialized value to config
 pub fn set_device_initialization_status(
@@ -9,7 +9,7 @@ pub fn set_device_initialization_status(
 ) -> Result<(), std::string::String> {
     let config_path = get_config_path(backend_communicator.clone());
 
-    match load_config(backend_communicator.clone()) {
+    match get_config(backend_communicator.clone()) {
         Ok(ok_config) => {
             let mut changed_config = ok_config;
             changed_config.initialized = device_initialization_status;
@@ -41,7 +41,7 @@ pub fn set_device_data(
 ) -> Result<String, String> {
     let config_path = get_config_path(backend_communicator.clone());
 
-    match load_config(backend_communicator.clone()) {
+    match get_config(backend_communicator.clone()) {
         Ok(ok_config) => {
             let mut changed_config = ok_config;
             changed_config.address = address.to_string();
@@ -68,7 +68,7 @@ pub fn set_autostart_status(
 ) -> Result<(), std::string::String> {
     let config_path = get_config_path(backend_communicator.clone());
 
-    match load_config(backend_communicator.clone()) {
+    match get_config(backend_communicator.clone()) {
         Ok(ok_config) => {
             let mut changed_config = ok_config;
             changed_config.is_auto_start_enabled = autostart_status;
@@ -100,7 +100,7 @@ pub fn set_launch_minimized_status(
 ) -> Result<(), std::string::String> {
     let config_path = get_config_path(backend_communicator.clone());
 
-    match load_config(backend_communicator.clone()) {
+    match get_config(backend_communicator.clone()) {
         Ok(ok_config) => {
             let mut changed_config = ok_config;
             changed_config.launch_minimized = launch_minimized;
