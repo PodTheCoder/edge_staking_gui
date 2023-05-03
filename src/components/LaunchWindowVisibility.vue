@@ -58,9 +58,9 @@ set_minimized_status_in_frontend();
 </script>
 
 <template>
-  <p>Start the GUI minimized.</p>
+  <p>Start the GUI minimized. Program is still accessible from system tray.</p>
   <div v-if="!launch_window_visibility" class="card">
-    <button type="button" @click="enable_minimized()">Enable Minimized</button>
+    <button type="button" @click="enable_minimized()">Enable Minimized (Recommended)</button>
   </div>
   <div v-else="auto_start_enabled" class="card">
     <button type="button" @click="disable_minimized()">Disable Minimized</button>
