@@ -4,14 +4,12 @@ In beta. Easy Edge Host Setup.
 <img width="599" alt="Edge-Staking-Gui-v-0-5-0 - Copy" src="https://user-images.githubusercontent.com/113918164/234863196-63f22076-6c0c-45fc-aea5-450de2e08fb9.PNG">
 
 ## Features
-- Easily setup your Edge host with a GUI (Graphical User Interface)
+- Easily setup your Edge host with a GUI (Graphical User Interface).
 - Uses the *device token* staking method. Has no access to your XE wallet. 
 - Runs on Windows. (Mac and Linux planned)
-
-## Planned Features Ver 1.0
-- Check if your device is online.
-- Auto-launch application when your system starts.
-- Minimize application to tray.
+- Autolaunch your node at login.
+- Automatically check for node earnings & online status.
+- Helpful error messages.
 
 ## Nerd Info
 - Tauri framework for Cross-OS Desktop App.
