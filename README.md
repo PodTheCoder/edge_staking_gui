@@ -1,15 +1,15 @@
-# Pod's Edge Staking GUI
-In beta. Easy Edge Host Setup.
-
-<img width="599" alt="Edge-Staking-Gui-v-0-5-0 - Copy" src="https://user-images.githubusercontent.com/113918164/234863196-63f22076-6c0c-45fc-aea5-450de2e08fb9.PNG">
+# Pod's Edge Staking GUI (beta)
 
 ## Features
 - Easily setup your Edge host with a GUI (Graphical User Interface).
-- Uses the *device token* staking method. Has no access to your XE wallet. 
-- Runs on Windows. (Mac and Linux planned)
-- Autolaunch your node at login.
-- Automatically check for node earnings & online status.
+- Uses the *device token* staking method. Has no access to your XE wallet.
+- Autolaunch your node at login. Can launch minimized for seamless experience.
+- Get a notification when you received node earnings or when your node is offline.
+- Runs on Windows, Mac, and Linux.
 - Helpful error messages.
+- Fast & small program.
+
+<img width="599" alt="Edge-Staking-Gui-v-0-5-0 - Copy" src="https://user-images.githubusercontent.com/113918164/234863196-63f22076-6c0c-45fc-aea5-450de2e08fb9.PNG">
 
 ## Nerd Info
 - Tauri framework for Cross-OS Desktop App.
