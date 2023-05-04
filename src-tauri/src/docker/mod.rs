@@ -13,8 +13,9 @@ pub(crate) fn remove_temporary_container(
 
     let output;
 
-    #[cfg(target_os = "windows")]
     const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
+
+    #[cfg(target_os = "windows")]
     let command = Command::new("docker")
         .args(args)
         .creation_flags(WINDOWS_CREATE_NO_WINDOW)
@@ -79,8 +80,9 @@ pub(crate) fn copy_data_to_running_container(
 
     let output;
 
-    #[cfg(target_os = "windows")]
     const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
+
+    #[cfg(target_os = "windows")]
     let command = Command::new("docker")
         .args(args)
         .creation_flags(WINDOWS_CREATE_NO_WINDOW)
@@ -147,8 +149,9 @@ pub(crate) fn start_docker_container_for_copying_data(
         "alpine",
     ];
 
-    #[cfg(target_os = "windows")]
     const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
+
+    #[cfg(target_os = "windows")]
     let command = Command::new("docker")
         .args(args)
         .creation_flags(WINDOWS_CREATE_NO_WINDOW)
@@ -208,8 +211,9 @@ pub(crate) fn get_docker_status(
 
     // OS-independent info method implemented
 
-    #[cfg(target_os = "windows")]
     const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
+
+    #[cfg(target_os = "windows")]
     let command = Command::new("docker")
         .arg("info")
         .creation_flags(WINDOWS_CREATE_NO_WINDOW)
