@@ -1,6 +1,7 @@
 use crate::utility;
 use crate::utility::log_and_emit;
 use crate::BackendCommunicator;
+use std::os::windows::process::CommandExt;
 use std::process::Command;
 
 pub(crate) fn remove_temporary_container(
@@ -10,7 +11,19 @@ pub(crate) fn remove_temporary_container(
 
     let output;
 
-    match Command::new("docker").args(args).output() {
+    const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
+
+    let command;
+    if cfg!(target_os = "windows") {
+        command = Command::new("docker")
+            .args(args)
+            .creation_flags(WINDOWS_CREATE_NO_WINDOW)
+            .output();
+    } else {
+        command = Command::new("docker").args(args).output();
+    };
+
+    match command {
         Ok(command_completed_result) => output = command_completed_result,
         Err(command_not_completed) => {
             let err_message = format!(
@@ -66,7 +79,19 @@ pub(crate) fn copy_data_to_running_container(
 
     let output;
 
-    match Command::new("docker").args(args).output() {
+    const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
+
+    let command;
+    if cfg!(target_os = "windows") {
+        command = Command::new("docker")
+            .args(args)
+            .creation_flags(WINDOWS_CREATE_NO_WINDOW)
+            .output();
+    } else {
+        command = Command::new("docker").args(args).output();
+    };
+
+    match command {
         Ok(command_completed_result) => output = command_completed_result,
         Err(command_not_completed) => {
             let err_message = format!(
@@ -124,7 +149,19 @@ pub(crate) fn start_docker_container_for_copying_data(
         "alpine",
     ];
 
-    match Command::new("docker").args(args).output() {
+    const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
+
+    let command;
+    if cfg!(target_os = "windows") {
+        command = Command::new("docker")
+            .args(args)
+            .creation_flags(WINDOWS_CREATE_NO_WINDOW)
+            .output();
+    } else {
+        command = Command::new("docker").args(args).output();
+    };
+
+    match command {
         Ok(command_completed_result) => output = command_completed_result,
         Err(command_not_completed) => {
             let err_message = format!(
@@ -173,8 +210,21 @@ pub(crate) fn get_docker_status(
 ) -> Result<String, String> {
     let output;
 
-    // OS-independent method implemented
-    match Command::new("docker").arg("info").output() {
+    // OS-independent info method implemented
+
+    const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
+
+    let command;
+    if cfg!(target_os = "windows") {
+        command = Command::new("docker")
+            .arg("info")
+            .creation_flags(WINDOWS_CREATE_NO_WINDOW)
+            .output();
+    } else {
+        command = Command::new("docker").arg("info").output();
+    };
+
+    match command {
         Ok(command_completed_result) => output = command_completed_result,
         Err(command_not_completed) => {
             let errormessage = format!(

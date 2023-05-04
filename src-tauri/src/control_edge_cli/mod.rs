@@ -3,6 +3,7 @@ use crate::utility::log_and_emit;
 use crate::BackendCommunicator;
 use std::process::Command;
 
+use std::os::windows::process::CommandExt;
 /// Run a command in the Edge Cli
 /// You can choose whether the edge binary must be the latest version to run the command.
 async fn command_edge_cli(
@@ -37,7 +38,19 @@ async fn command_edge_cli(
     let bin_name = "edge.exe";
     let bin_path = format!("{}{}", backend_communicator.data_dir.clone(), bin_name);
 
-    match Command::new(bin_path).args(arglist).output() {
+    const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
+
+    let command;
+    if cfg!(target_os = "windows") {
+        command = Command::new(bin_path)
+            .args(arglist)
+            .creation_flags(WINDOWS_CREATE_NO_WINDOW)
+            .output();
+    } else {
+        command = Command::new(bin_path).args(arglist).output();
+    };
+
+    match command {
         Ok(command_completed_result) => {
             output = command_completed_result;
             log_and_emit(
