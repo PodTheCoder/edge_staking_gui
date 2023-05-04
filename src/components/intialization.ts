@@ -236,7 +236,7 @@ export async function check_node_online_status(node_address: string) {
         let is_node_online = sess.online;
 
         if ((typeof is_node_online === 'boolean') && is_node_online) {
-            let ok_message = "Node session exists. However, node is not online.";
+            let ok_message = "Node is online.";
             await invoke("log_and_emit_from_frontend", {
                 message: ok_message,
                 datadir: appLocalDataDirPath,
