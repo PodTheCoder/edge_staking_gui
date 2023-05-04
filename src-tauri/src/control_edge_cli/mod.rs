@@ -40,9 +40,9 @@ async fn command_edge_cli(
     let bin_name = "edge.exe";
     let bin_path = format!("{}{}", backend_communicator.data_dir.clone(), bin_name);
 
-    const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
 
     #[cfg(target_os = "windows")]
+    const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
     let command = Command::new(bin_path)
         .args(arglist)
         .creation_flags(WINDOWS_CREATE_NO_WINDOW)
