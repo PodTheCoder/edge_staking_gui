@@ -10,6 +10,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { appLocalDataDir } from "@tauri-apps/api/path";
 import { appWindow } from "@tauri-apps/api/window";
 import { ref } from "vue";
+import { getName, getVersion } from '@tauri-apps/api/app';
 
 
 import { sync_launch_minimized_status } from "./components/window_visibility";
@@ -22,9 +23,24 @@ import Post_Initialization_Autocheck from "./components/Post_Initialization_Auto
 const deviceInitialized = ref(false); // default state is uninitialized
 const Node_Online_Message = ref();
 
-
 async function call_start_device_for_first_time() {
   start_device_for_first_time(deviceInitialized, Node_Online_Message)
+}
+
+const App_version = ref();
+const App_name = ref();
+/**
+ * Get Application Version
+ */
+async function get_app_version() {
+  App_version.value = await getVersion();
+}
+
+/**
+ * Get Application Name
+ */
+async function get_app_name() {
+  App_name.value = await getName();
 }
 
 /**
@@ -39,6 +55,8 @@ async function back_to_setup() {
   sync_initialization_status(deviceInitialized);
 }
 
+get_app_version();
+get_app_name();
 sync_initialization_status(deviceInitialized);
 sync_launch_minimized_status();
 </script>
@@ -94,5 +112,8 @@ sync_launch_minimized_status();
     </div>
     <Post_Initialization_Autocheck />
 
+  </div>
+  <div style="position:absolute; right: 8px">
+    <p style="font-size: small; color: gray;">v. {{ App_version }}</p>
   </div>
 </template>
