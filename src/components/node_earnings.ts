@@ -30,7 +30,7 @@ async function set_last_node_payment(node_payment_timestamp: number) {
 }
 
 /**
- * 
+ * If a new node earning is found, updates logs + status + sends notification.
  * @returns true if found higher node earning than in config.
  */
 export async function check_node_earnings() {
@@ -72,5 +72,8 @@ export async function check_node_earnings() {
             window: appWindow,
         });
         send_notification("Received Node Earnings", ok_message)
+        return true;
+    } else {
+        return false;
     }
 }

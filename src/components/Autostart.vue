@@ -5,6 +5,7 @@ import { appLocalDataDir } from '@tauri-apps/api/path';
 import { appWindow } from '@tauri-apps/api/window';
 import { invoke } from "@tauri-apps/api/tauri";
 import { send_notification } from './notification';
+import { check_device_initialization } from "./intialization";
 
 
 // Initialize consts
@@ -82,15 +83,6 @@ async function enable_autostart() {
 
 async function disable_autostart() {
   change_autostart_in_config_and_sync(false);
-}
-
-async function check_device_initialization() {
-  const appLocalDataDirPath = await appLocalDataDir();
-  let has_device_been_initialized = await invoke("get_device_initialization_status_from_frontend", {
-    datadir: appLocalDataDirPath,
-    window: appWindow,
-  });
-  return has_device_been_initialized
 }
 
 

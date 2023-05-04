@@ -172,7 +172,7 @@ async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>, node
                 window: appWindow,
             });
 
-            let is_node_online = await helper_check_node_online_status(nodeOnlineMessageref, node_address);
+            let is_node_online = await check_node_online_status(node_address);
             if (is_node_online) {
                 let could_wallet_address_be_derived = await derive_and_set_node_wallet_based_on_node_address(node_address);
 
@@ -227,7 +227,7 @@ async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>, node
  * @param node_address XE node address
  * Checks if the XE node address is online.
  */
-async function helper_check_node_online_status(Node_Online_Message_ref: Ref<any>, node_address: string) {
+export async function check_node_online_status(node_address: string) {
     const appLocalDataDirPath = await appLocalDataDir();
     try {
         const sess = await session.session('https://index.xe.network', node_address)
@@ -269,3 +269,13 @@ async function helper_check_node_online_status(Node_Online_Message_ref: Ref<any>
 
 
 }
+
+export async function check_device_initialization() {
+    const appLocalDataDirPath = await appLocalDataDir();
+    let has_device_been_initialized = await invoke("get_device_initialization_status_from_frontend", {
+        datadir: appLocalDataDirPath,
+        window: appWindow,
+    });
+    return has_device_been_initialized
+}
+

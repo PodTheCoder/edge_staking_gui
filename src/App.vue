@@ -15,6 +15,7 @@ import { ref } from "vue";
 import { sync_launch_minimized_status } from "./components/window_visibility";
 import LaunchWindowVisibility from "./components/LaunchWindowVisibility.vue";
 import { sync_initialization_status, start_device_for_first_time } from "./components/intialization";
+import Post_Initialization_Autocheck from "./components/Post_Initialization_Autocheck.vue";
 
 
 // Initialize consts
@@ -91,6 +92,7 @@ sync_launch_minimized_status();
         <button type="button" @click="back_to_setup()">Back to Setup.</button>
       </div>
     </div>
+    <Post_Initialization_Autocheck />
 
   </div>
 </template>
