@@ -1,8 +1,10 @@
 use crate::utility;
 use crate::utility::log_and_emit;
 use crate::BackendCommunicator;
-use std::os::windows::process::CommandExt;
 use std::process::Command;
+
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
 
 pub(crate) fn remove_temporary_container(
     backend_communicator: BackendCommunicator,
@@ -13,15 +15,14 @@ pub(crate) fn remove_temporary_container(
 
     const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
 
-    let command;
-    if cfg!(target_os = "windows") {
-        command = Command::new("docker")
-            .args(args)
-            .creation_flags(WINDOWS_CREATE_NO_WINDOW)
-            .output();
-    } else {
-        command = Command::new("docker").args(args).output();
-    };
+    #[cfg(target_os = "windows")]
+    let command = Command::new("docker")
+        .args(args)
+        .creation_flags(WINDOWS_CREATE_NO_WINDOW)
+        .output();
+
+    #[cfg(not(target_os = "windows"))]
+    let command = Command::new("docker").args(args).output();
 
     match command {
         Ok(command_completed_result) => output = command_completed_result,
@@ -81,15 +82,14 @@ pub(crate) fn copy_data_to_running_container(
 
     const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
 
-    let command;
-    if cfg!(target_os = "windows") {
-        command = Command::new("docker")
-            .args(args)
-            .creation_flags(WINDOWS_CREATE_NO_WINDOW)
-            .output();
-    } else {
-        command = Command::new("docker").args(args).output();
-    };
+    #[cfg(target_os = "windows")]
+    let command = Command::new("docker")
+        .args(args)
+        .creation_flags(WINDOWS_CREATE_NO_WINDOW)
+        .output();
+
+    #[cfg(not(target_os = "windows"))]
+    let command = Command::new("docker").args(args).output();
 
     match command {
         Ok(command_completed_result) => output = command_completed_result,
@@ -151,15 +151,14 @@ pub(crate) fn start_docker_container_for_copying_data(
 
     const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
 
-    let command;
-    if cfg!(target_os = "windows") {
-        command = Command::new("docker")
-            .args(args)
-            .creation_flags(WINDOWS_CREATE_NO_WINDOW)
-            .output();
-    } else {
-        command = Command::new("docker").args(args).output();
-    };
+    #[cfg(target_os = "windows")]
+    let command = Command::new("docker")
+        .args(args)
+        .creation_flags(WINDOWS_CREATE_NO_WINDOW)
+        .output();
+
+    #[cfg(not(target_os = "windows"))]
+    let command = Command::new("docker").args(args).output();
 
     match command {
         Ok(command_completed_result) => output = command_completed_result,
@@ -214,15 +213,14 @@ pub(crate) fn get_docker_status(
 
     const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
 
-    let command;
-    if cfg!(target_os = "windows") {
-        command = Command::new("docker")
-            .arg("info")
-            .creation_flags(WINDOWS_CREATE_NO_WINDOW)
-            .output();
-    } else {
-        command = Command::new("docker").arg("info").output();
-    };
+    #[cfg(target_os = "windows")]
+    let command = Command::new("docker")
+        .arg("info")
+        .creation_flags(WINDOWS_CREATE_NO_WINDOW)
+        .output();
+
+    #[cfg(not(target_os = "windows"))]
+    let command = Command::new("docker").arg("info").output();
 
     match command {
         Ok(command_completed_result) => output = command_completed_result,
