@@ -25,8 +25,8 @@ futures-util = "0.3.28"
 reqwest = { version = "0.11.16", features = ["stream"] }
 confy = "0.5.1"
 base64 = "0.21.0"
-tauri-plugin-autostart = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "dev" }
-tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "dev" }
+tauri-plugin-autostart = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
+tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 
 [profile.release]
 panic = "abort" # Strip expensive panic clean-up logic
