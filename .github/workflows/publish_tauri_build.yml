@@ -34,6 +34,13 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
+      - name: Setup rustup targets for MacOS universal build
+        if: matrix.platform == 'macos-latest'
+        run: |
+          rustup target add aarch64-apple-darwin
+          rustup target add x86_64-apple-darwin
+
+
       - name: Sync node version and setup cache
         uses: actions/setup-node@v3
         with:
@@ -52,6 +59,10 @@ jobs:
         with:
           tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
           releaseName: 'Edge Staking GUI v__VERSION__'
-          releaseBody: 'See the assets to download and install this version.'
+          releaseBody: 'Choose an installer for your system: \n
+          Windows: .msi, .exe \n
+          macOS: .app, .dmg \n
+          Linux: .deb, .appimage, tar.gz.gz \n
+'
           releaseDraft: true
           prerelease: false
