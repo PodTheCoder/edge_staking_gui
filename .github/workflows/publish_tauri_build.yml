@@ -59,10 +59,6 @@ jobs:
         with:
           tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
           releaseName: 'Edge Staking GUI v__VERSION__'
-          releaseBody: 'Choose an installer for your system: \n
-          Windows: .msi, .exe \n
-          macOS: .app, .dmg \n
-          Linux: .deb, .appimage, tar.gz.gz \n
-'
+          releaseBody: 'Choose an installer for your system: \n Windows: .msi, .exe \n macOS: .app, .dmg \n Linux: .deb, .appimage, tar.gz.gz \n'
           releaseDraft: true
           prerelease: false
