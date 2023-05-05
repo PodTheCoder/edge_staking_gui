@@ -5,7 +5,7 @@
 - Uses the *device token* staking method. Has no access to your XE wallet.
 - Autolaunch your node. Can also launch minimized for a seamless experience.
 - Get notified when you receive node earnings or when your node is offline.
-- Cross-platform (Windows, Mac, and Linux.)
+- Cross-platform 64-bit (Windows, Mac, and Linux.)
 - Helpful error messages.
 - Fast & small program.
 
