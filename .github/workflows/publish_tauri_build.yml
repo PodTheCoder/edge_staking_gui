@@ -34,13 +34,6 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
-      - name: Setup rustup targets for MacOS universal build
-        if: matrix.platform == 'macos-12'
-        run: |
-          rustup target add aarch64-apple-darwin
-          rustup target add x86_64-apple-darwin
-
-
       - name: Sync node version and setup cache
         uses: actions/setup-node@v3
         with:
@@ -50,12 +43,6 @@ jobs:
       - name: Install frontend dependencies
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
         run: npm install # Change this to npm, yarn or pnpm.
-
-      - name: Run build for MacOS universal build
-        if: matrix.platform == 'macos-12'
-        run: |
-          tauri build --target universal-apple-darwin
-
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0.4
