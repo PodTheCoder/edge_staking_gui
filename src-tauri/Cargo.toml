@@ -15,7 +15,6 @@ tauri-build = { version = "1.2", features = [] }
 [dependencies]
 tauri = { version = "1.2", features = ["app-all", "notification-all", "path-all", "shell-open", "system-tray", "window-minimize", "window-set-focus", "window-show", "window-unminimize"] }
 serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
 raw-cpuid = "10.7.0"
 os_info = "3.7.0"
 chrono = "0.4.24"
@@ -23,7 +22,7 @@ sysinfo = "0.28.4"
 sha2 = "0.10.6"
 futures = "0.3.28"
 futures-util = "0.3.28"
-reqwest = { version = "0.11.16", features = ["json", "stream"] }
+reqwest = { version = "0.11.16", features = ["stream"] }
 confy = "0.5.1"
 base64 = "0.21.0"
 tauri-plugin-autostart = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "dev" }
