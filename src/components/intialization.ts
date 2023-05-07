@@ -16,7 +16,7 @@ export async function set_wallet_address(deviceInitializedref: Ref<boolean>) {
 
 export async function get_node_wallet_from_config() {
     const appLocalDataDirPath = await appLocalDataDir();
-    let wallet_addr_from_config: string = await invoke("get_wallet_address_from_frontend", {
+    const wallet_addr_from_config: string = await invoke("get_wallet_address_from_frontend", {
         datadir: appLocalDataDirPath,
         window: appWindow,
     });
@@ -37,8 +37,8 @@ async function derive_and_set_node_wallet_based_on_node_address(node_address: st
 
     const derived_wallet_addr = myStake.wallet;
 
-    let err_str_1 = "Unset";
-    let err_str_2 = "CouldNotLoadWalletAddressFromConfig";
+    const err_str_1 = "Unset";
+    const err_str_2 = "CouldNotLoadWalletAddressFromConfig";
 
     if (derived_wallet_addr === err_str_1 || derived_wallet_addr === err_str_2) {
         return false //error
@@ -51,10 +51,10 @@ async function derive_and_set_node_wallet_based_on_node_address(node_address: st
         window: appWindow,
     });
 
-    let wallet_from_config = await get_node_wallet_from_config();
+    const wallet_from_config = await get_node_wallet_from_config();
 
     if (wallet_from_config === derived_wallet_addr) {
-        let ok_message = "Wallet address derived based on node address:" + wallet_from_config;
+        const ok_message = "Wallet address derived based on node address:" + wallet_from_config;
         await invoke("log_and_emit_from_frontend", {
             message: ok_message,
             datadir: appLocalDataDirPath,
@@ -63,7 +63,7 @@ async function derive_and_set_node_wallet_based_on_node_address(node_address: st
         return true
     }
     else {
-        let err_message = "Config wallet different from derived wallet after setting. Config: " + wallet_from_config + "Derived:" + derived_wallet_addr;
+        const err_message = "Config wallet different from derived wallet after setting. Config: " + wallet_from_config + "Derived:" + derived_wallet_addr;
         await invoke("log_and_emit_from_frontend", {
             message: err_message,
             datadir: appLocalDataDirPath,
@@ -92,7 +92,7 @@ export async function sync_initialization_status(deviceInitializedref: Ref<boole
  */
 async function initial_device_start_from_frontend() {
     const appLocalDataDirPath = await appLocalDataDir();
-    let has_device_start_from_frontended_successfully: boolean = await invoke("device_start_from_frontend", {
+    const has_device_start_from_frontended_successfully: boolean = await invoke("device_start_from_frontend", {
         checklatestbinary: true,
         datadir: appLocalDataDirPath,
         window: appWindow,
@@ -105,11 +105,10 @@ async function initial_device_start_from_frontend() {
 /**
  * Initial startup of device.
  */
-export async function start_device_for_first_time(deviceInitializedref: Ref<boolean>, nodeOnlineMessageref: Ref<any>) {
-    let has_device_start_from_frontended_successfully = await initial_device_start_from_frontend();
+export async function start_device_for_first_time(deviceInitializedref: Ref<boolean>, nodeOnlineMessageref: Ref<string>) {
+    const has_device_start_from_frontended_successfully = await initial_device_start_from_frontend();
     if (has_device_start_from_frontended_successfully == true) {
         complete_initialization_flow(deviceInitializedref, nodeOnlineMessageref);
-    } else {
     }
 }
 
@@ -119,18 +118,18 @@ export async function start_device_for_first_time(deviceInitializedref: Ref<bool
  * If true, set program stage to post-intialization.
  */
 // Check node and set initialization status. If the node is online once, it is assumed to be correctly initialized.
-async function complete_initialization_flow(deviceInitializedref: Ref<boolean>, nodeOnlineMessageref: Ref<any>) {
+async function complete_initialization_flow(deviceInitializedref: Ref<boolean>, nodeOnlineMessageref: Ref<string>) {
     const appLocalDataDirPath = await appLocalDataDir();
-    let node_address: string = await invoke("get_node_address_from_frontend", {
+    const node_address: string = await invoke("get_node_address_from_frontend", {
         datadir: appLocalDataDirPath,
         window: appWindow,
     });
 
     // Check online status of node and set initialization status based on result.
-    let error_string = "Unset";
+    const error_string = "Unset";
     if (node_address != error_string) {
         // Assume node address is valid.
-        let check_message = "Your node was started successfully! Sit back and relax. The Staking GUI will automatically keep checking if your node is online."
+        const check_message = "Your node was started successfully! Sit back and relax. The Staking GUI will automatically keep checking if your node is online."
         await invoke("log_and_emit_from_frontend", {
             message: check_message,
             datadir: appLocalDataDirPath,
@@ -140,7 +139,7 @@ async function complete_initialization_flow(deviceInitializedref: Ref<boolean>, 
         await auto_recheck_node_online(deviceInitializedref, nodeOnlineMessageref, appLocalDataDirPath, node_address);
     }
     else {
-        let error_message = "Node address is not set. Please complete the other setup steps.";
+        const error_message = "Node address is not set. Please complete the other setup steps.";
         await invoke("log_and_emit_from_frontend", {
             message: error_message,
             datadir: appLocalDataDirPath,
@@ -159,22 +158,22 @@ let isNodeOnlineAutocheckActive = false;
  * @param timer_seconds_delay 
  * @param recheck_limit 
  */
-async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>, nodeOnlineMessageref: Ref<any>, appLocalDataDirPath: string, node_address: string, timer_seconds_delay: number = 60, recheck_limit: number = 120) {
+async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>, nodeOnlineMessageref: Ref<string>, appLocalDataDirPath: string, node_address: string, timer_seconds_delay = 60, recheck_limit = 120) {
     let recheck_count = 0;
     if (!isNodeOnlineAutocheckActive) {
         isNodeOnlineAutocheckActive = true;
-        let AutoCheckNodeOnline = setInterval(async () => {
+        const AutoCheckNodeOnline = setInterval(async () => {
             recheck_count += 1;
-            let recheck_message = "Rechecking node online status. Count : " + recheck_count;
+            const recheck_message = "Rechecking node online status. Count : " + recheck_count;
             await invoke("log_and_emit_from_frontend", {
                 message: recheck_message,
                 datadir: appLocalDataDirPath,
                 window: appWindow,
             });
 
-            let is_node_online = await check_node_online_status(node_address);
+            const is_node_online = await check_node_online_status(node_address);
             if (is_node_online) {
-                let could_wallet_address_be_derived = await derive_and_set_node_wallet_based_on_node_address(node_address);
+                const could_wallet_address_be_derived = await derive_and_set_node_wallet_based_on_node_address(node_address);
 
                 if (could_wallet_address_be_derived) {
                     // set initialized flag
@@ -186,7 +185,7 @@ async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>, node
                     send_notification("Node Setup Completed", "Your Edge node setup has completed!");
                     Disable_Autocheck_Node_online(AutoCheckNodeOnline); // Stop autochecking
                 } else {
-                    let online_but_could_not_derive_msg = "Node is viewed as online, but unable to derive wallet addreses which is needed for node earning notifications.";
+                    const online_but_could_not_derive_msg = "Node is viewed as online, but unable to derive wallet addreses which is needed for node earning notifications.";
                     await invoke("log_and_emit_from_frontend", {
                         message: online_but_could_not_derive_msg,
                         datadir: appLocalDataDirPath,
@@ -194,7 +193,7 @@ async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>, node
                     });
                 }
             } else {
-                let err_msg_node_not_found_yet = "Node not seen yet. The Staking GUI automatically rechecks the online status. If you start your node for the first time this can take up to an hour."
+                const err_msg_node_not_found_yet = "Node not seen yet. The Staking GUI automatically rechecks the online status. If you start your node for the first time this can take up to an hour."
                 await invoke("log_and_emit_from_frontend", {
                     message: err_msg_node_not_found_yet,
                     datadir: appLocalDataDirPath,
@@ -203,7 +202,7 @@ async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>, node
             }
 
             if (recheck_count >= recheck_limit) {
-                let error_message = "Could not find your node online after several retries. Please double check if your device code was correctly assigned. Try starting the node again. If the error keeps persisting, contact support.";
+                const error_message = "Could not find your node online after several retries. Please double check if your device code was correctly assigned. Try starting the node again. If the error keeps persisting, contact support.";
                 await invoke("log_and_emit_from_frontend", {
                     message: error_message,
                     datadir: appLocalDataDirPath,
@@ -233,10 +232,10 @@ export async function check_node_online_status(node_address: string) {
         const sess = await session.session('https://index.xe.network', node_address)
         console.log(JSON.stringify(sess))
         console.log(sess.lastActive)
-        let is_node_online = sess.online;
+        const is_node_online = sess.online;
 
         if ((typeof is_node_online === 'boolean') && is_node_online) {
-            let ok_message = "Node is online.";
+            const ok_message = "Node is online.";
             await invoke("log_and_emit_from_frontend", {
                 message: ok_message,
                 datadir: appLocalDataDirPath,
@@ -244,7 +243,7 @@ export async function check_node_online_status(node_address: string) {
             });
             return true
         } else {
-            let error_message = "Node session exists. However, node is not online.";
+            const error_message = "Node session exists. However, node is not online.";
             await invoke("log_and_emit_from_frontend", {
                 message: error_message,
                 datadir: appLocalDataDirPath,
@@ -254,8 +253,8 @@ export async function check_node_online_status(node_address: string) {
         }
 
     } catch (e) {
-        let error_string = JSON.stringify(e);
-        let err_msg_1 = "Node not found http error code:" + error_string;
+        const error_string = JSON.stringify(e);
+        const err_msg_1 = "Node not found http error code:" + error_string;
 
         await invoke("log_and_emit_from_frontend", {
             message: err_msg_1,
@@ -272,7 +271,7 @@ export async function check_node_online_status(node_address: string) {
 
 export async function check_device_initialization() {
     const appLocalDataDirPath = await appLocalDataDir();
-    let has_device_been_initialized = await invoke("get_device_initialization_status_from_frontend", {
+    const has_device_been_initialized = await invoke("get_device_initialization_status_from_frontend", {
         datadir: appLocalDataDirPath,
         window: appWindow,
     });
