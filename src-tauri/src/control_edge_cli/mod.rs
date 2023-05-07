@@ -76,7 +76,7 @@ async fn command_edge_cli(
     }
 
     // Convert stdout strings
-    
+
     let stdout_output_str: String = match String::from_utf8(output.stdout.to_vec()) {
         Ok(ok_converted_str) => ok_converted_str,
         Err(_) => {

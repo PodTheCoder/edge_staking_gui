@@ -11,8 +11,6 @@ pub(crate) fn remove_temporary_container(
 ) -> Result<String, String> {
     let args = ["rm", "temp_container_for_copying_edge_device_data"];
 
-    
-
     #[cfg(target_os = "windows")]
     const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
 
@@ -79,8 +77,6 @@ pub(crate) fn copy_data_to_running_container(
         "temp_container_for_copying_edge_device_data:/data",
     ];
 
-    
-
     #[cfg(target_os = "windows")]
     const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
 
@@ -140,7 +136,6 @@ pub(crate) fn copy_data_to_running_container(
 pub(crate) fn start_docker_container_for_copying_data(
     backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
-    
     let args = [
         "container",
         "create",
@@ -210,8 +205,6 @@ pub(crate) fn start_docker_container_for_copying_data(
 pub(crate) fn get_docker_status(
     backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
-    
-
     // OS-independent info method implemented
 
     #[cfg(target_os = "windows")]

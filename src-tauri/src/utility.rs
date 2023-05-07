@@ -88,7 +88,6 @@ pub async fn download_file(
     let mut download_stream = valid_response.bytes_stream();
     let mut chunk_counter: u64 = 0;
     while let Some(stream_content) = download_stream.next().await {
-        
         let stream_chunk = match stream_content {
             Ok(ok_chunk) => ok_chunk,
             Err(_) => {
@@ -163,10 +162,8 @@ pub fn log_message(
 
             match valid_file.write(complete_log_string.as_bytes()) {
                 Ok(_) => {
-                    {
-                        println!("Logged: {}", complete_log_string.clone());
-                        Ok(complete_log_string)
-                    }
+                    println!("Logged: {}", complete_log_string.clone());
+                    Ok(complete_log_string)
                 }
                 Err(_) => Err("Unable to write log to file.".to_string()),
             }

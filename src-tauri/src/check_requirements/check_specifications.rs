@@ -118,8 +118,6 @@ pub fn get_os_info(_backend_communicator: &BackendCommunicator) -> OsInfo {
         }
     }
 
-    
-
     OsInfo {
         raw_os_name,
         os_name_supported,
@@ -135,7 +133,6 @@ fn get_raw_processor_brand() -> String {
         let processor_brand = String::from(vf.as_str());
         processor_brand
     } else {
-        
         String::from("No processor recognized.")
     }
 }
@@ -197,7 +194,6 @@ pub fn get_processor_info(_backend_communicator: &BackendCommunicator) -> Proces
         full_architecture_name = String::from("Full processor architecture not recognized.");
     }
 
-    
     ProcessorInfo {
         raw_processor_brand,
         processor_brand_supported,

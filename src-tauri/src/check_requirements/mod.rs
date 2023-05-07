@@ -137,19 +137,13 @@ pub async fn main(
     if all_requirements_passed {
         let ok_all_requirements_passed = "Passed requirements.".to_string();
         let pretty_ok_all_requirements_passed = pretty_ok_str(&ok_all_requirements_passed, false);
-        log_and_emit(
-            pretty_ok_all_requirements_passed,
-            backend_communicator,
-        );
+        log_and_emit(pretty_ok_all_requirements_passed, backend_communicator);
         Ok(result_string)
     } else {
         let err_all_requirements_passed = "Did not pass all requirements.".to_string();
         let pretty_err_all_requirements_passed =
             pretty_err_str(&err_all_requirements_passed, false);
-        log_and_emit(
-            pretty_err_all_requirements_passed,
-            backend_communicator,
-        );
+        log_and_emit(pretty_err_all_requirements_passed, backend_communicator);
         Err(result_string)
     }
 }
