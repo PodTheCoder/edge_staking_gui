@@ -3,11 +3,7 @@ use crate::{utility::log_and_emit, BackendCommunicator};
 use super::get_config;
 
 pub fn get_config_path_as_str(backend_communicator: &BackendCommunicator) -> String {
-    let config_path = format!(
-        "{}{}",
-        backend_communicator.data_dir.clone(),
-        format!("config.txt")
-    );
+    let config_path = format!("{}config.txt", backend_communicator.data_dir.clone()); // eg. appdata/config.txt
     config_path
 }
 
