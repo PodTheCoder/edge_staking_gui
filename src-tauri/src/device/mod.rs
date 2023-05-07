@@ -19,7 +19,7 @@ pub async fn create_device_code(
     public_key: String,
     backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
-    let network = format!("mainnet");
+    let network = "mainnet".to_string();
     println!(
         "add_device_from_frontend function called. address {}, private_key {}, public_key {}",
         address, private_key, public_key
@@ -46,10 +46,10 @@ pub async fn create_device_code(
     }
 
     let fields_hashmap: HashMap<String, String> = HashMap::from([
-        (format!("network"), network.clone()),
-        (format!("address"), address.clone()),
-        (format!("privateKey"), private_key),
-        (format!("publicKey"), public_key),
+        ("network".to_string(), network.clone()),
+        ("address".to_string(), address.clone()),
+        ("privateKey".to_string(), private_key),
+        ("publicKey".to_string(), public_key),
     ]); //
 
     // Convert config file to individual files in preparation of Docker
@@ -96,15 +96,15 @@ pub async fn create_device_code(
 
     // Success!
 
-    let success_message = format!("Successfully added device data.");
-    log_and_emit(success_message.clone(), backend_communicator);
+    let success_message = "Successfully added device data.".to_string();
+    log_and_emit(success_message, backend_communicator);
 
     let url_safe_device_code = general_purpose::URL_SAFE_NO_PAD.encode(address.as_bytes());
     let next_step = format!(
         "Please assign your device token at https://wallet.xe.network/staking. Your device token is : {}",
         url_safe_device_code
     );
-    return Ok(next_step);
+    Ok(next_step)
 }
 
 /// Save field as file with same name, returns filepath if successful
@@ -122,11 +122,11 @@ fn helper_save_device_file(
         Ok(ok_file) => {
             let mut valid_file = ok_file;
             match valid_file.write(field_value.as_bytes()) {
-                Ok(_) => return Ok(file_path),
-                Err(_) => return Err(format!("Unable to write file: {}", file_path)),
+                Ok(_) => Ok(file_path),
+                Err(_) => Err(format!("Unable to write file: {}", file_path)),
             }
         }
-        Err(_) => return Err(format!("Unable to open file {}", file_path.clone())),
+        Err(_) => Err(format!("Unable to open file {}", file_path)),
     }
 }
 
@@ -140,8 +140,8 @@ fn helper_delete_device_file(
         Ok(_) => {
             let ok_msg = format!("File {} was successfully cleaned up.", file_path);
             log_and_emit(ok_msg.clone(), backend_communicator);
-            return Ok(ok_msg);
+            Ok(ok_msg)
         }
-        Err(_) => return Err(format!("Unable to delete file {}", file_path.clone())),
+        Err(_) => Err(format!("Unable to delete file {}", file_path)),
     }
 }

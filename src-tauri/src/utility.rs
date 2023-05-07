@@ -49,7 +49,7 @@ pub async fn download_file(
             match valid_response.content_length() {
                 Some(ok_filesize) => filesize = ok_filesize,
                 None => {
-                    let error_message = format!("Unable to read filesize from valid response.");
+                    let error_message = "Unable to read filesize from valid response.".to_string();
                     log_and_emit(error_message.clone(), backend_communicator);
                     return Err(error_message);
                 }
@@ -61,10 +61,10 @@ pub async fn download_file(
         }
         Err(_) => {
             log_and_emit(
-                format!("Unable to read filesize from response."),
+                "Unable to read filesize from response.".to_string(),
                 backend_communicator,
             );
-            return Err(format!("Unable to read filesize from response."));
+            return Err("Unable to read filesize from response.".to_string());
         }
     }
 
@@ -88,19 +88,19 @@ pub async fn download_file(
     let mut download_stream = valid_response.bytes_stream();
     let mut chunk_counter: u64 = 0;
     while let Some(stream_content) = download_stream.next().await {
-        let stream_chunk;
-        match stream_content {
-            Ok(ok_chunk) => stream_chunk = ok_chunk,
+        
+        let stream_chunk = match stream_content {
+            Ok(ok_chunk) => ok_chunk,
             Err(_) => {
                 let error_message = format!("Unable to read chunk {}", chunk_counter);
                 log_and_emit(error_message.clone(), backend_communicator);
                 return Err(error_message);
             }
-        }
+        };
         match file.write_all(&stream_chunk) {
             Ok(_) => {}
             Err(_) => {
-                let error_message = format!("Unable to write chunk.");
+                let error_message = "Unable to write chunk.".to_string();
                 log_and_emit(error_message.clone(), backend_communicator);
                 return Err(error_message);
             }
@@ -127,7 +127,7 @@ pub async fn download_file(
         backend_communicator,
     );
 
-    return Ok(());
+    Ok(())
 }
 
 /// Convenience function, logs a message and emits an event with the message as payload.
@@ -136,8 +136,8 @@ pub fn log_and_emit(message: String, backend_communicator: &BackendCommunicator)
         Ok(_) => {}
         Err(err_str) => println!("{}", err_str),
     }
-    emit_event(message.clone(), backend_communicator);
-    return {};
+    emit_event(message, backend_communicator);
+    {}
 }
 
 /// Log a message locally
@@ -145,7 +145,7 @@ pub fn log_message(
     message: String,
     backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
-    let log_name = format!("log.txt");
+    let log_name = "log.txt".to_string();
     let log_path_str = format!("{}{}", backend_communicator.data_dir.clone(), log_name);
 
     let dt: DateTime<Utc> = Utc::now();
@@ -159,19 +159,19 @@ pub fn log_message(
             let mut valid_file = ok_file;
             let mut complete_log_string = dt.format("%d %B %Y %H:%M:%S%.3f %Z ").to_string();
             complete_log_string.push_str(&message);
-            complete_log_string.push_str(&format!("\n"));
+            complete_log_string.push('\n');
 
             match valid_file.write(complete_log_string.as_bytes()) {
                 Ok(_) => {
-                    return {
+                    {
                         println!("Logged: {}", complete_log_string.clone());
                         Ok(complete_log_string)
                     }
                 }
-                Err(_) => return Err(format!("Unable to write log to file.")),
+                Err(_) => Err("Unable to write log to file.".to_string()),
             }
         }
-        Err(_) => return Err(format!("Unable to open log file {}", log_path_str)),
+        Err(_) => Err(format!("Unable to open log file {}", log_path_str)),
     }
 }
 
@@ -189,5 +189,5 @@ pub fn emit_event(message: String, backend_communicator: &BackendCommunicator) {
         "Sent event on listener: {},  payload: {}",
         &backend_communicator.status_listener, message
     );
-    return {};
+    {}
 }

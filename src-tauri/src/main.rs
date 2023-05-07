@@ -51,22 +51,21 @@ async fn install_edge_cli_from_frontend(window: Window, datadir: String) -> bool
         data_dir: datadir.clone(),
         front_end_window: window,
     };
-    let is_edge_cli_binary_installed_correctly =
-        check_requirements::check_edge::get_edge_cli_binary(backend_communicator).await;
-    return is_edge_cli_binary_installed_correctly;
+    
+    check_requirements::check_edge::get_edge_cli_binary(backend_communicator).await
 }
 
 #[tauri::command]
 fn get_edge_cli_download_url_from_frontend(window: Window, datadir: String) -> String {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
+        data_dir: datadir,
         front_end_window: window,
     };
 
-    return check_requirements::check_edge::get_edge_cli_download_url_from_frontend(
+    check_requirements::check_edge::get_edge_cli_download_url_from_frontend(
         backend_communicator,
-    );
+    )
 }
 
 #[tauri::command]
@@ -81,8 +80,8 @@ async fn device_start_from_frontend(
         front_end_window: window,
     };
 
-    return control_edge_cli::device_start_from_frontend(checklatestbinary, backend_communicator)
-        .await;
+    control_edge_cli::device_start_from_frontend(checklatestbinary, backend_communicator)
+        .await
 }
 
 /// Returns true if initialization is complete, false if not.
@@ -90,18 +89,14 @@ async fn device_start_from_frontend(
 fn get_device_initialization_status_from_frontend(window: Window, datadir: String) -> bool {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
+        data_dir: datadir,
         front_end_window: window,
     };
 
     let initialization_status = get_initialization_status(backend_communicator);
 
     // Frontend div hide needs a bool.
-    if initialization_status == 0 {
-        return true; // Show the setup divs
-    } else {
-        return false; // Hide the setup divs
-    }
+    initialization_status == 0
 }
 
 /// Returns true if initialization is complete, false if not.
@@ -109,16 +104,16 @@ fn get_device_initialization_status_from_frontend(window: Window, datadir: Strin
 fn set_device_fully_initialized_from_frontend(window: Window, datadir: String) -> bool {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
+        data_dir: datadir,
         front_end_window: window,
     };
 
     match set_device_initialization_status(true, backend_communicator) {
         Ok(_) => {
-            let ok_message = format!("Congratulations! Your device has fully started! You can now close the Staking GUI.");
+            let ok_message = "Congratulations! Your device has fully started! You can now close the Staking GUI.".to_string();
             let ok_message_pretty = pretty_check_string::pretty_ok_str(&ok_message, false);
-            log_and_emit(ok_message_pretty.clone(), backend_communicator);
-            return true;
+            log_and_emit(ok_message_pretty, backend_communicator);
+            true
         }
         Err(err_str) => {
             let err_message = format!(
@@ -126,7 +121,7 @@ fn set_device_fully_initialized_from_frontend(window: Window, datadir: String) -
             );
             let err_message_pretty = pretty_err_str(&err_message, false);
             log_and_emit(err_message_pretty, backend_communicator);
-            return false;
+            false
         }
     }
 }
@@ -135,22 +130,22 @@ fn set_device_fully_initialized_from_frontend(window: Window, datadir: String) -
 fn set_device_not_initialized_from_frontend(window: Window, datadir: String) -> bool {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
+        data_dir: datadir,
         front_end_window: window,
     };
 
     match set_device_initialization_status(false, backend_communicator) {
         Ok(_) => {
-            let ok_message = format!("Reset program to setup stage.");
-            log_and_emit(ok_message.clone(), backend_communicator);
-            return true;
+            let ok_message = "Reset program to setup stage.".to_string();
+            log_and_emit(ok_message, backend_communicator);
+            true
         }
         Err(err) => {
             let err_message = format!(
                 "Unable to reset program to setup stage. Try pressing the button again and reloading. If the problem persists, contact support. Err: {}", err
             );
-            log_and_emit(err_message.clone(), backend_communicator);
-            return false;
+            log_and_emit(err_message, backend_communicator);
+            false
         }
     }
 }
@@ -159,13 +154,13 @@ fn set_device_not_initialized_from_frontend(window: Window, datadir: String) -> 
 fn get_node_address_from_frontend(window: Window, datadir: String) -> String {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
+        data_dir: datadir,
         front_end_window: window,
     };
 
     // let no_node_found = format!("Unset"); // "Unset" is the error String.
-    let node_address = get_node_address(backend_communicator);
-    return node_address;
+    
+    get_node_address(backend_communicator)
 }
 
 #[tauri::command]
@@ -191,13 +186,13 @@ async fn update_edge_cli_from_frontend(window: Window, datadir: String) -> bool 
 
     if !is_edge_cli_latest_ver {
         // Update failed via CLI. Trying fallback.
-        let err_msg = format!("Unable to update Edge CLI via update command. Trying fallback method using get_cli_binary.");
+        let err_msg = "Unable to update Edge CLI via update command. Trying fallback method using get_cli_binary.".to_string();
         log_and_emit(err_msg, backend_communicator);
         is_edge_cli_latest_ver =
             check_requirements::check_edge::get_edge_cli_binary(backend_communicator).await;
     }
 
-    return is_edge_cli_latest_ver;
+    is_edge_cli_latest_ver
 }
 
 #[tauri::command]
@@ -205,12 +200,11 @@ fn log_and_emit_from_frontend(message: String, window: Window, datadir: String) 
     // Send message from frontend to backend,
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
+        data_dir: datadir,
         front_end_window: window,
     };
 
     log_and_emit(message, backend_communicator);
-    return;
 }
 
 #[tauri::command]
@@ -229,9 +223,9 @@ async fn add_device_from_frontend(
 
     match device::create_device_code(address, privatekey, publickey, backend_communicator).await {
         Ok(ok_str) => {
-            return check_requirements::pretty_check_string::pretty_ok_str(&ok_str, false)
+            check_requirements::pretty_check_string::pretty_ok_str(&ok_str, false)
         }
-        Err(err_str) => return err_str,
+        Err(err_str) => err_str,
     }
 }
 
@@ -239,24 +233,24 @@ async fn add_device_from_frontend(
 fn get_autostart_status_from_frontend(window: Window, datadir: String) -> bool {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
+        data_dir: datadir,
         front_end_window: window,
     };
 
-    return get_autostart_status(backend_communicator);
+    get_autostart_status(backend_communicator)
 }
 
 #[tauri::command]
 fn set_autostart_status_from_frontend(autostartstatus: bool, window: Window, datadir: String) {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
+        data_dir: datadir,
         front_end_window: window,
     };
 
     match set_autostart_status(autostartstatus, backend_communicator) {
-        Ok(_) => return (),
-        Err(_) => return (),
+        Ok(_) => (),
+        Err(_) => (),
     }
 }
 
@@ -264,11 +258,11 @@ fn set_autostart_status_from_frontend(autostartstatus: bool, window: Window, dat
 fn get_launch_minimized_status_from_frontend(window: Window, datadir: String) -> bool {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
+        data_dir: datadir,
         front_end_window: window,
     };
 
-    return get_launch_minimized_status(backend_communicator);
+    get_launch_minimized_status(backend_communicator)
 }
 
 #[tauri::command]
@@ -279,13 +273,13 @@ fn set_launch_minimized_status_from_frontend(
 ) {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
+        data_dir: datadir,
         front_end_window: window,
     };
 
     match set_launch_minimized_status(launchminimized, backend_communicator) {
-        Ok(_) => return (),
-        Err(_) => return (),
+        Ok(_) => (),
+        Err(_) => (),
     }
 }
 
@@ -293,24 +287,24 @@ fn set_launch_minimized_status_from_frontend(
 fn get_wallet_address_from_frontend(window: Window, datadir: String) -> String {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
+        data_dir: datadir,
         front_end_window: window,
     };
 
-    return get_wallet_address(backend_communicator);
+    get_wallet_address(backend_communicator)
 }
 
 #[tauri::command]
 fn set_wallet_address_from_frontend(walletaddress: String, window: Window, datadir: String) {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
+        data_dir: datadir,
         front_end_window: window,
     };
 
     match set_wallet_address(walletaddress, backend_communicator) {
-        Ok(_) => return (),
-        Err(_) => return (),
+        Ok(_) => (),
+        Err(_) => (),
     }
 }
 
@@ -318,24 +312,24 @@ fn set_wallet_address_from_frontend(walletaddress: String, window: Window, datad
 fn get_last_node_payment_from_frontend(window: Window, datadir: String) -> u64 {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
+        data_dir: datadir,
         front_end_window: window,
     };
 
-    return get_last_node_payment(backend_communicator);
+    get_last_node_payment(backend_communicator)
 }
 
 #[tauri::command]
 fn set_last_node_payment_from_frontend(lastnodepayment: u64, window: Window, datadir: String) {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
+        data_dir: datadir,
         front_end_window: window,
     };
 
     match set_last_node_payment(lastnodepayment, backend_communicator) {
-        Ok(_) => return (),
-        Err(_) => return (),
+        Ok(_) => (),
+        Err(_) => (),
     }
 }
 

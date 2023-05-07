@@ -17,17 +17,17 @@ pub fn set_device_initialization_status(
             log_and_emit(
                 format!(
                     "Changed config initialization status to: {}",
-                    device_initialization_status.to_string()
+                    device_initialization_status
                 ),
                 backend_communicator,
             );
 
             match confy::store_path(config_path, changed_config) {
-                Ok(_) => return Ok({}),
-                Err(_) => return Err(format!("Unable to store config file at location")),
+                Ok(_) => Ok(()),
+                Err(_) => Err("Unable to store config file at location".to_string()),
             }
         }
-        Err(err) => return Err(err),
+        Err(err) => Err(err),
     }
 }
 
@@ -51,14 +51,14 @@ pub fn set_device_data(
 
             match confy::store_path(config_path, changed_config) {
                 Ok(_) => {
-                    let ok_message = format!("Stored device data in config.");
+                    let ok_message = "Stored device data in config.".to_string();
                     log_and_emit(ok_message.clone(), backend_communicator);
-                    return Ok(ok_message);
+                    Ok(ok_message)
                 }
-                Err(_) => return Err(format!("Unable to store config file at location")),
+                Err(_) => Err("Unable to store config file at location".to_string()),
             }
         }
-        Err(err) => return Err(err),
+        Err(err) => Err(err),
     }
 }
 
@@ -76,21 +76,21 @@ pub fn set_autostart_status(
             log_and_emit(
                 format!(
                     "Changed autostart state to: {}",
-                    changed_config.is_auto_start_enabled.to_string()
+                    changed_config.is_auto_start_enabled
                 ),
                 backend_communicator,
             );
 
             match confy::store_path(config_path, changed_config) {
-                Ok(_) => return Ok({}),
+                Ok(_) => Ok(()),
                 Err(_) => {
-                    let err_msg = format!("Unable to store config file at location");
+                    let err_msg = "Unable to store config file at location".to_string();
                     log_and_emit(err_msg.clone(), backend_communicator);
-                    return Err(err_msg);
+                    Err(err_msg)
                 }
             }
         }
-        Err(err) => return Err(err),
+        Err(err) => Err(err),
     }
 }
 
@@ -108,21 +108,21 @@ pub fn set_launch_minimized_status(
             log_and_emit(
                 format!(
                     "The program will launch minimized: {}",
-                    changed_config.launch_minimized.to_string()
+                    changed_config.launch_minimized
                 ),
                 backend_communicator,
             );
 
             match confy::store_path(config_path, changed_config) {
-                Ok(_) => return Ok({}),
+                Ok(_) => Ok(()),
                 Err(_) => {
-                    let err_msg = format!("Unable to store config file at location");
+                    let err_msg = "Unable to store config file at location".to_string();
                     log_and_emit(err_msg.clone(), backend_communicator);
-                    return Err(err_msg);
+                    Err(err_msg)
                 }
             }
         }
-        Err(err) => return Err(err),
+        Err(err) => Err(err),
     }
 }
 
@@ -140,21 +140,21 @@ pub fn set_wallet_address(
             log_and_emit(
                 format!(
                     "Set wallet address in config: {}",
-                    changed_config.wallet_address.to_string()
+                    changed_config.wallet_address
                 ),
                 backend_communicator,
             );
 
             match confy::store_path(config_path, changed_config) {
-                Ok(_) => return Ok({}),
+                Ok(_) => Ok(()),
                 Err(_) => {
-                    let err_msg = format!("Unable to store config file at location");
+                    let err_msg = "Unable to store config file at location".to_string();
                     log_and_emit(err_msg.clone(), backend_communicator);
-                    return Err(err_msg);
+                    Err(err_msg)
                 }
             }
         }
-        Err(err) => return Err(err),
+        Err(err) => Err(err),
     }
 }
 
@@ -172,20 +172,20 @@ pub fn set_last_node_payment(
             log_and_emit(
                 format!(
                     "Set last node payment timestamp in config: {}",
-                    changed_config.last_node_payment.to_string()
+                    changed_config.last_node_payment
                 ),
                 backend_communicator,
             );
 
             match confy::store_path(config_path, changed_config) {
-                Ok(_) => return Ok({}),
+                Ok(_) => Ok(()),
                 Err(_) => {
-                    let err_msg = format!("Unable to store config file at location");
+                    let err_msg = "Unable to store config file at location".to_string();
                     log_and_emit(err_msg.clone(), backend_communicator);
-                    return Err(err_msg);
+                    Err(err_msg)
                 }
             }
         }
-        Err(err) => return Err(err),
+        Err(err) => Err(err),
     }
 }

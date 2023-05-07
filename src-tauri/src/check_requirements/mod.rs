@@ -28,7 +28,7 @@ pub async fn main(
     // Check OS
     if check_os {
         log_and_emit(
-            format!("Checking if Operating System (OS) is supported"),
+            "Checking if Operating System (OS) is supported".to_string(),
             backend_communicator,
         );
         let os_info = check_specifications::get_os_info(backend_communicator);
@@ -49,7 +49,7 @@ pub async fn main(
     // Check Processor Arch eg. Arch64
     if check_processor {
         log_and_emit(
-            format!("Checking if processor is supported"),
+            "Checking if processor is supported".to_string(),
             backend_communicator,
         );
         let processor_info = check_specifications::get_processor_info(backend_communicator);
@@ -74,7 +74,7 @@ pub async fn main(
     // Check Docker
     if check_docker {
         log_and_emit(
-            format!("Checking if Docker is installed & running correctly"),
+            "Checking if Docker is installed & running correctly".to_string(),
             backend_communicator,
         );
         match get_docker_status(backend_communicator) {
@@ -97,7 +97,7 @@ pub async fn main(
     // Check Edge CLI Download
     if check_edge_cli_binary {
         log_and_emit(
-            format!("Checking if Edge is downloaded correctly"),
+            "Checking if Edge is downloaded correctly".to_string(),
             backend_communicator,
         );
         let is_edge_downloaded_correctly_future =
@@ -115,7 +115,7 @@ pub async fn main(
             Err(edge_not_downloaded_correctly) => {
                 all_requirements_passed = false;
                 let pretty_edge_not_downloaded_correctly =
-                    pretty_err_str(&edge_not_downloaded_correctly.clone(), false);
+                    pretty_err_str(&edge_not_downloaded_correctly, false);
                 log_and_emit(
                     pretty_edge_not_downloaded_correctly.clone(),
                     backend_communicator,
@@ -125,31 +125,31 @@ pub async fn main(
         }
     }
 
-    log_and_emit(format!("Checked requirements."), backend_communicator);
+    log_and_emit("Checked requirements.".to_string(), backend_communicator);
 
     let requirements_last_checked = format!(
         "Requirements last checked on: {} ",
-        dt.format("%d %B %Y %H:%M:%S %Z").to_string()
+        dt.format("%d %B %Y %H:%M:%S %Z")
     );
     log_and_emit(requirements_last_checked.clone(), backend_communicator);
     result_string.push_str(&requirements_last_checked);
 
     if all_requirements_passed {
-        let ok_all_requirements_passed = format!("Passed requirements.");
+        let ok_all_requirements_passed = "Passed requirements.".to_string();
         let pretty_ok_all_requirements_passed = pretty_ok_str(&ok_all_requirements_passed, false);
         log_and_emit(
-            pretty_ok_all_requirements_passed.clone(),
+            pretty_ok_all_requirements_passed,
             backend_communicator,
         );
-        return Ok(result_string);
+        Ok(result_string)
     } else {
-        let err_all_requirements_passed = format!("Did not pass all requirements.");
+        let err_all_requirements_passed = "Did not pass all requirements.".to_string();
         let pretty_err_all_requirements_passed =
             pretty_err_str(&err_all_requirements_passed, false);
         log_and_emit(
-            pretty_err_all_requirements_passed.clone(),
+            pretty_err_all_requirements_passed,
             backend_communicator,
         );
-        return Err(result_string);
+        Err(result_string)
     }
 }

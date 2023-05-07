@@ -31,11 +31,11 @@ pub fn create_default_config(backend_communicator: &BackendCommunicator) -> Resu
         is_auto_start_enabled: false,
         launch_minimized: false,
         last_node_payment: 0,
-        wallet_address: format!("Unset"),
-        address: format!("Unset"),
-        network: format!("Unset"),
-        private_key: format!("Unset"),
-        public_key: format!("Unset"),
+        wallet_address: "Unset".to_string(),
+        address: "Unset".to_string(),
+        network: "Unset".to_string(),
+        private_key: "Unset".to_string(),
+        public_key: "Unset".to_string(),
     };
     match confy::store_path(config_path.clone(), default_config) {
         Ok(_) => {
@@ -43,11 +43,11 @@ pub fn create_default_config(backend_communicator: &BackendCommunicator) -> Resu
                 format!("Created initial config file at location: {}", config_path),
                 backend_communicator,
             );
-            log_and_emit(format!("Awaiting initial command..."), backend_communicator);
-            return Ok({});
+            log_and_emit("Awaiting initial command...".to_string(), backend_communicator);
+            Ok(())
         }
         Err(_) => {
-            return Err(format!(
+            Err(format!(
                 "Unable to store default config at path {}",
                 config_path
             ))
@@ -68,7 +68,7 @@ pub fn create_config_if_not_exists(
     if !config_path.exists() {
         match create_default_config(backend_communicator) {
             Ok(_) => {
-                let ok_message = format!("Created default config.");
+                let ok_message = "Created default config.".to_string();
                 log_and_emit(ok_message.clone(), backend_communicator);
                 return Ok(ok_message);
             }
@@ -80,7 +80,7 @@ pub fn create_config_if_not_exists(
     }
 
     //
-    let ok_message = format!("Default config already exists.");
+    let ok_message = "Default config already exists.".to_string();
     Ok(ok_message)
 }
 
@@ -100,7 +100,7 @@ pub fn get_config(backend_communicator: &BackendCommunicator) -> Result<ConfigSt
 
     // Load config from file
     match confy::load_path(config_path) {
-        Ok(ok_config) => return Ok(ok_config),
+        Ok(ok_config) => Ok(ok_config),
         Err(_) => {
             log_and_emit(
                 format!(
@@ -135,15 +135,15 @@ pub fn get_config(backend_communicator: &BackendCommunicator) -> Result<ConfigSt
                         Err(err) => return Err(err),
                     }
                     let error_message =
-                        format!("Could not load config, but restored to default value.");
+                        "Could not load config, but restored to default value.".to_string();
 
                     log_and_emit(error_message.clone(), backend_communicator);
-                    return Err(error_message);
+                    Err(error_message)
                 }
                 Err(_) => {
-                    let error_message = format!("Unable to remove corrupted config file.");
+                    let error_message = "Unable to remove corrupted config file.".to_string();
                     log_and_emit(error_message.clone(), backend_communicator);
-                    return Err(error_message);
+                    Err(error_message)
                 }
             }
         }

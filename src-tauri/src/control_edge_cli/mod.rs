@@ -68,7 +68,7 @@ async fn command_edge_cli(
             let error_message = format!(
                 "Command {} did not complete successfully. Error = {}",
                 cli_command.clone(),
-                command_not_completed.to_string()
+                command_not_completed
             );
             log_and_emit(error_message.clone(), backend_communicator);
             return Err(error_message);
@@ -76,20 +76,20 @@ async fn command_edge_cli(
     }
 
     // Convert stdout strings
-    let stdout_output_str: String;
-    match String::from_utf8(output.stdout.to_vec()) {
-        Ok(ok_converted_str) => stdout_output_str = ok_converted_str,
+    
+    let stdout_output_str: String = match String::from_utf8(output.stdout.to_vec()) {
+        Ok(ok_converted_str) => ok_converted_str,
         Err(_) => {
-            let err_message = format!("Unable to convert stdout.");
+            let err_message = "Unable to convert stdout.".to_string();
             log_and_emit(err_message.clone(), backend_communicator);
             return Err(err_message);
         }
-    }
+    };
     let stderr_output_str: String;
     match String::from_utf8(output.stderr.to_vec()) {
         Ok(ok_converted_str) => stderr_output_str = ok_converted_str,
         Err(_) => {
-            stderr_output_str = format!("Unable to convert stderr.");
+            stderr_output_str = "Unable to convert stderr.".to_string();
             log_and_emit(stderr_output_str.clone(), backend_communicator)
         }
     }
@@ -108,7 +108,7 @@ async fn command_edge_cli(
             if exit_code == cli_found_successful_command {
                 let log_message = format!("Stdout: {}", stdout_output_str);
                 log_and_emit(log_message, backend_communicator);
-                return Ok(format!("{}", stdout_output_str));
+                Ok(stdout_output_str)
             } else if exit_code == cli_found_failed_command {
                 let err_message =
                     format!("CLI installed but ran with error: {}", stderr_output_str);
@@ -121,9 +121,9 @@ async fn command_edge_cli(
             }
         }
         None => {
-            let err_message = format!("Edge CLI running status could not be checked.");
+            let err_message = "Edge CLI running status could not be checked.".to_string();
             log_and_emit(err_message.clone(), backend_communicator);
-            return Err(err_message);
+            Err(err_message)
         }
     }
 }
@@ -134,7 +134,7 @@ pub async fn device_stop_from_frontend(backend_communicator: &BackendCommunicato
     let command_edge_cli_future = command_edge_cli(cli_command, false, backend_communicator).await;
     match command_edge_cli_future {
         Ok(_) => {
-            let ok_message = format!("Device stopped successfully.");
+            let ok_message = "Device stopped successfully.".to_string();
             log_and_emit(ok_message, backend_communicator);
         }
         Err(stderr_str) => {
@@ -159,12 +159,12 @@ pub async fn device_start_from_frontend(
         Ok(stdout_str) => {
             let ok_message = format!("Device successfully started! Ok msg: {}", stdout_str);
             log_and_emit(ok_message, backend_communicator);
-            return true;
+            true
         }
         Err(stderr_str) => {
             let error_message = format!("Could not start device. Err: {}", stderr_str);
             log_and_emit(error_message, backend_communicator);
-            return false;
+            false
         }
     }
 }
@@ -177,12 +177,12 @@ pub async fn update_edge_cli(backend_communicator: &BackendCommunicator) -> bool
         Ok(ok_msg) => {
             let ok_message = format!("Edge CLI updated successfully: {}", ok_msg);
             log_and_emit(ok_message, backend_communicator);
-            return true;
+            true
         }
         Err(err_msg) => {
             let err_message = format!("Edge CLI failed to update: {}", err_msg);
             log_and_emit(err_message, backend_communicator);
-            return false;
+            false
         }
     }
 }
