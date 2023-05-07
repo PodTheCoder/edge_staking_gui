@@ -236,16 +236,18 @@ fn get_autostart_status_from_frontend(window: Window, datadir: String) -> bool {
 }
 
 #[tauri::command]
-fn set_autostart_status_from_frontend(autostartstatus: bool, window: Window, datadir: String) {
+fn set_autostart_status_from_frontend(
+    autostartstatus: bool,
+    window: Window,
+    datadir: String,
+) -> bool {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir,
         front_end_window: window,
     };
 
-    if let Ok(_) = set_autostart_status(autostartstatus, backend_communicator) {
-        ()
-    }
+    set_autostart_status(autostartstatus, backend_communicator).is_ok()
 }
 
 #[tauri::command]
@@ -264,16 +266,14 @@ fn set_launch_minimized_status_from_frontend(
     launchminimized: bool,
     window: Window,
     datadir: String,
-) {
+) -> bool {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir,
         front_end_window: window,
     };
 
-    if let Ok(_) = set_launch_minimized_status(launchminimized, backend_communicator) {
-        ()
-    }
+    set_launch_minimized_status(launchminimized, backend_communicator).is_ok()
 }
 
 #[tauri::command]
@@ -288,16 +288,18 @@ fn get_wallet_address_from_frontend(window: Window, datadir: String) -> String {
 }
 
 #[tauri::command]
-fn set_wallet_address_from_frontend(walletaddress: String, window: Window, datadir: String) {
+fn set_wallet_address_from_frontend(
+    walletaddress: String,
+    window: Window,
+    datadir: String,
+) -> bool {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir,
         front_end_window: window,
     };
 
-    if let Ok(_) = set_wallet_address(walletaddress, backend_communicator) {
-        ()
-    }
+    set_wallet_address(walletaddress, backend_communicator).is_ok()
 }
 
 #[tauri::command]
@@ -312,16 +314,18 @@ fn get_last_node_payment_from_frontend(window: Window, datadir: String) -> u64 {
 }
 
 #[tauri::command]
-fn set_last_node_payment_from_frontend(lastnodepayment: u64, window: Window, datadir: String) {
+fn set_last_node_payment_from_frontend(
+    lastnodepayment: u64,
+    window: Window,
+    datadir: String,
+) -> bool {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir,
         front_end_window: window,
     };
 
-    if let Ok(_) = set_last_node_payment(lastnodepayment, backend_communicator) {
-        ()
-    }
+    set_last_node_payment(lastnodepayment, backend_communicator).is_ok()
 }
 
 fn main() {
