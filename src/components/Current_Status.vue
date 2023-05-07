@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { appLocalDataDir } from '@tauri-apps/api/path'
 import { appWindow } from '@tauri-apps/api/window'
 import { emit } from '@tauri-apps/api/event'
-import { invoke } from '@tauri-apps/api/tauri'
 import { ref } from 'vue'
 
 
@@ -18,21 +16,6 @@ await appWindow.listen(
 
 // Default status
 await emit(eventListenerName, defaultStatus)
-
-async function emit_event_from_frontend() {
-  await emit(eventListenerName,
-    'Called from frontend'
-  )
-}
-
-async function emit_event_from_backend() {
-  const appLocalDataDirPath = await appLocalDataDir()
-  await invoke('emit_from_backend',
-    {
-      window: appWindow,
-      datadir: appLocalDataDirPath
-    })
-}
 </script>
 
 <template>
