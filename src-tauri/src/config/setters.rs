@@ -1,13 +1,13 @@
 use crate::{utility::log_and_emit, BackendCommunicator};
 
-use super::{get_config, getters::get_config_path};
+use super::{get_config, getters::get_config_path_as_str};
 
 /// Write initialized value to config
 pub fn set_device_initialization_status(
     device_initialization_status: bool,
     backend_communicator: &BackendCommunicator,
 ) -> Result<(), std::string::String> {
-    let config_path = get_config_path(backend_communicator);
+    let config_path = get_config_path_as_str(backend_communicator);
 
     match get_config(backend_communicator) {
         Ok(ok_config) => {
@@ -39,7 +39,7 @@ pub fn set_device_data(
     public_key: &String,
     backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
-    let config_path = get_config_path(backend_communicator);
+    let config_path = get_config_path_as_str(backend_communicator);
 
     match get_config(backend_communicator) {
         Ok(ok_config) => {
@@ -66,7 +66,7 @@ pub fn set_autostart_status(
     autostart_status: bool,
     backend_communicator: &BackendCommunicator,
 ) -> Result<(), std::string::String> {
-    let config_path = get_config_path(backend_communicator);
+    let config_path = get_config_path_as_str(backend_communicator);
 
     match get_config(backend_communicator) {
         Ok(ok_config) => {
@@ -98,7 +98,7 @@ pub fn set_launch_minimized_status(
     launch_minimized: bool,
     backend_communicator: &BackendCommunicator,
 ) -> Result<(), std::string::String> {
-    let config_path = get_config_path(backend_communicator);
+    let config_path = get_config_path_as_str(backend_communicator);
 
     match get_config(backend_communicator) {
         Ok(ok_config) => {
@@ -130,7 +130,7 @@ pub fn set_wallet_address(
     wallet_address: String,
     backend_communicator: &BackendCommunicator,
 ) -> Result<(), std::string::String> {
-    let config_path = get_config_path(backend_communicator);
+    let config_path = get_config_path_as_str(backend_communicator);
 
     match get_config(backend_communicator) {
         Ok(ok_config) => {
@@ -162,7 +162,7 @@ pub fn set_last_node_payment(
     last_node_payment: u64,
     backend_communicator: &BackendCommunicator,
 ) -> Result<(), std::string::String> {
-    let config_path = get_config_path(backend_communicator);
+    let config_path = get_config_path_as_str(backend_communicator);
 
     match get_config(backend_communicator) {
         Ok(ok_config) => {

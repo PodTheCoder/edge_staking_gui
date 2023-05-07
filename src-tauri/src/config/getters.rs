@@ -2,7 +2,7 @@ use crate::{utility::log_and_emit, BackendCommunicator};
 
 use super::get_config;
 
-pub fn get_config_path(backend_communicator: &BackendCommunicator) -> String {
+pub fn get_config_path_as_str(backend_communicator: &BackendCommunicator) -> String {
     let config_path = format!(
         "{}{}",
         backend_communicator.data_dir.clone(),
@@ -25,8 +25,7 @@ pub fn get_node_address(backend_communicator: &BackendCommunicator) -> String {
                 log_and_emit(err, backend_communicator);
                 no_node_found
             } else {
-                let ok_message =
-                    format!("Loaded node address successfully: {}", node_address);
+                let ok_message = format!("Loaded node address successfully: {}", node_address);
                 log_and_emit(ok_message, backend_communicator);
                 node_address
             }
@@ -44,7 +43,7 @@ pub fn get_initialization_status(backend_communicator: &BackendCommunicator) -> 
     let initialized_code: u64 = 0;
     let not_initialized_code: u64 = 1;
     let failed_to_get_code: u64 = 2;
-    
+
     let config = match get_config(backend_communicator) {
         Ok(ok_config) => ok_config,
         Err(err) => {

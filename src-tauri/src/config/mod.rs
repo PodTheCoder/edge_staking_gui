@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{utility::log_and_emit, BackendCommunicator};
 
-use self::getters::get_config_path;
+use self::getters::get_config_path_as_str;
 
 pub mod getters;
 pub mod setters;
@@ -24,7 +24,7 @@ pub struct ConfigStruct {
 
 /// Create the default config file locally
 pub fn create_default_config(backend_communicator: &BackendCommunicator) -> Result<(), String> {
-    let config_path = get_config_path(backend_communicator);
+    let config_path = get_config_path_as_str(backend_communicator);
 
     let default_config = ConfigStruct {
         initialized: false,
@@ -43,15 +43,16 @@ pub fn create_default_config(backend_communicator: &BackendCommunicator) -> Resu
                 format!("Created initial config file at location: {}", config_path),
                 backend_communicator,
             );
-            log_and_emit("Awaiting initial command...".to_string(), backend_communicator);
+            log_and_emit(
+                "Awaiting initial command...".to_string(),
+                backend_communicator,
+            );
             Ok(())
         }
-        Err(_) => {
-            Err(format!(
-                "Unable to store default config at path {}",
-                config_path
-            ))
-        }
+        Err(_) => Err(format!(
+            "Unable to store default config at path {}",
+            config_path
+        )),
     }
 }
 
@@ -59,12 +60,8 @@ pub fn create_default_config(backend_communicator: &BackendCommunicator) -> Resu
 pub fn create_config_if_not_exists(
     backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
-    let filepath = format!(
-        "{}{}",
-        backend_communicator.data_dir.clone(),
-        format!("config.txt")
-    );
-    let config_path = Path::new(&filepath);
+    let config_path_as_str = get_config_path_as_str(backend_communicator);
+    let config_path = Path::new(&config_path_as_str);
     if !config_path.exists() {
         match create_default_config(backend_communicator) {
             Ok(_) => {
@@ -86,12 +83,8 @@ pub fn create_config_if_not_exists(
 
 /// Load config file
 pub fn get_config(backend_communicator: &BackendCommunicator) -> Result<ConfigStruct, String> {
-    let filepath = format!(
-        "{}{}",
-        backend_communicator.data_dir.clone(),
-        format!("config.txt")
-    );
-    let config_path = Path::new(&filepath);
+    let config_path_as_str = get_config_path_as_str(backend_communicator);
+    let config_path = Path::new(&config_path_as_str);
 
     match create_config_if_not_exists(backend_communicator) {
         Ok(value) => value,
