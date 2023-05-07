@@ -23,8 +23,8 @@ pub struct ConfigStruct {
 }
 
 /// Create the default config file locally
-pub fn create_default_config(backend_communicator: BackendCommunicator) -> Result<(), String> {
-    let config_path = get_config_path(backend_communicator.clone());
+pub fn create_default_config(backend_communicator: &BackendCommunicator) -> Result<(), String> {
+    let config_path = get_config_path(backend_communicator);
 
     let default_config = ConfigStruct {
         initialized: false,
@@ -41,12 +41,9 @@ pub fn create_default_config(backend_communicator: BackendCommunicator) -> Resul
         Ok(_) => {
             log_and_emit(
                 format!("Created initial config file at location: {}", config_path),
-                backend_communicator.clone(),
+                backend_communicator,
             );
-            log_and_emit(
-                format!("Awaiting initial command..."),
-                backend_communicator.clone(),
-            );
+            log_and_emit(format!("Awaiting initial command..."), backend_communicator);
             return Ok({});
         }
         Err(_) => {
@@ -60,7 +57,7 @@ pub fn create_default_config(backend_communicator: BackendCommunicator) -> Resul
 
 /// Create config file if it does not yet exist.
 pub fn create_config_if_not_exists(
-    backend_communicator: BackendCommunicator,
+    backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
     let filepath = format!(
         "{}{}",
@@ -69,10 +66,10 @@ pub fn create_config_if_not_exists(
     );
     let config_path = Path::new(&filepath);
     if !config_path.exists() {
-        match create_default_config(backend_communicator.clone()) {
+        match create_default_config(backend_communicator) {
             Ok(_) => {
                 let ok_message = format!("Created default config.");
-                log_and_emit(ok_message.clone(), backend_communicator.clone());
+                log_and_emit(ok_message.clone(), backend_communicator);
                 return Ok(ok_message);
             }
             Err(err_string) => {
@@ -88,7 +85,7 @@ pub fn create_config_if_not_exists(
 }
 
 /// Load config file
-pub fn get_config(backend_communicator: BackendCommunicator) -> Result<ConfigStruct, String> {
+pub fn get_config(backend_communicator: &BackendCommunicator) -> Result<ConfigStruct, String> {
     let filepath = format!(
         "{}{}",
         backend_communicator.data_dir.clone(),
@@ -96,7 +93,7 @@ pub fn get_config(backend_communicator: BackendCommunicator) -> Result<ConfigStr
     );
     let config_path = Path::new(&filepath);
 
-    match create_config_if_not_exists(backend_communicator.clone()) {
+    match create_config_if_not_exists(backend_communicator) {
         Ok(value) => value,
         Err(value) => return Err(value),
     };
@@ -110,18 +107,18 @@ pub fn get_config(backend_communicator: BackendCommunicator) -> Result<ConfigStr
                     "Unable to load config at path {}. Assumed corrupted.",
                     config_path.display()
                 ),
-                backend_communicator.clone(),
+                backend_communicator,
             );
             log_and_emit(
                 format!(
                     "Attempting to restore corrupted config to default state. Path: {}",
                     config_path.display()
                 ),
-                backend_communicator.clone(),
+                backend_communicator,
             );
             log_and_emit(
                 format!("Removing corrupted file at path {}", config_path.display()),
-                backend_communicator.clone(),
+                backend_communicator,
             );
             match fs::remove_file(config_path) {
                 Ok(_) => {
@@ -130,17 +127,17 @@ pub fn get_config(backend_communicator: BackendCommunicator) -> Result<ConfigStr
                             "Removed corrupted config at path : {}",
                             config_path.display()
                         ),
-                        backend_communicator.clone(),
+                        backend_communicator,
                     );
 
-                    match create_default_config(backend_communicator.clone()) {
+                    match create_default_config(backend_communicator) {
                         Ok(_) => {}
                         Err(err) => return Err(err),
                     }
                     let error_message =
                         format!("Could not load config, but restored to default value.");
 
-                    log_and_emit(error_message.clone(), backend_communicator.clone());
+                    log_and_emit(error_message.clone(), backend_communicator);
                     return Err(error_message);
                 }
                 Err(_) => {

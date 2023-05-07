@@ -19,7 +19,7 @@ pub async fn main(
     check_processor: bool,
     check_docker: bool,
     check_edge_cli_binary: bool,
-    backend_communicator: BackendCommunicator,
+    backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
     let mut result_string = String::from("");
     let dt: DateTime<Utc> = Utc::now();
@@ -29,19 +29,19 @@ pub async fn main(
     if check_os {
         log_and_emit(
             format!("Checking if Operating System (OS) is supported"),
-            backend_communicator.clone(),
+            backend_communicator,
         );
-        let os_info = check_specifications::get_os_info(backend_communicator.clone());
+        let os_info = check_specifications::get_os_info(backend_communicator);
         if os_info.os_name_supported {
             let ok_os_name_str = &os_info.cli_os_name;
             let pretty_ok_os_name_str = pretty_check_string::pretty_ok_str(ok_os_name_str, true);
-            log_and_emit(pretty_ok_os_name_str.clone(), backend_communicator.clone());
+            log_and_emit(pretty_ok_os_name_str.clone(), backend_communicator);
             result_string.push_str(&pretty_ok_os_name_str);
         } else {
             all_requirements_passed = false;
             let err_os_name_str = &os_info.cli_os_name;
             let pretty_err_os_name = pretty_check_string::pretty_err_str(err_os_name_str, true);
-            log_and_emit(pretty_err_os_name.clone(), backend_communicator.clone());
+            log_and_emit(pretty_err_os_name.clone(), backend_communicator);
             result_string.push_str(&pretty_err_os_name);
         }
     }
@@ -50,13 +50,13 @@ pub async fn main(
     if check_processor {
         log_and_emit(
             format!("Checking if processor is supported"),
-            backend_communicator.clone(),
+            backend_communicator,
         );
-        let processor_info = check_specifications::get_processor_info(backend_communicator.clone());
+        let processor_info = check_specifications::get_processor_info(backend_communicator);
         if processor_info.full_architecture_supported {
             let ok_cli_arch_str = &processor_info.cli_architecture_name;
             let pretty_ok_cli_arch_str = pretty_check_string::pretty_ok_str(ok_cli_arch_str, true);
-            log_and_emit(pretty_ok_cli_arch_str.clone(), backend_communicator.clone());
+            log_and_emit(pretty_ok_cli_arch_str.clone(), backend_communicator);
             result_string.push_str(&pretty_ok_cli_arch_str);
         } else {
             all_requirements_passed = false;
@@ -66,10 +66,7 @@ pub async fn main(
             );
             let pretty_err_cli_arch_str =
                 pretty_check_string::pretty_err_str(&err_cli_arch_str, true);
-            log_and_emit(
-                pretty_err_cli_arch_str.clone(),
-                backend_communicator.clone(),
-            );
+            log_and_emit(pretty_err_cli_arch_str.clone(), backend_communicator);
             result_string.push_str(&pretty_err_cli_arch_str);
         }
     }
@@ -78,26 +75,20 @@ pub async fn main(
     if check_docker {
         log_and_emit(
             format!("Checking if Docker is installed & running correctly"),
-            backend_communicator.clone(),
+            backend_communicator,
         );
-        match get_docker_status(backend_communicator.clone()) {
+        match get_docker_status(backend_communicator) {
             Ok(docker_ok_string) => {
                 let pretty_docker_ok_string =
                     pretty_check_string::pretty_ok_str(&docker_ok_string, true);
-                log_and_emit(
-                    pretty_docker_ok_string.clone(),
-                    backend_communicator.clone(),
-                );
+                log_and_emit(pretty_docker_ok_string.clone(), backend_communicator);
                 result_string.push_str(&pretty_docker_ok_string);
             }
             Err(docker_not_ok_string) => {
                 all_requirements_passed = false;
                 let pretty_docker_not_ok_string =
                     pretty_check_string::pretty_err_str(&docker_not_ok_string, true);
-                log_and_emit(
-                    pretty_docker_not_ok_string.clone(),
-                    backend_communicator.clone(),
-                );
+                log_and_emit(pretty_docker_not_ok_string.clone(), backend_communicator);
                 result_string.push_str(&pretty_docker_not_ok_string);
             }
         }
@@ -107,17 +98,17 @@ pub async fn main(
     if check_edge_cli_binary {
         log_and_emit(
             format!("Checking if Edge is downloaded correctly"),
-            backend_communicator.clone(),
+            backend_communicator,
         );
         let is_edge_downloaded_correctly_future =
-            is_edge_correctly_downloaded(backend_communicator.clone()).await;
+            is_edge_correctly_downloaded(backend_communicator).await;
         match is_edge_downloaded_correctly_future {
             Ok(edge_downloaded_correctly) => {
                 let pretty_edge_downloaded_correctly =
                     pretty_ok_str(&edge_downloaded_correctly, false);
                 log_and_emit(
                     pretty_edge_downloaded_correctly.clone(),
-                    backend_communicator.clone(),
+                    backend_communicator,
                 );
                 result_string.push_str(&pretty_edge_downloaded_correctly);
             }
@@ -127,26 +118,20 @@ pub async fn main(
                     pretty_err_str(&edge_not_downloaded_correctly.clone(), false);
                 log_and_emit(
                     pretty_edge_not_downloaded_correctly.clone(),
-                    backend_communicator.clone(),
+                    backend_communicator,
                 );
                 result_string.push_str(&pretty_edge_not_downloaded_correctly);
             }
         }
     }
 
-    log_and_emit(
-        format!("Checked requirements."),
-        backend_communicator.clone(),
-    );
+    log_and_emit(format!("Checked requirements."), backend_communicator);
 
     let requirements_last_checked = format!(
         "Requirements last checked on: {} ",
         dt.format("%d %B %Y %H:%M:%S %Z").to_string()
     );
-    log_and_emit(
-        requirements_last_checked.clone(),
-        backend_communicator.clone(),
-    );
+    log_and_emit(requirements_last_checked.clone(), backend_communicator);
     result_string.push_str(&requirements_last_checked);
 
     if all_requirements_passed {
@@ -154,7 +139,7 @@ pub async fn main(
         let pretty_ok_all_requirements_passed = pretty_ok_str(&ok_all_requirements_passed, false);
         log_and_emit(
             pretty_ok_all_requirements_passed.clone(),
-            backend_communicator.clone(),
+            backend_communicator,
         );
         return Ok(result_string);
     } else {
@@ -163,7 +148,7 @@ pub async fn main(
             pretty_err_str(&err_all_requirements_passed, false);
         log_and_emit(
             pretty_err_all_requirements_passed.clone(),
-            backend_communicator.clone(),
+            backend_communicator,
         );
         return Err(result_string);
     }

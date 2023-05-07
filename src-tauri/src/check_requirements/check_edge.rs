@@ -36,25 +36,21 @@ fn create_edge_url(
 
 /// Downloads checksum of latest edge binary for system
 async fn get_edge_cli_checksum(
-    backend_communicator: BackendCommunicator,
+    backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
-    let backend_communicator = backend_communicator.clone();
-    let checksum_url = get_edge_cli_checksum_url(backend_communicator.clone());
+    let backend_communicator = backend_communicator;
+    let checksum_url = get_edge_cli_checksum_url(backend_communicator);
 
     let filename = String::from("checksum");
     let filepath = format!("{}{}", backend_communicator.data_dir.clone(), filename);
 
     log_and_emit(
         format!("Downloading checksum from URL: {}", checksum_url.clone()),
-        backend_communicator.clone(),
+        backend_communicator,
     );
 
-    let download_file_future = download_file(
-        checksum_url.clone(),
-        filepath.clone(),
-        backend_communicator.clone(),
-    )
-    .await;
+    let download_file_future =
+        download_file(checksum_url.clone(), filepath.clone(), backend_communicator).await;
     match download_file_future {
         Ok(_) => {}
         Err(err) => {
@@ -76,11 +72,11 @@ async fn get_edge_cli_checksum(
 }
 
 // Create URL based on user's system to filename.
-fn get_edge_file_url(filename: String, backend_communicator: BackendCommunicator) -> String {
+fn get_edge_file_url(filename: String, backend_communicator: &BackendCommunicator) -> String {
     let net = String::from("mainnet");
-    let os_info = get_os_info(backend_communicator.clone());
+    let os_info = get_os_info(backend_communicator);
     let os = os_info.cli_os_name;
-    let processor_info = get_processor_info(backend_communicator.clone());
+    let processor_info = get_processor_info(backend_communicator);
     let arch = processor_info.cli_architecture_name;
     let version = String::from("latest");
     let edge_url = create_edge_url(net, os, arch, version, filename);
@@ -89,14 +85,14 @@ fn get_edge_file_url(filename: String, backend_communicator: BackendCommunicator
 }
 
 /// Returns the checksum url
-fn get_edge_cli_checksum_url(backend_communicator: BackendCommunicator) -> String {
+fn get_edge_cli_checksum_url(backend_communicator: &BackendCommunicator) -> String {
     let filename = String::from("checksum");
     let checksum_url = get_edge_file_url(filename, backend_communicator);
     return checksum_url;
 }
 /// Creates URL to Edge CLI based on user's system. eg. windows user will get link to windows binary.
 pub fn get_edge_cli_download_url_from_frontend(
-    backend_communicator: BackendCommunicator,
+    backend_communicator: &BackendCommunicator,
 ) -> String {
     let filename = String::from("edge.exe");
     let edge_cli_url = get_edge_file_url(filename, backend_communicator);
@@ -106,7 +102,7 @@ pub fn get_edge_cli_download_url_from_frontend(
 
 /// Checks whether the Edge CLI was downloaded correctly by checksumming.
 pub async fn is_edge_correctly_downloaded(
-    backend_communicator: BackendCommunicator,
+    backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
     // Send a GET request and wait for the response headers.
     // Must be `mut` so we can read the response body.
@@ -118,8 +114,7 @@ pub async fn is_edge_correctly_downloaded(
 
     if edge_cli_path.exists() {
         let calculated_checksum;
-        let get_edge_cli_checksum_future =
-            get_edge_cli_checksum(backend_communicator.clone()).await;
+        let get_edge_cli_checksum_future = get_edge_cli_checksum(backend_communicator).await;
         match get_edge_cli_checksum_future {
             Ok(ok_checksum_str) => calculated_checksum = ok_checksum_str,
             Err(err_checksum_str) => {
@@ -184,16 +179,16 @@ fn hash_file(file_path: &Path) -> Result<String, String> {
 
 /// Download the fitting Edge CLI based on user's system.
 /// Returns true if latest binary installed.
-pub(crate) async fn get_edge_cli_binary(backend_communicator: BackendCommunicator) -> bool {
+pub(crate) async fn get_edge_cli_binary(backend_communicator: &BackendCommunicator) -> bool {
     let edge_binary_filename = String::from("edge.exe");
     let edge_binary_filepath = format!(
         "{}{}",
-        backend_communicator.clone().data_dir.clone(),
+        backend_communicator.data_dir.clone(),
         edge_binary_filename
     );
 
     let is_edge_correctly_downloaded_future_pre_download_cli =
-        is_edge_correctly_downloaded(backend_communicator.clone()).await;
+        is_edge_correctly_downloaded(backend_communicator).await;
     match is_edge_correctly_downloaded_future_pre_download_cli {
         Ok(_) => {
             let ok_msg = pretty_check_string::pretty_ok_str(
@@ -206,16 +201,16 @@ pub(crate) async fn get_edge_cli_binary(backend_communicator: BackendCommunicato
         Err(_) => {}
     }
 
-    let cli_download_url = get_edge_cli_download_url_from_frontend(backend_communicator.clone());
+    let cli_download_url = get_edge_cli_download_url_from_frontend(backend_communicator);
     log_and_emit(
         format!("Download Url: {}", cli_download_url),
-        backend_communicator.clone(),
+        backend_communicator,
     );
 
     let download_file_future = download_file(
         cli_download_url,
         edge_binary_filepath.clone(),
-        backend_communicator.clone(),
+        backend_communicator,
     )
     .await;
 
@@ -229,7 +224,7 @@ pub(crate) async fn get_edge_cli_binary(backend_communicator: BackendCommunicato
     }
 
     let is_edge_correctly_downloaded_future_post_download_cli =
-        is_edge_correctly_downloaded(backend_communicator.clone()).await;
+        is_edge_correctly_downloaded(backend_communicator).await;
     match is_edge_correctly_downloaded_future_post_download_cli {
         Ok(_) => {
             let ok_msg = pretty_check_string::pretty_ok_str(
@@ -242,7 +237,7 @@ pub(crate) async fn get_edge_cli_binary(backend_communicator: BackendCommunicato
         Err(_) => {
             let err_msg =
                 format!("File was not downloaded correctly. Attempting to remove automatically.");
-            log_and_emit(err_msg, backend_communicator.clone());
+            log_and_emit(err_msg, backend_communicator);
             match fs::remove_file(edge_binary_filepath.clone()) {
                 Ok(_) => {
                     let ok_msg = format!("Removed incorrect downloaded file automatically.");

@@ -7,7 +7,7 @@ use std::process::Command;
 use std::os::windows::process::CommandExt;
 
 pub(crate) fn remove_temporary_container(
-    backend_communicator: BackendCommunicator,
+    backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
     let args = ["rm", "temp_container_for_copying_edge_device_data"];
 
@@ -32,7 +32,7 @@ pub(crate) fn remove_temporary_container(
                 "Could not run docker close container command. Error: {}",
                 command_not_completed.to_string()
             );
-            log_and_emit(err_message.clone(), backend_communicator.clone());
+            log_and_emit(err_message.clone(), backend_communicator);
             return Err(err_message);
         }
     }
@@ -45,24 +45,24 @@ pub(crate) fn remove_temporary_container(
             exit_code = code;
             log_and_emit(
                 format!("Docker Exit code = {}", exit_code),
-                backend_communicator.clone(),
+                backend_communicator,
             );
             if exit_code == success_exit_code {
                 let ok_message = format!("Closed docker container");
-                log_and_emit(ok_message.clone(), backend_communicator.clone());
+                log_and_emit(ok_message.clone(), backend_communicator);
                 return Ok(ok_message);
             } else {
                 let err_message = format!(
                     "Did not recognize error code for closing container: {}",
                     exit_code
                 );
-                log_and_emit(err_message.clone(), backend_communicator.clone());
+                log_and_emit(err_message.clone(), backend_communicator);
                 return Err(err_message);
             }
         }
         None => {
             let error_message = format!("Could not find error code for Docker output.");
-            log_and_emit(error_message.clone(), backend_communicator.clone());
+            log_and_emit(error_message.clone(), backend_communicator);
             return Err(error_message);
         }
     }
@@ -71,7 +71,7 @@ pub(crate) fn remove_temporary_container(
 /// Copy the local edge-device-data files to the running container
 pub(crate) fn copy_data_to_running_container(
     file_to_copy_path: String,
-    backend_communicator: BackendCommunicator,
+    backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
     let args = [
         "cp",
@@ -100,7 +100,7 @@ pub(crate) fn copy_data_to_running_container(
                 "Could not run copy file command. Error: {}",
                 command_not_completed.to_string()
             );
-            log_and_emit(err_message.clone(), backend_communicator.clone());
+            log_and_emit(err_message.clone(), backend_communicator);
             return Err(err_message);
         }
     }
@@ -113,24 +113,24 @@ pub(crate) fn copy_data_to_running_container(
             exit_code = code;
             log_and_emit(
                 format!("Docker Exit code = {}", exit_code),
-                backend_communicator.clone(),
+                backend_communicator,
             );
             if exit_code == success_exit_code {
                 let ok_message = format!("Copied file to edge device data volume.");
-                log_and_emit(ok_message.clone(), backend_communicator.clone());
+                log_and_emit(ok_message.clone(), backend_communicator);
                 return Ok(ok_message);
             } else {
                 let err_message = format!(
                     "Did not recognize error code for copying data to volume: {}",
                     exit_code
                 );
-                log_and_emit(err_message.clone(), backend_communicator.clone());
+                log_and_emit(err_message.clone(), backend_communicator);
                 return Err(err_message);
             }
         }
         None => {
             let error_message = format!("Could not find error code for Docker output.");
-            log_and_emit(error_message.clone(), backend_communicator.clone());
+            log_and_emit(error_message.clone(), backend_communicator);
             return Err(error_message);
         }
     }
@@ -138,7 +138,7 @@ pub(crate) fn copy_data_to_running_container(
 
 /// Start a temporary docker container for the purpose of copying data
 pub(crate) fn start_docker_container_for_copying_data(
-    backend_communicator: BackendCommunicator,
+    backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
     let output;
     let args = [
@@ -170,7 +170,7 @@ pub(crate) fn start_docker_container_for_copying_data(
                 "Could not create temporary container. Error: {}",
                 command_not_completed.to_string()
             );
-            log_and_emit(err_message.clone(), backend_communicator.clone());
+            log_and_emit(err_message.clone(), backend_communicator);
             return Err(err_message);
         }
     }
@@ -183,24 +183,24 @@ pub(crate) fn start_docker_container_for_copying_data(
             exit_code = code;
             log_and_emit(
                 format!("Docker Exit code = {}", exit_code),
-                backend_communicator.clone(),
+                backend_communicator,
             );
             if exit_code == success_exit_code {
                 let ok_message = format!("Created temporary container for copying data.");
-                log_and_emit(ok_message.clone(), backend_communicator.clone());
+                log_and_emit(ok_message.clone(), backend_communicator);
                 return Ok(ok_message);
             } else {
                 let err_message = format!(
                     "Did not recognize error code for starting temporary container: {}",
                     exit_code
                 );
-                log_and_emit(err_message.clone(), backend_communicator.clone());
+                log_and_emit(err_message.clone(), backend_communicator);
                 return Err(err_message);
             }
         }
         None => {
             let error_message = format!("Could not find error code for Docker output.");
-            log_and_emit(error_message.clone(), backend_communicator.clone());
+            log_and_emit(error_message.clone(), backend_communicator);
             return Err(error_message);
         }
     }
@@ -208,7 +208,7 @@ pub(crate) fn start_docker_container_for_copying_data(
 
 /// Os-independent docker status check based on https://docs.docker.com/config/daemon/troubleshoot/#check-whether-docker-is-running
 pub(crate) fn get_docker_status(
-    backend_communicator: BackendCommunicator,
+    backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
     let output;
 
@@ -246,26 +246,26 @@ pub(crate) fn get_docker_status(
             exit_code = code;
             log_and_emit(
                 format!("Docker Exit code = {}", exit_code),
-                backend_communicator.clone(),
+                backend_communicator,
             );
 
             if exit_code == docker_installed_and_running_code {
                 let ok_string = String::from("Docker installed & ready.");
-                log_and_emit(ok_string.clone(), backend_communicator.clone());
+                log_and_emit(ok_string.clone(), backend_communicator);
                 return Ok(ok_string);
             } else if exit_code == docker_installed_not_running_code {
                 let err_string = format!("Docker installed but not running/ready. Docker loading time can be several minutes.");
-                log_and_emit(err_string.clone(), backend_communicator.clone());
+                log_and_emit(err_string.clone(), backend_communicator);
                 return Err(err_string);
             } else {
                 let err_string = format!("Docker exit code not recognized");
-                log_and_emit(err_string.clone(), backend_communicator.clone());
+                log_and_emit(err_string.clone(), backend_communicator);
                 return Err(err_string);
             }
         }
         None => {
             let err_string = format!("Docker running status could not be checked");
-            log_and_emit(err_string.clone(), backend_communicator.clone());
+            log_and_emit(err_string.clone(), backend_communicator);
             return Err(err_string);
         }
     }

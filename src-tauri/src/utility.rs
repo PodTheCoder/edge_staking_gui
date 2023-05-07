@@ -16,7 +16,7 @@ struct Payload {
 pub async fn download_file(
     download_url: String,
     download_path_str: String,
-    backend_communicator: BackendCommunicator,
+    backend_communicator: &BackendCommunicator,
 ) -> Result<(), String> {
     let download_path = PathBuf::new();
     let download_path = download_path.join(download_path_str.clone());
@@ -27,7 +27,7 @@ pub async fn download_file(
             download_url.clone(),
             download_path_str.clone()
         ),
-        backend_communicator.clone(),
+        backend_communicator,
     );
 
     let client = Client::new();
@@ -56,7 +56,7 @@ pub async fn download_file(
             };
             log_and_emit(
                 format!("Download Headers: {:#?}", valid_response.headers()),
-                backend_communicator.clone(),
+                backend_communicator,
             );
         }
         Err(_) => {
@@ -73,7 +73,7 @@ pub async fn download_file(
             "Opening file: {}. Program may be temporarily unresponsive while writing.",
             download_path_str.clone()
         ),
-        backend_communicator.clone(),
+        backend_communicator,
     );
     let mut file;
     match File::create(download_path) {
@@ -93,7 +93,7 @@ pub async fn download_file(
             Ok(ok_chunk) => stream_chunk = ok_chunk,
             Err(_) => {
                 let error_message = format!("Unable to read chunk {}", chunk_counter);
-                log_and_emit(error_message.clone(), backend_communicator.clone());
+                log_and_emit(error_message.clone(), backend_communicator);
                 return Err(error_message);
             }
         }
@@ -101,7 +101,7 @@ pub async fn download_file(
             Ok(_) => {}
             Err(_) => {
                 let error_message = format!("Unable to write chunk.");
-                log_and_emit(error_message.clone(), backend_communicator.clone());
+                log_and_emit(error_message.clone(), backend_communicator);
                 return Err(error_message);
             }
         }
@@ -116,7 +116,7 @@ pub async fn download_file(
                     bytes_downloaded,
                     filesize
                 ),
-                backend_communicator.clone(),
+                backend_communicator,
             )
         }
         chunk_counter += 1;
@@ -131,8 +131,8 @@ pub async fn download_file(
 }
 
 /// Convenience function, logs a message and emits an event with the message as payload.
-pub fn log_and_emit(message: String, backend_communicator: BackendCommunicator) {
-    match log_message(message.clone(), backend_communicator.clone()) {
+pub fn log_and_emit(message: String, backend_communicator: &BackendCommunicator) {
+    match log_message(message.clone(), backend_communicator) {
         Ok(_) => {}
         Err(err_str) => println!("{}", err_str),
     }
@@ -143,7 +143,7 @@ pub fn log_and_emit(message: String, backend_communicator: BackendCommunicator) 
 /// Log a message locally
 pub fn log_message(
     message: String,
-    backend_communicator: BackendCommunicator,
+    backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
     let log_name = format!("log.txt");
     let log_path_str = format!("{}{}", backend_communicator.data_dir.clone(), log_name);
@@ -176,7 +176,7 @@ pub fn log_message(
 }
 
 /// Emit an event to the main window
-pub fn emit_event(message: String, backend_communicator: BackendCommunicator) {
+pub fn emit_event(message: String, backend_communicator: &BackendCommunicator) {
     // window.center();
     backend_communicator
         .front_end_window
