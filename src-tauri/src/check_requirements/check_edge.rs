@@ -118,7 +118,7 @@ pub async fn is_edge_correctly_downloaded(
             }
         };
 
-        let hash_string: String = match hash_file(edge_cli_path) {
+        let hash_string: String = match hash_file(edge_cli_path, backend_communicator) {
             Ok(hash_str) => hash_str,
             Err(err_str) => {
                 let error_message = err_str;
@@ -145,7 +145,10 @@ pub async fn is_edge_correctly_downloaded(
 }
 
 /// Hash file with SHA256
-fn hash_file(file_path: &Path) -> Result<String, String> {
+fn hash_file(
+    file_path: &Path,
+    backend_communicator: &BackendCommunicator,
+) -> Result<String, String> {
     let mut file_binary: File;
     match fs::File::open(file_path) {
         Ok(valid_path) => file_binary = valid_path,
@@ -159,8 +162,14 @@ fn hash_file(file_path: &Path) -> Result<String, String> {
     }
     let mut hasher = Sha256::new();
 
-    // TODO: Add error handling
-    if let Ok(_) = io::copy(&mut file_binary, &mut hasher) {}
+    match io::copy(&mut file_binary, &mut hasher) {
+        Ok(_) => (),
+        Err(err_str) => {
+            let err_msg = format!("Unable to copy binary to hasher. Err {}", err_str);
+            log_and_emit(err_msg.clone(), backend_communicator);
+            return Err(err_msg);
+        }
+    }
     let hash = hasher.finalize();
 
     let hash_string = format!("{:x}", hash);
