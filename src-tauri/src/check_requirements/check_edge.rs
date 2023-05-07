@@ -186,16 +186,13 @@ pub(crate) async fn get_edge_cli_binary(backend_communicator: &BackendCommunicat
         edge_binary_filename
     );
 
-    match is_edge_correctly_downloaded(backend_communicator).await {
-        Ok(_) => {
-            let ok_msg = pretty_check_string::pretty_ok_str(
-                &String::from("Latest Edge CLI is already correctly installed."),
-                false,
-            );
-            log_and_emit(ok_msg, backend_communicator);
-            return true;
-        }
-        Err(_) => {}
+    if (is_edge_correctly_downloaded(backend_communicator).await).is_ok() {
+        let ok_msg = pretty_check_string::pretty_ok_str(
+            &String::from("Latest Edge CLI is already correctly installed."),
+            false,
+        );
+        log_and_emit(ok_msg, backend_communicator);
+        return true;
     }
 
     let cli_download_url = get_edge_cli_download_url_from_frontend(backend_communicator);
