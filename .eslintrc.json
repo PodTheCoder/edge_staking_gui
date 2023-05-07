@@ -4,6 +4,7 @@
         "es2021": true
     },
     "extends": [
+        "@edge/eslint-config-typescript",
         "eslint:recommended",
         "plugin:vue/vue3-essential",
         "plugin:@typescript-eslint/recommended"
