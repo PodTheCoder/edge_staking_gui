@@ -51,7 +51,7 @@ async fn install_edge_cli_from_frontend(window: Window, datadir: String) -> bool
         data_dir: datadir.clone(),
         front_end_window: window,
     };
-    
+
     check_requirements::check_edge::get_edge_cli_binary(backend_communicator).await
 }
 
@@ -63,9 +63,7 @@ fn get_edge_cli_download_url_from_frontend(window: Window, datadir: String) -> S
         front_end_window: window,
     };
 
-    check_requirements::check_edge::get_edge_cli_download_url_from_frontend(
-        backend_communicator,
-    )
+    check_requirements::check_edge::get_edge_cli_download_url_from_frontend(backend_communicator)
 }
 
 #[tauri::command]
@@ -80,8 +78,7 @@ async fn device_start_from_frontend(
         front_end_window: window,
     };
 
-    control_edge_cli::device_start_from_frontend(checklatestbinary, backend_communicator)
-        .await
+    control_edge_cli::device_start_from_frontend(checklatestbinary, backend_communicator).await
 }
 
 /// Returns true if initialization is complete, false if not.
@@ -159,7 +156,7 @@ fn get_node_address_from_frontend(window: Window, datadir: String) -> String {
     };
 
     // let no_node_found = format!("Unset"); // "Unset" is the error String.
-    
+
     get_node_address(backend_communicator)
 }
 
@@ -222,9 +219,7 @@ async fn add_device_from_frontend(
     };
 
     match device::create_device_code(address, privatekey, publickey, backend_communicator).await {
-        Ok(ok_str) => {
-            check_requirements::pretty_check_string::pretty_ok_str(&ok_str, false)
-        }
+        Ok(ok_str) => check_requirements::pretty_check_string::pretty_ok_str(&ok_str, false),
         Err(err_str) => err_str,
     }
 }
@@ -248,9 +243,8 @@ fn set_autostart_status_from_frontend(autostartstatus: bool, window: Window, dat
         front_end_window: window,
     };
 
-    match set_autostart_status(autostartstatus, backend_communicator) {
-        Ok(_) => (),
-        Err(_) => (),
+    if let Ok(_) = set_autostart_status(autostartstatus, backend_communicator) {
+        ()
     }
 }
 
@@ -277,9 +271,8 @@ fn set_launch_minimized_status_from_frontend(
         front_end_window: window,
     };
 
-    match set_launch_minimized_status(launchminimized, backend_communicator) {
-        Ok(_) => (),
-        Err(_) => (),
+    if let Ok(_) = set_launch_minimized_status(launchminimized, backend_communicator) {
+        ()
     }
 }
 
@@ -302,9 +295,8 @@ fn set_wallet_address_from_frontend(walletaddress: String, window: Window, datad
         front_end_window: window,
     };
 
-    match set_wallet_address(walletaddress, backend_communicator) {
-        Ok(_) => (),
-        Err(_) => (),
+    if let Ok(_) = set_wallet_address(walletaddress, backend_communicator) {
+        ()
     }
 }
 
@@ -327,9 +319,8 @@ fn set_last_node_payment_from_frontend(lastnodepayment: u64, window: Window, dat
         front_end_window: window,
     };
 
-    match set_last_node_payment(lastnodepayment, backend_communicator) {
-        Ok(_) => (),
-        Err(_) => (),
+    if let Ok(_) = set_last_node_payment(lastnodepayment, backend_communicator) {
+        ()
     }
 }
 

@@ -59,7 +59,6 @@ async fn get_edge_cli_checksum(
         }
     }
 
-    
     let checksum: String = match fs::read_to_string(filepath) {
         Ok(checksum_str) => checksum_str, // Checksum is SHA256
         Err(err) => {
@@ -79,7 +78,6 @@ fn get_edge_file_url(filename: String, backend_communicator: &BackendCommunicato
     let processor_info = get_processor_info(backend_communicator);
     let arch = processor_info.cli_architecture_name;
     let version = String::from("latest");
-    
 
     create_edge_url(net, os, arch, version, filename)
 }
@@ -87,7 +85,7 @@ fn get_edge_file_url(filename: String, backend_communicator: &BackendCommunicato
 /// Returns the checksum url
 fn get_edge_cli_checksum_url(backend_communicator: &BackendCommunicator) -> String {
     let filename = String::from("checksum");
-    
+
     get_edge_file_url(filename, backend_communicator)
 }
 /// Creates URL to Edge CLI based on user's system. eg. windows user will get link to windows binary.
@@ -95,7 +93,6 @@ pub fn get_edge_cli_download_url_from_frontend(
     backend_communicator: &BackendCommunicator,
 ) -> String {
     let filename = String::from("edge.exe");
-    
 
     get_edge_file_url(filename, backend_communicator)
 }
@@ -113,19 +110,14 @@ pub async fn is_edge_correctly_downloaded(
     let edge_cli_path = Path::new(&filepath);
 
     if edge_cli_path.exists() {
-        let calculated_checksum;
         let get_edge_cli_checksum_future = get_edge_cli_checksum(backend_communicator).await;
-        match get_edge_cli_checksum_future {
-            Ok(ok_checksum_str) => calculated_checksum = ok_checksum_str,
+        let calculated_checksum = match get_edge_cli_checksum_future {
+            Ok(ok_checksum_str) => ok_checksum_str,
             Err(err_checksum_str) => {
-                calculated_checksum = format!(
-                    "Edge CLI Checksum not found. Err = {}",
-                    err_checksum_str
-                )
+                format!("Edge CLI Checksum not found. Err = {}", err_checksum_str)
             }
-        }
+        };
 
-        
         let hash_string: String = match hash_file(edge_cli_path) {
             Ok(hash_str) => hash_str,
             Err(err_str) => {
@@ -167,10 +159,8 @@ fn hash_file(file_path: &Path) -> Result<String, String> {
     }
     let mut hasher = Sha256::new();
 
-    match io::copy(&mut file_binary, &mut hasher) {
-        Ok(_) => {}
-        Err(_) => {}
-    }
+    // TODO: Add error handling
+    if let Ok(_) = io::copy(&mut file_binary, &mut hasher) {}
     let hash = hasher.finalize();
 
     let hash_string = format!("{:x}", hash);
@@ -187,9 +177,7 @@ pub(crate) async fn get_edge_cli_binary(backend_communicator: &BackendCommunicat
         edge_binary_filename
     );
 
-    let is_edge_correctly_downloaded_future_pre_download_cli =
-        is_edge_correctly_downloaded(backend_communicator).await;
-    match is_edge_correctly_downloaded_future_pre_download_cli {
+    match is_edge_correctly_downloaded(backend_communicator).await {
         Ok(_) => {
             let ok_msg = pretty_check_string::pretty_ok_str(
                 &String::from("Latest Edge CLI is already correctly installed."),
@@ -235,8 +223,8 @@ pub(crate) async fn get_edge_cli_binary(backend_communicator: &BackendCommunicat
             true
         }
         Err(_) => {
-            let err_msg =
-                "File was not downloaded correctly. Attempting to remove automatically.".to_string();
+            let err_msg = "File was not downloaded correctly. Attempting to remove automatically."
+                .to_string();
             log_and_emit(err_msg, backend_communicator);
             match fs::remove_file(edge_binary_filepath.clone()) {
                 Ok(_) => {
