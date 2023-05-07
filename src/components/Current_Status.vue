@@ -1,37 +1,37 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { invoke } from "@tauri-apps/api/tauri";
-
-import { appWindow } from '@tauri-apps/api/window';
-import { appLocalDataDir } from '@tauri-apps/api/path';
+import { appLocalDataDir } from '@tauri-apps/api/path'
+import { appWindow } from '@tauri-apps/api/window'
 import { emit } from '@tauri-apps/api/event'
+import { invoke } from '@tauri-apps/api/tauri'
+import { ref } from 'vue'
 
-const Status_Response = ref("");
 
-const eventListenerName = "program_status_listener";
-const defaultStatus = "Awaiting instructions..."
+const Status_Response = ref('')
+
+const eventListenerName = 'program_status_listener'
+const defaultStatus = 'Awaiting instructions...'
 // Listen to events on current window
 await appWindow.listen(
   eventListenerName,
   (event) => Status_Response.value = String(event.payload)
-);
+)
 
 // Default status
-await emit(eventListenerName, defaultStatus);
+await emit(eventListenerName, defaultStatus)
 
 async function emit_event_from_frontend() {
   await emit(eventListenerName,
     'Called from frontend'
-  );
+  )
 }
 
 async function emit_event_from_backend() {
-  const appLocalDataDirPath = await appLocalDataDir();
-  await invoke("emit_from_backend",
+  const appLocalDataDirPath = await appLocalDataDir()
+  await invoke('emit_from_backend',
     {
       window: appWindow,
       datadir: appLocalDataDirPath
-    });
+    })
 }
 </script>
 
