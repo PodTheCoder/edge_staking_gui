@@ -92,3 +92,9 @@ input,
 button {
   outline: none;
 }
+
+p {
+  overflow-wrap: break-word;
+  margin-left: 20px;
+  margin-right: 20px;
+}

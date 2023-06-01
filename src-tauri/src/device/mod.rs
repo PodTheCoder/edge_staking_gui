@@ -1,4 +1,5 @@
 use base64::{engine::general_purpose, Engine as _};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::{self, OpenOptions};
 use std::io::Write;
@@ -25,6 +26,11 @@ pub async fn create_device_code(
         address, private_key, public_key
     );
     // TODO: Check if input is correct.
+    #[derive(Default, Debug, Serialize, Deserialize, Clone)]
+    pub struct DeviceJSON {
+        pub address: String,    // XE address
+        pub privateKey: String, // Private key of XE address
+    }
 
     // Check requirements to see if Docker is running
     match check_requirements::main(false, false, true, false, backend_communicator).await {
@@ -48,7 +54,7 @@ pub async fn create_device_code(
     let fields_hashmap: HashMap<String, String> = HashMap::from([
         ("network".to_string(), network.clone()),
         ("address".to_string(), address.clone()),
-        ("privateKey".to_string(), private_key),
+        ("privateKey".to_string(), private_key.clone()),
         ("publicKey".to_string(), public_key),
     ]); //
 
@@ -99,7 +105,21 @@ pub async fn create_device_code(
     let success_message = "Successfully added device data.".to_string();
     log_and_emit(success_message, backend_communicator);
 
-    let url_safe_device_code = general_purpose::URL_SAFE_NO_PAD.encode(address.as_bytes());
+    let device_json = DeviceJSON {
+        address,
+        privateKey: private_key,
+    };
+
+    let device_json_string;
+    match serde_json::to_string(&device_json) {
+        Ok(json_str) => {
+            device_json_string = json_str;
+        }
+        Err(err_str) => return Err(err_str.to_string()),
+    }
+
+    let url_safe_device_code =
+        general_purpose::URL_SAFE_NO_PAD.encode(device_json_string.as_bytes());
     let next_step = format!(
         "Please assign your device token at https://wallet.xe.network/staking. Your device token is : {}",
         url_safe_device_code
