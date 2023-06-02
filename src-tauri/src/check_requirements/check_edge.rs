@@ -59,8 +59,9 @@ async fn get_edge_cli_checksum(
         }
     }
 
-    let checksum: String = match fs::read_to_string(filepath) {
-        Ok(checksum_str) => checksum_str, // Checksum is SHA256
+    let checksum: String;
+    match fs::read_to_string(filepath) {
+        Ok(checksum_str) => checksum = checksum_str, // Checksum is SHA256
         Err(err) => {
             let error_message = err.to_string();
             return Err(error_message);
@@ -118,8 +119,9 @@ pub async fn is_edge_correctly_downloaded(
             }
         };
 
-        let hash_string: String = match hash_file(edge_cli_path, backend_communicator) {
-            Ok(hash_str) => hash_str,
+        let hash_string: String;
+        match hash_file(edge_cli_path, backend_communicator) {
+            Ok(hash_str) => hash_string = hash_str,
             Err(err_str) => {
                 let error_message = err_str;
                 return Err(error_message);
