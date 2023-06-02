@@ -1,6 +1,6 @@
 use crate::{utility::log_and_emit, BackendCommunicator};
 
-use super::get_config;
+use super::{get_config, ConfigStruct};
 
 pub fn get_config_path_as_str(backend_communicator: &BackendCommunicator) -> String {
     let config_path = format!("{}config.txt", backend_communicator.data_dir.clone()); // eg. appdata/config.txt
@@ -40,8 +40,9 @@ pub fn get_initialization_status(backend_communicator: &BackendCommunicator) -> 
     let not_initialized_code: u64 = 1;
     let failed_to_get_code: u64 = 2;
 
-    let config = match get_config(backend_communicator) {
-        Ok(ok_config) => ok_config,
+    let config: ConfigStruct;
+    match get_config(backend_communicator) {
+        Ok(ok_config) => config = ok_config,
         Err(err) => {
             let err_message = format!("Could not load initialization status. Err {}", err);
             log_and_emit(err_message, backend_communicator);
