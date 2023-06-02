@@ -1,3 +1,6 @@
+#![allow(non_snake_case)] // Disable non_snake_case check for privateKey.
+                          // Impedance mismatch between Javascript best practice of camelCase and Rust best practice of snake_case
+                          // Edge JSON expects Javascript. Javascript best practice used.
 use base64::{engine::general_purpose, Engine as _};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -26,6 +29,7 @@ pub async fn create_device_code(
         address, private_key, public_key
     );
     // TODO: Check if input is correct.
+
     #[derive(Default, Debug, Serialize, Deserialize, Clone)]
     pub struct DeviceJSON {
         pub address: String,    // XE address
