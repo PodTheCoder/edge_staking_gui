@@ -1,7 +1,7 @@
 use crate::utility;
 use crate::utility::log_and_emit;
 use crate::BackendCommunicator;
-use std::process::Command;
+use std::process::{Command, Output};
 
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
@@ -23,8 +23,9 @@ pub(crate) fn remove_temporary_container(
     #[cfg(not(target_os = "windows"))]
     let command = Command::new("docker").args(args).output();
 
-    let output = match command {
-        Ok(command_completed_result) => command_completed_result,
+    let output: Output;
+    match command {
+        Ok(command_completed_result) => output = command_completed_result,
         Err(command_not_completed) => {
             let err_message = format!(
                 "Could not run docker close container command. Error: {}",
@@ -89,8 +90,9 @@ pub(crate) fn copy_data_to_running_container(
     #[cfg(not(target_os = "windows"))]
     let command = Command::new("docker").args(args).output();
 
-    let output = match command {
-        Ok(command_completed_result) => command_completed_result,
+    let output: Output;
+    match command {
+        Ok(command_completed_result) => output = command_completed_result,
         Err(command_not_completed) => {
             let err_message = format!(
                 "Could not run copy file command. Error: {}",
@@ -158,8 +160,9 @@ pub(crate) fn start_docker_container_for_copying_data(
     #[cfg(not(target_os = "windows"))]
     let command = Command::new("docker").args(args).output();
 
-    let output = match command {
-        Ok(command_completed_result) => command_completed_result,
+    let output: Output;
+    match command {
+        Ok(command_completed_result) => output = command_completed_result,
         Err(command_not_completed) => {
             let err_message = format!(
                 "Could not create temporary container. Error: {}",
@@ -219,8 +222,9 @@ pub(crate) fn get_docker_status(
     #[cfg(not(target_os = "windows"))]
     let command = Command::new("docker").arg("info").output();
 
-    let output = match command {
-        Ok(command_completed_result) => command_completed_result,
+    let output: Output;
+    match command {
+        Ok(command_completed_result) => output = command_completed_result,
         Err(command_not_completed) => {
             let errormessage = format!(
                 "Is Docker installed & did you restart your computer? Docker installation link: https://www.docker.com/products/docker-desktop/ Error = {}",
