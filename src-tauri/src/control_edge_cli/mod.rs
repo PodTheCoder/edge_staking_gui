@@ -77,22 +77,25 @@ async fn command_edge_cli(
 
     // Convert stdout strings
 
-    let stdout_output_str: String = match String::from_utf8(output.stdout.to_vec()) {
-        Ok(ok_converted_str) => ok_converted_str,
+    let stdout_output_str: String;
+    match String::from_utf8(output.stdout.to_vec()) {
+        Ok(ok_converted_str) => stdout_output_str = ok_converted_str,
         Err(_) => {
             let err_message = "Unable to convert stdout.".to_string();
             log_and_emit(err_message.clone(), backend_communicator);
             return Err(err_message);
         }
     };
+    
     let stderr_output_str: String;
     match String::from_utf8(output.stderr.to_vec()) {
         Ok(ok_converted_str) => stderr_output_str = ok_converted_str,
         Err(_) => {
             stderr_output_str = "Unable to convert stderr.".to_string();
-            log_and_emit(stderr_output_str.clone(), backend_communicator)
+            log_and_emit(stderr_output_str.clone(), backend_communicator);
+            return Err(stderr_output_str);
         }
-    }
+    };
 
     let exit_code: i32;
     let cli_found_successful_command = 0;
