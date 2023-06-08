@@ -20,6 +20,7 @@ pub struct ConfigStruct {
     pub address: String,   // What is the device XE address?
     pub private_key: String, // What is the private key of the XE address?
     pub public_key: String, // What is the public key of the XE address?
+    pub stake_id: String,  // What is the stake ID of the device?
 }
 
 /// Create the default config file locally
@@ -36,6 +37,7 @@ pub fn create_default_config(backend_communicator: &BackendCommunicator) -> Resu
         network: "Unset".to_string(),
         private_key: "Unset".to_string(),
         public_key: "Unset".to_string(),
+        stake_id: "Unset".to_string(),
     };
     match confy::store_path(config_path.clone(), default_config) {
         Ok(_) => {

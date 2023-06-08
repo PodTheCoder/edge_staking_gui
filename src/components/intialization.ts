@@ -87,10 +87,11 @@ export async function sync_initialization_status(deviceInitializedref: Ref<boole
 /**
  * Start the node. Returns a boolean whether the device has successfully started.
  */
-async function initial_device_start_from_frontend() {
+async function initial_device_start_from_frontend(stake_ID: string) {
   const appLocalDataDirPath = await appLocalDataDir()
   const has_device_start_from_frontended_successfully: boolean = await invoke('device_start_from_frontend', {
-    checklatestbinary: true,
+    checklatestbinary: false,
+    stake: stake_ID,
     datadir: appLocalDataDirPath,
     window: appWindow
   })
@@ -102,8 +103,8 @@ async function initial_device_start_from_frontend() {
 /**
  * Initial startup of device.
  */
-export async function start_device_for_first_time(deviceInitializedref: Ref<boolean>, nodeOnlineMessageref: Ref<string>) {
-  const has_device_start_from_frontended_successfully = await initial_device_start_from_frontend()
+export async function start_device_for_first_time(stake_ID: string, deviceInitializedref: Ref<boolean>, nodeOnlineMessageref: Ref<string>) {
+  const has_device_start_from_frontended_successfully = await initial_device_start_from_frontend(stake_ID)
   if (has_device_start_from_frontended_successfully == true) {
     complete_initialization_flow(deviceInitializedref, nodeOnlineMessageref)
   }
@@ -133,7 +134,7 @@ async function complete_initialization_flow(deviceInitializedref: Ref<boolean>, 
       window: appWindow
     })
 
-    await auto_recheck_node_online(deviceInitializedref, nodeOnlineMessageref, appLocalDataDirPath, node_address)
+    await auto_recheck_node_online(deviceInitializedref, nodeOnlineMessageref, appLocalDataDirPath)
   }
   else {
     const error_message = 'Node address is not set. Please complete the other setup steps.'
@@ -158,7 +159,6 @@ let isNodeOnlineAutocheckActive = false
 async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>,
   nodeOnlineMessageref: Ref<string>,
   appLocalDataDirPath: string,
-  node_address: string,
   timer_seconds_delay = 60, recheck_limit = 120) {
   let recheck_count = 0
   if (!isNodeOnlineAutocheckActive) {
@@ -171,6 +171,24 @@ async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>,
         datadir: appLocalDataDirPath,
         window: appWindow
       })
+
+      const node_address: string = await invoke('get_node_address_from_frontend', {
+        datadir: appLocalDataDirPath,
+        window: appWindow
+      })
+
+      // Check online status of node and set initialization status based on result.
+      const error_string = 'Unset'
+      if (node_address == error_string) {
+        const invalid_node_address_message = `Your node address ${node_address} is invalid`
+        await invoke('log_and_emit_from_frontend', {
+          message: invalid_node_address_message,
+          datadir: appLocalDataDirPath,
+          window: appWindow
+        })
+        return
+      }
+
 
       const is_node_online = await check_node_online_status(node_address)
       if (is_node_online) {

@@ -189,3 +189,32 @@ pub fn set_last_node_payment(
         Err(err) => Err(err),
     }
 }
+
+pub fn set_stake_id(
+    stake_id: String,
+    backend_communicator: &BackendCommunicator,
+) -> Result<(), std::string::String> {
+    let config_path = get_config_path_as_str(backend_communicator);
+
+    match get_config(backend_communicator) {
+        Ok(ok_config) => {
+            let mut changed_config = ok_config;
+            changed_config.stake_id = stake_id;
+
+            log_and_emit(
+                format!("Set stake ID in config: {}", changed_config.stake_id),
+                backend_communicator,
+            );
+
+            match confy::store_path(config_path, changed_config) {
+                Ok(_) => Ok(()),
+                Err(_) => {
+                    let err_msg = "Unable to store config file at location".to_string();
+                    log_and_emit(err_msg.clone(), backend_communicator);
+                    Err(err_msg)
+                }
+            }
+        }
+        Err(err) => Err(err),
+    }
+}

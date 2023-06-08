@@ -125,3 +125,19 @@ pub fn get_last_node_payment(backend_communicator: &BackendCommunicator) -> u64 
         }
     }
 }
+
+/// Returns last node payment timestamp. Default & error is 0.
+pub fn get_stake_id(backend_communicator: &BackendCommunicator) -> String {
+    let config;
+    match get_config(backend_communicator) {
+        Ok(ok_config) => {
+            config = ok_config;
+            config.stake_id
+        }
+        Err(err) => {
+            let err_message = format!("Could not load last node payment. Err {}", err);
+            log_and_emit(err_message, backend_communicator);
+            "Not Set".to_string()
+        }
+    }
+}

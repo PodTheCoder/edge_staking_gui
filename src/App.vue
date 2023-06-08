@@ -20,10 +20,11 @@ import { start_device_for_first_time, sync_initialization_status } from './compo
 // Initialize consts
 // default state is uninitialized
 const deviceInitialized = ref(false)
-const Node_Online_Message = ref()
+const Node_Online_Message = ref('')
+const stake_ID = ref('')
 
-async function call_start_device_for_first_time() {
-  start_device_for_first_time(deviceInitialized, Node_Online_Message)
+async function call_start_device_for_first_time(stake_ID: string) {
+  start_device_for_first_time(stake_ID, deviceInitialized, Node_Online_Message)
 }
 
 const App_version = ref()
@@ -87,7 +88,8 @@ sync_launch_minimized_status()
       <div class="step">
         <p>4. Start your node.</p>
         <div class="card">
-          <button type="button" @click="call_start_device_for_first_time()">
+          <input v-model="stake_ID" placeholder="Your StakeID" />
+          <button type="button" @click="call_start_device_for_first_time(stake_ID)">
             Start Node
           </button>
           <p>{{ Node_Online_Message }}</p>

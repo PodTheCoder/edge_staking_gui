@@ -1,4 +1,5 @@
 use crate::check_requirements;
+use crate::config::getters::get_stake_id;
 use crate::utility::log_and_emit;
 use crate::BackendCommunicator;
 use std::process::Command;
@@ -39,7 +40,6 @@ async fn command_edge_cli(
     );
     let bin_name = "edge.exe";
     let bin_path = format!("{}{}", backend_communicator.data_dir.clone(), bin_name);
-
     #[cfg(target_os = "windows")]
     const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
 
@@ -86,7 +86,7 @@ async fn command_edge_cli(
             return Err(err_message);
         }
     };
-    
+
     let stderr_output_str: String;
     match String::from_utf8(output.stderr.to_vec()) {
         Ok(ok_converted_str) => stderr_output_str = ok_converted_str,
@@ -133,7 +133,8 @@ async fn command_edge_cli(
 
 /// Stop Edge device
 pub async fn device_stop_from_frontend(backend_communicator: &BackendCommunicator) {
-    let cli_command = String::from("device stop");
+    let stake_id: String = get_stake_id(backend_communicator);
+    let cli_command = format!("device stop --remote-stake={}", stake_id);
     let command_edge_cli_future = command_edge_cli(cli_command, false, backend_communicator).await;
     match command_edge_cli_future {
         Ok(_) => {
@@ -151,7 +152,8 @@ pub async fn device_start_from_frontend(
     check_is_edge_binary_latest_version: bool,
     backend_communicator: &BackendCommunicator,
 ) -> bool {
-    let cli_command = String::from("device start");
+    let stake_id: String = get_stake_id(backend_communicator);
+    let cli_command = format!("device start --remote-stake={}", stake_id);
     let command_edge_cli_future = command_edge_cli(
         cli_command,
         check_is_edge_binary_latest_version,
@@ -174,7 +176,8 @@ pub async fn device_start_from_frontend(
 
 /// Update Edge CLI to latest version via CMD
 pub async fn update_edge_cli(backend_communicator: &BackendCommunicator) -> bool {
-    let cli_command = String::from("update");
+    let stake_id: String = get_stake_id(backend_communicator);
+    let cli_command = format!("device update --remote-stake={}", stake_id);
     let command_edge_cli_future = command_edge_cli(cli_command, false, backend_communicator).await;
     match command_edge_cli_future {
         Ok(ok_msg) => {
