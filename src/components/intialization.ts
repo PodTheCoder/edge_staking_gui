@@ -89,15 +89,25 @@ export async function sync_initialization_status(deviceInitializedref: Ref<boole
  */
 async function initial_device_start_from_frontend(stake_ID: string) {
   const appLocalDataDirPath = await appLocalDataDir()
-  const has_device_start_from_frontended_successfully: boolean = await invoke('device_start_from_frontend', {
-    checklatestbinary: true,
+
+  const set_stake_id_from_frontend: boolean = await invoke('set_stake_id_from_frontend', {
     stake: stake_ID,
     datadir: appLocalDataDirPath,
     window: appWindow
   })
 
-  return has_device_start_from_frontended_successfully
+  if (!set_stake_id_from_frontend) {
+    // Error while setting stake id
+    return false
+  }
 
+  const has_device_start_from_frontended_successfully: boolean = await invoke('device_start_from_frontend', {
+    checklatestbinary: true,
+    datadir: appLocalDataDirPath,
+    window: appWindow
+  })
+
+  return has_device_start_from_frontended_successfully
 }
 
 /**

@@ -71,7 +71,6 @@ fn get_edge_cli_download_url_from_frontend(window: Window, datadir: String) -> S
 #[tauri::command]
 async fn device_start_from_frontend(
     checklatestbinary: bool,
-    stake: String,
     window: Window,
     datadir: String,
 ) -> bool {
@@ -79,10 +78,6 @@ async fn device_start_from_frontend(
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
-    };
-    match config::setters::set_stake_id(stake, backend_communicator) {
-        Ok(_) => (),
-        Err(_) => return false,
     };
     control_edge_cli::device_start_from_frontend(checklatestbinary, backend_communicator).await
 }
@@ -288,6 +283,17 @@ fn set_launch_minimized_status_from_frontend(
 }
 
 #[tauri::command]
+fn set_stake_id_from_frontend(stake: String, window: Window, datadir: String) -> bool {
+    let backend_communicator = &BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir,
+        front_end_window: window,
+    };
+
+    config::setters::set_stake_id(stake, backend_communicator).is_ok()
+}
+
+#[tauri::command]
 fn get_wallet_address_from_frontend(window: Window, datadir: String) -> String {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
@@ -364,6 +370,7 @@ fn main() {
             set_autostart_status_from_frontend,
             get_launch_minimized_status_from_frontend,
             set_launch_minimized_status_from_frontend,
+            set_stake_id_from_frontend,
             get_wallet_address_from_frontend,
             set_wallet_address_from_frontend,
             get_last_node_payment_from_frontend,
