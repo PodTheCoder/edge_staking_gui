@@ -167,25 +167,30 @@ fn get_node_address_from_frontend(window: Window, datadir: String) -> String {
 }
 
 #[tauri::command]
-async fn device_stop_from_frontend(window: Window, datadir: String) {
+async fn device_stop_from_frontend(checklatestbinary: bool, window: Window, datadir: String) {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
 
-    control_edge_cli::device_stop_from_frontend(backend_communicator).await;
+    control_edge_cli::device_stop_from_frontend(checklatestbinary, backend_communicator).await;
 }
 
 #[tauri::command]
-async fn update_edge_cli_from_frontend(window: Window, datadir: String) -> bool {
+async fn update_edge_cli_from_frontend(
+    checklatestbinary: bool,
+    window: Window,
+    datadir: String,
+) -> bool {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
 
-    let mut is_edge_cli_latest_ver = control_edge_cli::update_edge_cli(backend_communicator).await;
+    let mut is_edge_cli_latest_ver =
+        control_edge_cli::update_edge_cli(checklatestbinary, backend_communicator).await;
 
     if !is_edge_cli_latest_ver {
         // Update failed via CLI. Trying fallback.

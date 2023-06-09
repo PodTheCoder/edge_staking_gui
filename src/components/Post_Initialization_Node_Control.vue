@@ -10,7 +10,7 @@ async function device_start_from_frontend_emitter() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   const appLocalDataDirPath = await appLocalDataDir()
   await invoke('device_start_from_frontend', {
-    checklatestbinary: true,
+    checklatestbinary: false,
     datadir: appLocalDataDirPath,
     window: appWindow
   })
@@ -20,6 +20,7 @@ async function device_stop_from_frontend_emitter() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   const appLocalDataDirPath = await appLocalDataDir()
   Node_Control_Response.value = await invoke('device_stop_from_frontend', {
+    checklatestbinary: false,
     datadir: appLocalDataDirPath,
     window: appWindow
   })
@@ -29,6 +30,7 @@ async function update_cli_emitter() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   const appLocalDataDirPath = await appLocalDataDir()
   Node_Control_Response.value = await invoke('update_edge_cli_from_frontend', {
+    checklatestbinary: false,
     datadir: appLocalDataDirPath,
     window: appWindow
   })

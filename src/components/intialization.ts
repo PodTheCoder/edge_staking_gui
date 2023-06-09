@@ -90,7 +90,7 @@ export async function sync_initialization_status(deviceInitializedref: Ref<boole
 async function initial_device_start_from_frontend(stake_ID: string) {
   const appLocalDataDirPath = await appLocalDataDir()
   const has_device_start_from_frontended_successfully: boolean = await invoke('device_start_from_frontend', {
-    checklatestbinary: false,
+    checklatestbinary: true,
     stake: stake_ID,
     datadir: appLocalDataDirPath,
     window: appWindow

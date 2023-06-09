@@ -11,21 +11,15 @@ use std::os::windows::process::CommandExt;
 /// You can choose whether the edge binary must be the latest version to run the command.
 async fn command_edge_cli(
     cli_command: String,
-    check_edge_binary_latest_version: bool,
+    checklatestbinary: bool,
     backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
     let arglist: Vec<&str> = cli_command.split(' ').collect();
     let output;
 
     // Requirements must first be met before commands can be run.
-    let check_requirements_future = check_requirements::main(
-        true,
-        true,
-        true,
-        check_edge_binary_latest_version,
-        backend_communicator,
-    )
-    .await;
+    let check_requirements_future =
+        check_requirements::main(true, true, true, checklatestbinary, backend_communicator).await;
     match check_requirements_future {
         Ok(_) => {}
         Err(err) => {
@@ -132,10 +126,14 @@ async fn command_edge_cli(
 }
 
 /// Stop Edge device
-pub async fn device_stop_from_frontend(backend_communicator: &BackendCommunicator) {
+pub async fn device_stop_from_frontend(
+    checklatestbinary: bool,
+    backend_communicator: &BackendCommunicator,
+) {
     let stake_id: String = get_stake_id(backend_communicator);
     let cli_command = format!("device stop --remote-stake={}", stake_id);
-    let command_edge_cli_future = command_edge_cli(cli_command, false, backend_communicator).await;
+    let command_edge_cli_future =
+        command_edge_cli(cli_command, checklatestbinary, backend_communicator).await;
     match command_edge_cli_future {
         Ok(_) => {
             let ok_message = "Device stopped successfully.".to_string();
@@ -149,17 +147,13 @@ pub async fn device_stop_from_frontend(backend_communicator: &BackendCommunicato
 
 /// Start Edge device; true if started successfully, otherwise false
 pub async fn device_start_from_frontend(
-    check_is_edge_binary_latest_version: bool,
+    checklatestbinary: bool,
     backend_communicator: &BackendCommunicator,
 ) -> bool {
     let stake_id: String = get_stake_id(backend_communicator);
     let cli_command = format!("device start --remote-stake={}", stake_id);
-    let command_edge_cli_future = command_edge_cli(
-        cli_command,
-        check_is_edge_binary_latest_version,
-        backend_communicator,
-    )
-    .await;
+    let command_edge_cli_future =
+        command_edge_cli(cli_command, checklatestbinary, backend_communicator).await;
     match command_edge_cli_future {
         Ok(stdout_str) => {
             let ok_message = format!("Device successfully started! Ok msg: {}", stdout_str);
@@ -175,10 +169,18 @@ pub async fn device_start_from_frontend(
 }
 
 /// Update Edge CLI to latest version via CMD
-pub async fn update_edge_cli(backend_communicator: &BackendCommunicator) -> bool {
+pub async fn update_edge_cli(
+    check_is_edge_binary_latest_version: bool,
+    backend_communicator: &BackendCommunicator,
+) -> bool {
     let stake_id: String = get_stake_id(backend_communicator);
     let cli_command = format!("device update --remote-stake={}", stake_id);
-    let command_edge_cli_future = command_edge_cli(cli_command, false, backend_communicator).await;
+    let command_edge_cli_future = command_edge_cli(
+        cli_command,
+        check_is_edge_binary_latest_version,
+        backend_communicator,
+    )
+    .await;
     match command_edge_cli_future {
         Ok(ok_msg) => {
             let ok_message = format!("Edge CLI updated successfully: {}", ok_msg);
