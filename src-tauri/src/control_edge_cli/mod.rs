@@ -131,7 +131,7 @@ pub async fn device_stop_from_frontend(
     backend_communicator: &BackendCommunicator,
 ) {
     let stake_id: String = get_stake_id(backend_communicator);
-    let cli_command = format!("device stop --remote-stake={}", stake_id);
+    let cli_command = format!("device stop --stake={}", stake_id);
     let command_edge_cli_future =
         command_edge_cli(cli_command, checklatestbinary, backend_communicator).await;
     match command_edge_cli_future {
@@ -151,7 +151,7 @@ pub async fn device_start_from_frontend(
     backend_communicator: &BackendCommunicator,
 ) -> bool {
     let stake_id: String = get_stake_id(backend_communicator);
-    let cli_command = format!("device start --remote-stake={}", stake_id);
+    let cli_command = format!("device start --stake={}", stake_id);
     let command_edge_cli_future =
         command_edge_cli(cli_command, checklatestbinary, backend_communicator).await;
     match command_edge_cli_future {
@@ -174,7 +174,7 @@ pub async fn update_edge_cli(
     backend_communicator: &BackendCommunicator,
 ) -> bool {
     let stake_id: String = get_stake_id(backend_communicator);
-    let cli_command = format!("device update --remote-stake={}", stake_id);
+    let cli_command = format!("device update --stake={}", stake_id);
     let command_edge_cli_future = command_edge_cli(
         cli_command,
         check_is_edge_binary_latest_version,
