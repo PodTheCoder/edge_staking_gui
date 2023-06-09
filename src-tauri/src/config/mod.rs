@@ -34,7 +34,7 @@ pub fn create_default_config(backend_communicator: &BackendCommunicator) -> Resu
         last_node_payment: 0,
         wallet_address: "Unset".to_string(),
         address: "Unset".to_string(),
-        network: "Unset".to_string(),
+        network: "mainnet".to_string(),
         private_key: "Unset".to_string(),
         public_key: "Unset".to_string(),
         stake_id: "Unset".to_string(),

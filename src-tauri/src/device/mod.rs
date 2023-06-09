@@ -7,6 +7,7 @@ use std::collections::HashMap;
 use std::fs::{self, OpenOptions};
 use std::io::Write;
 
+use crate::config::getters::get_network;
 use crate::config::setters::set_device_data;
 use crate::docker::{
     copy_data_to_running_container, remove_temporary_container,
@@ -23,7 +24,7 @@ pub async fn create_device_code(
     public_key: String,
     backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
-    let network = "mainnet".to_string();
+    let network = get_network(backend_communicator);
     println!(
         "add_device_from_frontend function called. address {}, private_key {}, public_key {}",
         address, private_key, public_key
@@ -124,10 +125,44 @@ pub async fn create_device_code(
 
     let url_safe_device_code =
         general_purpose::URL_SAFE_NO_PAD.encode(device_json_string.as_bytes());
+
+    let network = get_network(backend_communicator);
+
+    let mainnet = String::from("mainnet");
+    let mainnet_wallet_url = String::from("https://wallet.xe.network/staking");
+    let testnet = String::from("testnet");
+    let testnet_wallet_url = String::from("https://wallet.test.network/staking");
+
+    let wallet_url;
+    if network == mainnet {
+        wallet_url = mainnet_wallet_url;
+        let ok_message = format!(
+            "Derived staking wallet url {} based on network in config: {}",
+            wallet_url, network
+        );
+        log_and_emit(ok_message, backend_communicator);
+    } else if network == testnet {
+        wallet_url = testnet_wallet_url;
+        let ok_message = format!(
+            "Derived staking wallet url {} based on network in config: {}",
+            wallet_url, network
+        );
+        log_and_emit(ok_message, backend_communicator);
+    } else {
+        let err_message = format!(
+            "Could not derive wallet url based on network in config: {}",
+            network
+        );
+        log_and_emit(err_message.clone(), backend_communicator);
+        return Err(err_message);
+    }
+
     let next_step = format!(
-        "Please assign your device token at https://wallet.xe.network/staking. Your device token is : {}",
-        url_safe_device_code
+        "Please assign your device token at {}. Your device token is : {}",
+        wallet_url, url_safe_device_code
     );
+    let ok_msg = String::from("Your device token was created.");
+    log_and_emit(ok_msg, backend_communicator);
     Ok(next_step)
 }
 

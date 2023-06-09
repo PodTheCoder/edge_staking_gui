@@ -126,7 +126,7 @@ pub fn get_last_node_payment(backend_communicator: &BackendCommunicator) -> u64 
     }
 }
 
-/// Returns last node payment timestamp. Default & error is 0.
+/// Returns stake id
 pub fn get_stake_id(backend_communicator: &BackendCommunicator) -> String {
     let config;
     match get_config(backend_communicator) {
@@ -135,7 +135,23 @@ pub fn get_stake_id(backend_communicator: &BackendCommunicator) -> String {
             config.stake_id
         }
         Err(err) => {
-            let err_message = format!("Could not load last node payment. Err {}", err);
+            let err_message = format!("Could not load stake id. Err {}", err);
+            log_and_emit(err_message, backend_communicator);
+            "Not Set".to_string()
+        }
+    }
+}
+
+/// Returns network
+pub fn get_network(backend_communicator: &BackendCommunicator) -> String {
+    let config;
+    match get_config(backend_communicator) {
+        Ok(ok_config) => {
+            config = ok_config;
+            config.network
+        }
+        Err(err) => {
+            let err_message = format!("Could not load network. Err {}", err);
             log_and_emit(err_message, backend_communicator);
             "Not Set".to_string()
         }

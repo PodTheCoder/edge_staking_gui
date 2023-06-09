@@ -5,7 +5,10 @@
 
 use tauri::{CustomMenuItem, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem};
 
-use check_requirements::pretty_check_string::{self, pretty_err_str};
+use check_requirements::{
+    check_edge::get_edge_index_url,
+    pretty_check_string::{self, pretty_err_str},
+};
 use config::{
     getters::{
         get_autostart_status, get_initialization_status, get_last_node_payment,
@@ -126,6 +129,17 @@ fn get_edge_cli_download_url_from_frontend(window: Window, datadir: String) -> S
     };
 
     check_requirements::check_edge::get_edge_cli_download_url_from_frontend(backend_communicator)
+}
+
+#[tauri::command]
+fn get_index_url_from_frontend(window: Window, datadir: String) -> String {
+    let backend_communicator = &BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir,
+        front_end_window: window,
+    };
+
+    get_edge_index_url(backend_communicator)
 }
 
 #[tauri::command]
@@ -362,6 +376,7 @@ fn main() {
             get_autostart_status_from_frontend,
             get_device_initialization_status_from_frontend,
             get_edge_cli_download_url_from_frontend,
+            get_index_url_from_frontend,
             get_launch_minimized_status_from_frontend,
             get_last_node_payment_from_frontend,
             get_node_address_from_frontend,

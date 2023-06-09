@@ -29,9 +29,13 @@ export async function get_node_wallet_from_config() {
 async function derive_and_set_node_wallet_based_on_node_address(node_address: string) {
   const appLocalDataDirPath = await appLocalDataDir()
 
-  const sess = await session.session('https://index.xe.network', node_address)
+  const network: string = await invoke('get_index_url_from_frontend', {
+    datadir: appLocalDataDirPath,
+    window: appWindow
+  })
+  const sess = await session.session(network, node_address);
   const node_stake = sess.node.stake
-  const myStake = await stake.stake('https://index.xe.network', node_stake)
+  const myStake = await stake.stake(network, node_stake);
   const derived_wallet_addr = myStake.wallet
   const err_str_1 = 'Unset'
   const err_str_2 = 'CouldNotLoadWalletAddressFromConfig'
@@ -266,7 +270,11 @@ async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>,
 export async function check_node_online_status(node_address: string) {
   const appLocalDataDirPath = await appLocalDataDir()
   try {
-    const sess = await session.session('https://index.xe.network', node_address)
+    const network: string = await invoke('get_index_url_from_frontend', {
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
+    const sess = await session.session(network, node_address)
     console.log(JSON.stringify(sess))
     console.log(sess.lastActive)
     const is_node_online = sess.online

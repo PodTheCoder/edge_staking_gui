@@ -1,3 +1,4 @@
+use crate::config::getters::get_network;
 use crate::utility::download_file;
 use crate::utility::log_and_emit;
 use crate::BackendCommunicator;
@@ -71,9 +72,42 @@ async fn get_edge_cli_checksum(
     Ok(checksum)
 }
 
+// Create index url based on config value of network
+pub fn get_edge_index_url(backend_communicator: &BackendCommunicator) -> String {
+    let network = get_network(backend_communicator);
+    let mainnet = String::from("mainnet");
+    let mainnet_index = String::from("https://index.xe.network");
+    let testnet = String::from("testnet");
+    let testnet_index = String::from("https://index.test.network");
+
+    if network == mainnet {
+        let ok_message = format!(
+            "Derived index url {} based on network in config {}",
+            mainnet_index, network
+        );
+        log_and_emit(ok_message, backend_communicator);
+        mainnet_index
+    } else if network == testnet {
+        let ok_message = format!(
+            "Derived index url {} based on network in config {}",
+            testnet_index, network
+        );
+        log_and_emit(ok_message, backend_communicator);
+        testnet_index
+    } else {
+        let err_message = format!(
+            "Unable to derive edge_index_url based on network in config: {}",
+            network
+        );
+        log_and_emit(err_message, backend_communicator);
+
+        String::from("ERR, see log")
+    }
+}
+
 // Create URL based on user's system to filename.
 fn get_edge_file_url(filename: String, backend_communicator: &BackendCommunicator) -> String {
-    let net = String::from("mainnet");
+    let net = get_network(backend_communicator);
     let os_info = get_os_info(backend_communicator);
     let os = os_info.cli_os_name;
     let processor_info = get_processor_info(backend_communicator);
@@ -93,7 +127,21 @@ fn get_edge_cli_checksum_url(backend_communicator: &BackendCommunicator) -> Stri
 pub fn get_edge_cli_download_url_from_frontend(
     backend_communicator: &BackendCommunicator,
 ) -> String {
-    let filename = String::from("edge.exe");
+    let network = get_network(backend_communicator);
+
+    let filename;
+    if network == "mainnet" {
+        filename = String::from("edge.exe");
+    } else if network == "testnet" {
+        filename = String::from("edgetest.exe");
+    } else {
+        let err_str = format!(
+            "Could not derive edge_cli_download_url based on network {}",
+            network,
+        );
+        log_and_emit(err_str.clone(), backend_communicator);
+        return err_str;
+    }
 
     get_edge_file_url(filename, backend_communicator)
 }
