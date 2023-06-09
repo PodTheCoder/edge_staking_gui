@@ -47,25 +47,23 @@ pub struct BackendCommunicator {
 }
 
 #[tauri::command]
-async fn install_edge_cli_from_frontend(window: Window, datadir: String) -> bool {
+async fn add_device_from_frontend(
+    address: String,
+    privatekey: String,
+    publickey: String,
+    window: Window,
+    datadir: String,
+) -> String {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
 
-    check_requirements::check_edge::get_edge_cli_binary(backend_communicator).await
-}
-
-#[tauri::command]
-fn get_edge_cli_download_url_from_frontend(window: Window, datadir: String) -> String {
-    let backend_communicator = &BackendCommunicator {
-        status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir,
-        front_end_window: window,
-    };
-
-    check_requirements::check_edge::get_edge_cli_download_url_from_frontend(backend_communicator)
+    match device::create_device_code(address, privatekey, publickey, backend_communicator).await {
+        Ok(ok_str) => check_requirements::pretty_check_string::pretty_ok_str(&ok_str, false),
+        Err(err_str) => err_str,
+    }
 }
 
 #[tauri::command]
@@ -82,6 +80,28 @@ async fn device_start_from_frontend(
     control_edge_cli::device_start_from_frontend(checklatestbinary, backend_communicator).await
 }
 
+#[tauri::command]
+async fn device_stop_from_frontend(checklatestbinary: bool, window: Window, datadir: String) {
+    let backend_communicator = &BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
+    control_edge_cli::device_stop_from_frontend(checklatestbinary, backend_communicator).await;
+}
+
+#[tauri::command]
+fn get_autostart_status_from_frontend(window: Window, datadir: String) -> bool {
+    let backend_communicator = &BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir,
+        front_end_window: window,
+    };
+
+    get_autostart_status(backend_communicator)
+}
+
 /// Returns true if initialization is complete, false if not.
 #[tauri::command]
 fn get_device_initialization_status_from_frontend(window: Window, datadir: String) -> bool {
@@ -95,6 +115,101 @@ fn get_device_initialization_status_from_frontend(window: Window, datadir: Strin
 
     // Frontend div hide needs a bool.
     initialization_status == 0
+}
+
+#[tauri::command]
+fn get_edge_cli_download_url_from_frontend(window: Window, datadir: String) -> String {
+    let backend_communicator = &BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir,
+        front_end_window: window,
+    };
+
+    check_requirements::check_edge::get_edge_cli_download_url_from_frontend(backend_communicator)
+}
+
+#[tauri::command]
+fn get_launch_minimized_status_from_frontend(window: Window, datadir: String) -> bool {
+    let backend_communicator = &BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir,
+        front_end_window: window,
+    };
+
+    get_launch_minimized_status(backend_communicator)
+}
+
+#[tauri::command]
+fn get_last_node_payment_from_frontend(window: Window, datadir: String) -> u64 {
+    let backend_communicator = &BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir,
+        front_end_window: window,
+    };
+
+    get_last_node_payment(backend_communicator)
+}
+
+#[tauri::command]
+fn get_node_address_from_frontend(window: Window, datadir: String) -> String {
+    let backend_communicator = &BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir,
+        front_end_window: window,
+    };
+
+    // let no_node_found = format!("Unset"); // "Unset" is the error String.
+
+    get_node_address(backend_communicator)
+}
+
+#[tauri::command]
+fn get_wallet_address_from_frontend(window: Window, datadir: String) -> String {
+    let backend_communicator = &BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir,
+        front_end_window: window,
+    };
+
+    get_wallet_address(backend_communicator)
+}
+
+#[tauri::command]
+async fn install_edge_cli_from_frontend(window: Window, datadir: String) -> bool {
+    let backend_communicator = &BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir.clone(),
+        front_end_window: window,
+    };
+
+    check_requirements::check_edge::get_edge_cli_binary(backend_communicator).await
+}
+
+#[tauri::command]
+fn log_and_emit_from_frontend(message: String, window: Window, datadir: String) {
+    // Send message from frontend to backend,
+    let backend_communicator = &BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir,
+        front_end_window: window,
+    };
+
+    log_and_emit(message, backend_communicator);
+}
+
+#[tauri::command]
+fn set_autostart_status_from_frontend(
+    autostartstatus: bool,
+    window: Window,
+    datadir: String,
+) -> bool {
+    let backend_communicator = &BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir,
+        front_end_window: window,
+    };
+
+    set_autostart_status(autostartstatus, backend_communicator).is_ok()
 }
 
 /// Returns true if initialization is complete, false if not.
@@ -149,101 +264,8 @@ fn set_device_not_initialized_from_frontend(window: Window, datadir: String) -> 
 }
 
 #[tauri::command]
-fn get_node_address_from_frontend(window: Window, datadir: String) -> String {
-    let backend_communicator = &BackendCommunicator {
-        status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir,
-        front_end_window: window,
-    };
-
-    // let no_node_found = format!("Unset"); // "Unset" is the error String.
-
-    get_node_address(backend_communicator)
-}
-
-#[tauri::command]
-async fn device_stop_from_frontend(checklatestbinary: bool, window: Window, datadir: String) {
-    let backend_communicator = &BackendCommunicator {
-        status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
-        front_end_window: window,
-    };
-
-    control_edge_cli::device_stop_from_frontend(checklatestbinary, backend_communicator).await;
-}
-
-#[tauri::command]
-async fn update_edge_cli_from_frontend(
-    checklatestbinary: bool,
-    window: Window,
-    datadir: String,
-) -> bool {
-    let backend_communicator = &BackendCommunicator {
-        status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
-        front_end_window: window,
-    };
-
-    let mut is_edge_cli_latest_ver =
-        control_edge_cli::update_edge_cli(checklatestbinary, backend_communicator).await;
-
-    if !is_edge_cli_latest_ver {
-        // Update failed via CLI. Trying fallback.
-        let err_msg = "Unable to update Edge CLI via update command. Trying fallback method using get_cli_binary.".to_string();
-        log_and_emit(err_msg, backend_communicator);
-        is_edge_cli_latest_ver =
-            check_requirements::check_edge::get_edge_cli_binary(backend_communicator).await;
-    }
-
-    is_edge_cli_latest_ver
-}
-
-#[tauri::command]
-fn log_and_emit_from_frontend(message: String, window: Window, datadir: String) {
-    // Send message from frontend to backend,
-    let backend_communicator = &BackendCommunicator {
-        status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir,
-        front_end_window: window,
-    };
-
-    log_and_emit(message, backend_communicator);
-}
-
-#[tauri::command]
-async fn add_device_from_frontend(
-    address: String,
-    privatekey: String,
-    publickey: String,
-    window: Window,
-    datadir: String,
-) -> String {
-    let backend_communicator = &BackendCommunicator {
-        status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir.clone(),
-        front_end_window: window,
-    };
-
-    match device::create_device_code(address, privatekey, publickey, backend_communicator).await {
-        Ok(ok_str) => check_requirements::pretty_check_string::pretty_ok_str(&ok_str, false),
-        Err(err_str) => err_str,
-    }
-}
-
-#[tauri::command]
-fn get_autostart_status_from_frontend(window: Window, datadir: String) -> bool {
-    let backend_communicator = &BackendCommunicator {
-        status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir,
-        front_end_window: window,
-    };
-
-    get_autostart_status(backend_communicator)
-}
-
-#[tauri::command]
-fn set_autostart_status_from_frontend(
-    autostartstatus: bool,
+fn set_last_node_payment_from_frontend(
+    lastnodepayment: u64,
     window: Window,
     datadir: String,
 ) -> bool {
@@ -253,18 +275,7 @@ fn set_autostart_status_from_frontend(
         front_end_window: window,
     };
 
-    set_autostart_status(autostartstatus, backend_communicator).is_ok()
-}
-
-#[tauri::command]
-fn get_launch_minimized_status_from_frontend(window: Window, datadir: String) -> bool {
-    let backend_communicator = &BackendCommunicator {
-        status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir,
-        front_end_window: window,
-    };
-
-    get_launch_minimized_status(backend_communicator)
+    set_last_node_payment(lastnodepayment, backend_communicator).is_ok()
 }
 
 #[tauri::command]
@@ -294,17 +305,6 @@ fn set_stake_id_from_frontend(stake: String, window: Window, datadir: String) ->
 }
 
 #[tauri::command]
-fn get_wallet_address_from_frontend(window: Window, datadir: String) -> String {
-    let backend_communicator = &BackendCommunicator {
-        status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir,
-        front_end_window: window,
-    };
-
-    get_wallet_address(backend_communicator)
-}
-
-#[tauri::command]
 fn set_wallet_address_from_frontend(
     walletaddress: String,
     window: Window,
@@ -320,29 +320,29 @@ fn set_wallet_address_from_frontend(
 }
 
 #[tauri::command]
-fn get_last_node_payment_from_frontend(window: Window, datadir: String) -> u64 {
-    let backend_communicator = &BackendCommunicator {
-        status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir,
-        front_end_window: window,
-    };
-
-    get_last_node_payment(backend_communicator)
-}
-
-#[tauri::command]
-fn set_last_node_payment_from_frontend(
-    lastnodepayment: u64,
+async fn update_edge_cli_from_frontend(
+    checklatestbinary: bool,
     window: Window,
     datadir: String,
 ) -> bool {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
-        data_dir: datadir,
+        data_dir: datadir.clone(),
         front_end_window: window,
     };
 
-    set_last_node_payment(lastnodepayment, backend_communicator).is_ok()
+    let mut is_edge_cli_latest_ver =
+        control_edge_cli::update_edge_cli(checklatestbinary, backend_communicator).await;
+
+    if !is_edge_cli_latest_ver {
+        // Update failed via CLI. Trying fallback.
+        let err_msg = "Unable to update Edge CLI via update command. Trying fallback method using get_cli_binary.".to_string();
+        log_and_emit(err_msg, backend_communicator);
+        is_edge_cli_latest_ver =
+            check_requirements::check_edge::get_edge_cli_binary(backend_communicator).await;
+    }
+
+    is_edge_cli_latest_ver
 }
 
 fn main() {
@@ -356,26 +356,26 @@ fn main() {
 
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
-            install_edge_cli_from_frontend,
-            get_edge_cli_download_url_from_frontend,
+            add_device_from_frontend,
             device_start_from_frontend,
             device_stop_from_frontend,
-            update_edge_cli_from_frontend,
-            log_and_emit_from_frontend,
+            get_autostart_status_from_frontend,
             get_device_initialization_status_from_frontend,
+            get_edge_cli_download_url_from_frontend,
+            get_launch_minimized_status_from_frontend,
+            get_last_node_payment_from_frontend,
+            get_node_address_from_frontend,
+            get_wallet_address_from_frontend,
+            install_edge_cli_from_frontend,
+            log_and_emit_from_frontend,
+            set_autostart_status_from_frontend,
             set_device_fully_initialized_from_frontend,
             set_device_not_initialized_from_frontend,
-            get_node_address_from_frontend,
-            get_autostart_status_from_frontend,
-            set_autostart_status_from_frontend,
-            get_launch_minimized_status_from_frontend,
+            set_last_node_payment_from_frontend,
             set_launch_minimized_status_from_frontend,
             set_stake_id_from_frontend,
-            get_wallet_address_from_frontend,
             set_wallet_address_from_frontend,
-            get_last_node_payment_from_frontend,
-            set_last_node_payment_from_frontend,
-            add_device_from_frontend
+            update_edge_cli_from_frontend,
         ])
         .system_tray(tray)
         .on_window_event(|event| {
