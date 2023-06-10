@@ -106,7 +106,7 @@ async function initial_device_start_from_frontend(stake_ID: string) {
   }
 
   const has_device_start_from_frontended_successfully: boolean = await invoke('device_start_from_frontend', {
-    checklatestbinary: true,
+    checklatestbinary: false,
     datadir: appLocalDataDirPath,
     window: appWindow
   })

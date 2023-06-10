@@ -115,7 +115,6 @@ async function auto_start_node(timer_seconds_delay = 30, recheck_limit = 60) {
     window: appWindow
   })
 
-  let is_node_latest_version = false
   let recheck_count = 0
   if (!isNodeAutostartIntervalActive) {
     isNodeAutostartIntervalActive = true
@@ -132,25 +131,6 @@ async function auto_start_node(timer_seconds_delay = 30, recheck_limit = 60) {
         datadir: appLocalDataDirPath,
         window: appWindow
       })
-
-
-      // First update node to latest version.
-      if (!is_node_latest_version) {
-        const appLocalDataDirPath = await appLocalDataDir()
-        is_node_latest_version = await invoke('update_edge_cli_from_frontend', {
-          datadir: appLocalDataDirPath,
-          window: appWindow
-        })
-
-        if (is_node_latest_version) {
-          const node_updated_msg = 'Your Edge CLI is the latest version. Attempting to start your node.'
-          await invoke('log_and_emit_from_frontend', {
-            message: node_updated_msg,
-            datadir: appLocalDataDirPath,
-            window: appWindow
-          })
-        }
-      }
 
       const has_node_started_successfully = await start_device()
 
