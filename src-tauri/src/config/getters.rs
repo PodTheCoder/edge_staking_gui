@@ -157,3 +157,33 @@ pub fn get_network(backend_communicator: &BackendCommunicator) -> String {
         }
     }
 }
+
+// Get edge binary name based on network value
+pub fn get_edge_binary_name(backend_communicator: &BackendCommunicator) -> String {
+    let network = get_network(backend_communicator);
+    let mainnet = String::from("mainnet");
+    let mainnet_bin = String::from("edge.exe");
+    let testnet = String::from("testnet");
+    let testnet_bin = String::from("edgetest.exe");
+    if network == mainnet {
+        let bin_name = mainnet_bin;
+        let ok_message = format!(
+            "Derived binary name {} based on network {}",
+            bin_name, network
+        );
+        log_and_emit(ok_message, backend_communicator);
+        bin_name
+    } else if network == testnet {
+        let bin_name = testnet_bin;
+        let ok_message = format!(
+            "Derived binary name {} based on network {}",
+            bin_name, network
+        );
+        log_and_emit(ok_message, backend_communicator);
+        bin_name
+    } else {
+        let err_message = format!("Unable to derive binary name based on network {}", network);
+        log_and_emit(err_message.clone(), backend_communicator);
+        err_message
+    }
+}

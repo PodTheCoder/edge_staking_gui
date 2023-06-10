@@ -1,3 +1,4 @@
+use crate::config::getters::get_edge_binary_name;
 use crate::config::getters::get_network;
 use crate::utility::download_file;
 use crate::utility::log_and_emit;
@@ -127,21 +128,7 @@ fn get_edge_cli_checksum_url(backend_communicator: &BackendCommunicator) -> Stri
 pub fn get_edge_cli_download_url_from_frontend(
     backend_communicator: &BackendCommunicator,
 ) -> String {
-    let network = get_network(backend_communicator);
-
-    let filename;
-    if network == "mainnet" {
-        filename = String::from("edge.exe");
-    } else if network == "testnet" {
-        filename = String::from("edgetest.exe");
-    } else {
-        let err_str = format!(
-            "Could not derive edge_cli_download_url based on network {}",
-            network,
-        );
-        log_and_emit(err_str.clone(), backend_communicator);
-        return err_str;
-    }
+    let filename = get_edge_binary_name(backend_communicator);
 
     get_edge_file_url(filename, backend_communicator)
 }
@@ -153,7 +140,7 @@ pub async fn is_edge_correctly_downloaded(
     // Send a GET request and wait for the response headers.
     // Must be `mut` so we can read the response body.
 
-    let filename = String::from("edge.exe");
+    let filename = get_edge_binary_name(backend_communicator);
     let filepath = format!("{}{}", backend_communicator.data_dir.clone(), filename);
 
     let edge_cli_path = Path::new(&filepath);
@@ -229,7 +216,7 @@ fn hash_file(
 /// Download the fitting Edge CLI based on user's system.
 /// Returns true if latest binary installed.
 pub(crate) async fn get_edge_cli_binary(backend_communicator: &BackendCommunicator) -> bool {
-    let edge_binary_filename = String::from("edge.exe");
+    let edge_binary_filename = get_edge_binary_name(backend_communicator);
     let edge_binary_filepath = format!(
         "{}{}",
         backend_communicator.data_dir.clone(),

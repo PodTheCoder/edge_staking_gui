@@ -1,5 +1,5 @@
 use crate::check_requirements;
-use crate::config::getters::get_stake_id;
+use crate::config::getters::{get_edge_binary_name, get_stake_id};
 use crate::utility::log_and_emit;
 use crate::BackendCommunicator;
 use std::process::Command;
@@ -32,7 +32,8 @@ async fn command_edge_cli(
         format!("Invoking command in Edge CLI = {}", cli_command),
         backend_communicator,
     );
-    let bin_name = "edge.exe";
+
+    let bin_name = get_edge_binary_name(backend_communicator);
     let bin_path = format!("{}{}", backend_communicator.data_dir.clone(), bin_name);
     #[cfg(target_os = "windows")]
     const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
