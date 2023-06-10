@@ -270,11 +270,11 @@ async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>,
 export async function check_node_online_status(node_address: string) {
   const appLocalDataDirPath = await appLocalDataDir()
   try {
-    const network: string = await invoke('get_index_url_from_frontend', {
+    const index_url: string = await invoke('get_index_url_from_frontend', {
       datadir: appLocalDataDirPath,
       window: appWindow
     })
-    const sess = await session.session(network, node_address)
+    const sess = await session.session(index_url, node_address)
     console.log(JSON.stringify(sess))
     console.log(sess.lastActive)
     const is_node_online = sess.online
