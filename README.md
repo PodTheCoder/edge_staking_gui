@@ -23,6 +23,8 @@ Prerequisites: https://tauri.app/v1/guides/getting-started/prerequisites
 
 Development & build commands can be found in the Makefile.
 
+You can switch your network via the config. Accepted values: "testnet", "mainnet"
+
 ## Troubleshooting
 
 
