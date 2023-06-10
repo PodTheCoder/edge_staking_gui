@@ -28,13 +28,14 @@ async fn command_edge_cli(
             return Err(error_message);
         }
     }
+
+    let bin_name = get_edge_binary_name(backend_communicator);
+    let bin_path = format!("{}{}", backend_communicator.data_dir.clone(), bin_name);
+
     log_and_emit(
         format!("Invoking command in Edge CLI = {}", cli_command),
         backend_communicator,
     );
-
-    let bin_name = get_edge_binary_name(backend_communicator);
-    let bin_path = format!("{}{}", backend_communicator.data_dir.clone(), bin_name);
     #[cfg(target_os = "windows")]
     const WINDOWS_CREATE_NO_WINDOW: u32 = 0x08000000;
 
