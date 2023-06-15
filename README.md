@@ -1,7 +1,7 @@
 # Pod's Edge Staking GUI (beta)
 
 ## Features
-- Easily setup your Edge host with a GUI (Graphical User Interface).
+- Easily setup & control your Edge host with a GUI (Graphical User Interface).
 - Uses the *device token* staking method. Has no access to your XE wallet.
 - Autolaunch your node. Can also launch minimized for a seamless experience.
 - Get notified when you receive node earnings or when your node is offline.
@@ -10,7 +10,8 @@
 - Fast & small program.
 
 ## Screenshot
-<img width="599" alt="Edge-Staking-Gui-v-0-5-0 - Copy" src="https://user-images.githubusercontent.com/113918164/234863196-63f22076-6c0c-45fc-aea5-450de2e08fb9.PNG">
+<img width="598" alt="edge_staking_gui_screenshot - Copy" src="https://github.com/PodTheCoder/edge_staking_gui/assets/113918164/cc6dccca-52c5-4538-9d7d-b20638217ffe">
+
 
 ## Frequently Asked Questions
 Q: Does the GUI have access to my wallet?
