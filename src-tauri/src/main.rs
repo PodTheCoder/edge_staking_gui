@@ -334,29 +334,14 @@ fn set_wallet_address_from_frontend(
 }
 
 #[tauri::command]
-async fn update_edge_cli_from_frontend(
-    checklatestbinary: bool,
-    window: Window,
-    datadir: String,
-) -> bool {
+async fn update_edge_cli_from_frontend(window: Window, datadir: String) -> bool {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
 
-    let mut is_edge_cli_latest_ver =
-        control_edge_cli::update_edge_cli(checklatestbinary, backend_communicator).await;
-
-    if !is_edge_cli_latest_ver {
-        // Update failed via CLI. Trying fallback.
-        let err_msg = "Unable to update Edge CLI via update command. Trying fallback method using get_cli_binary.".to_string();
-        log_and_emit(err_msg, backend_communicator);
-        is_edge_cli_latest_ver =
-            check_requirements::check_edge::get_edge_cli_binary(backend_communicator).await;
-    }
-
-    is_edge_cli_latest_ver
+    check_requirements::check_edge::get_edge_cli_binary(backend_communicator).await
 }
 
 fn main() {

@@ -30,7 +30,6 @@ async function update_cli_emitter() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   const appLocalDataDirPath = await appLocalDataDir()
   Node_Control_Response.value = await invoke('update_edge_cli_from_frontend', {
-    checklatestbinary: false,
     datadir: appLocalDataDirPath,
     window: appWindow
   })
@@ -49,7 +48,7 @@ async function update_cli_emitter() {
         Stop Node
       </button>
       <button type="button" @click="update_cli_emitter()">
-        Update Node
+        Update CLI
       </button>
     </div>
   </div>

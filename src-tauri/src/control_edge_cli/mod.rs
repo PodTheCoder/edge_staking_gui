@@ -169,30 +169,3 @@ pub async fn device_start_from_frontend(
         }
     }
 }
-
-/// Update Edge CLI to latest version via CMD
-pub async fn update_edge_cli(
-    check_is_edge_binary_latest_version: bool,
-    backend_communicator: &BackendCommunicator,
-) -> bool {
-    let stake_id: String = get_stake_id(backend_communicator);
-    let cli_command = format!("device update --stake={}", stake_id);
-    let command_edge_cli_future = command_edge_cli(
-        cli_command,
-        check_is_edge_binary_latest_version,
-        backend_communicator,
-    )
-    .await;
-    match command_edge_cli_future {
-        Ok(ok_msg) => {
-            let ok_message = format!("Edge CLI updated successfully: {}", ok_msg);
-            log_and_emit(ok_message, backend_communicator);
-            true
-        }
-        Err(err_msg) => {
-            let err_message = format!("Edge CLI failed to update: {}", err_msg);
-            log_and_emit(err_message, backend_communicator);
-            false
-        }
-    }
-}
