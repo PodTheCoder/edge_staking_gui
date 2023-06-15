@@ -28,6 +28,7 @@ async function call_start_device_for_first_time(stake_ID: string) {
 }
 
 const App_version = ref()
+const network = ref('')
 const App_name = ref()
 /**
  * Get Application Version
@@ -55,8 +56,51 @@ async function back_to_setup() {
   sync_initialization_status(deviceInitialized)
 }
 
+/**
+ * Get network eg. testnet or mainnet
+ */
+async function get_network() {
+  const appLocalDataDirPath = await appLocalDataDir()
+  network.value = await invoke('get_network_from_frontend', {
+    datadir: appLocalDataDirPath,
+    window: appWindow
+  })
+}
+
+/**
+ * Switch network eg. testnet or mainnet
+ * Function is inlined because Vue unwraps a reference:
+* https://github.com/vuejs/composition-api/issues/605
+ */
+async function switch_network() {
+  const appLocalDataDirPath = await appLocalDataDir()
+  if (network.value == "mainnet") {
+    await invoke('set_network_from_frontend', {
+      network: "testnet",
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
+  } else {
+    await invoke('set_network_from_frontend', {
+      network: "mainnet",
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
+
+  }
+  await get_network()
+  const network_next_step = `Your network has been set to ${network.value}. Make sure you update the CLI and that your stake is set correctly. This might require going back to setup.`
+  await invoke('log_and_emit_from_frontend', {
+    message: network_next_step,
+    datadir: appLocalDataDirPath,
+    window: appWindow
+  })
+}
+
+
 get_app_version()
 get_app_name()
+get_network()
 sync_initialization_status(deviceInitialized)
 sync_launch_minimized_status()
 </script>
@@ -117,10 +161,13 @@ sync_launch_minimized_status()
       </div>
       <Post_Initialization_Autocheck />
     </div>
-    <div style="position:absolute; right: 8px">
-      <p style="font-size: small; color: gray;">
-        v. {{ App_version }}
-      </p>
+    <div style="position:absolute; right: 8px; white-space: nowrap;">
+      <span style="font-size: small; color: gray;" @click="switch_network()">
+        Network: {{ network }} |
+      </span>
+      <span style="font-size: small; color: gray;">
+        GUI Version: {{ App_version }}
+      </span>
     </div>
   </div>
 </template>

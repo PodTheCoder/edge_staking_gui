@@ -12,6 +12,20 @@
 ## Screenshot
 <img width="599" alt="Edge-Staking-Gui-v-0-5-0 - Copy" src="https://user-images.githubusercontent.com/113918164/234863196-63f22076-6c0c-45fc-aea5-450de2e08fb9.PNG">
 
+## Frequently Asked Questions
+Q: Does the GUI have access to my wallet?
+
+A: No. The GUI is designed to use the *device code* staking method.
+
+Q: How can I switch networks?
+
+A: Click "Network" in the bottom-right of the GUI.
+
+Q: Help I am stuck. Where can I get support?
+
+A: On the Edge Discord: https://ed.ge/discord. Ask in the *staking-support* channel.
+
+
 ## Nerd Info
 - Tauri framework for Cross-OS Desktop App.
 - Frontend -> Vue with Vite.
@@ -23,7 +37,7 @@ Prerequisites: https://tauri.app/v1/guides/getting-started/prerequisites
 
 Development & build commands can be found in the Makefile.
 
-You can switch your network via the config. Accepted values: "testnet", "mainnet"
+You can switch your network by clicking on "Network" in the bottom-right of the GUI.
 
 ## Troubleshooting
 

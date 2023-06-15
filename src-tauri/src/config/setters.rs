@@ -94,6 +94,35 @@ pub fn set_autostart_status(
     }
 }
 
+pub fn set_network(
+    network: String,
+    backend_communicator: &BackendCommunicator,
+) -> Result<(), std::string::String> {
+    let config_path = get_config_path_as_str(backend_communicator);
+
+    match get_config(backend_communicator) {
+        Ok(ok_config) => {
+            let mut changed_config = ok_config;
+            changed_config.network = network;
+
+            log_and_emit(
+                format!("Set network to: {}", changed_config.network),
+                backend_communicator,
+            );
+
+            match confy::store_path(config_path, changed_config) {
+                Ok(_) => Ok(()),
+                Err(_) => {
+                    let err_msg = "Unable to store config file at location".to_string();
+                    log_and_emit(err_msg.clone(), backend_communicator);
+                    Err(err_msg)
+                }
+            }
+        }
+        Err(err) => Err(err),
+    }
+}
+
 pub fn set_launch_minimized_status(
     launch_minimized: bool,
     backend_communicator: &BackendCommunicator,

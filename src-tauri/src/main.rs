@@ -12,7 +12,7 @@ use check_requirements::{
 use config::{
     getters::{
         get_autostart_status, get_initialization_status, get_last_node_payment,
-        get_launch_minimized_status, get_node_address, get_wallet_address,
+        get_launch_minimized_status, get_network, get_node_address, get_wallet_address,
     },
     setters::{
         set_autostart_status, set_device_initialization_status, set_last_node_payment,
@@ -165,6 +165,17 @@ fn get_last_node_payment_from_frontend(window: Window, datadir: String) -> u64 {
 }
 
 #[tauri::command]
+fn get_network_from_frontend(window: Window, datadir: String) -> String {
+    let backend_communicator = &BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir,
+        front_end_window: window,
+    };
+
+    get_network(backend_communicator)
+}
+
+#[tauri::command]
 fn get_node_address_from_frontend(window: Window, datadir: String) -> String {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
@@ -308,6 +319,17 @@ fn set_launch_minimized_status_from_frontend(
 }
 
 #[tauri::command]
+fn set_network_from_frontend(network: String, window: Window, datadir: String) -> bool {
+    let backend_communicator = &BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir,
+        front_end_window: window,
+    };
+
+    config::setters::set_network(network, backend_communicator).is_ok()
+}
+
+#[tauri::command]
 fn set_stake_id_from_frontend(stake: String, window: Window, datadir: String) -> bool {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
@@ -364,6 +386,7 @@ fn main() {
             get_index_url_from_frontend,
             get_launch_minimized_status_from_frontend,
             get_last_node_payment_from_frontend,
+            get_network_from_frontend,
             get_node_address_from_frontend,
             get_wallet_address_from_frontend,
             install_edge_cli_from_frontend,
@@ -373,6 +396,7 @@ fn main() {
             set_device_not_initialized_from_frontend,
             set_last_node_payment_from_frontend,
             set_launch_minimized_status_from_frontend,
+            set_network_from_frontend,
             set_stake_id_from_frontend,
             set_wallet_address_from_frontend,
             update_edge_cli_from_frontend,
