@@ -186,7 +186,7 @@ sync_launch_minimized_status()
       </span>
       <br />
       <span style="font-size: small; color: gray;">
-        Configuration file location: {{ config_location }}
+        Config location: {{ config_location }}
       </span>
     </div>
   </div>
