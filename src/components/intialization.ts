@@ -4,6 +4,8 @@ import { appWindow } from '@tauri-apps/api/window'
 import { invoke } from '@tauri-apps/api'
 import { send_notification } from './notification'
 import { session, stake } from '@edge/index-utils'
+import { SuperAgentRequest } from 'superagent'
+
 
 export async function set_wallet_address(deviceInitializedref: Ref<boolean>) {
   const appLocalDataDirPath = await appLocalDataDir()
@@ -91,17 +93,30 @@ export async function sync_initialization_status(deviceInitializedref: Ref<boole
 /**
  * Start the node. Returns a boolean whether the device has successfully started.
  */
-async function initial_device_start_from_frontend(stake_ID: string) {
+async function initial_device_start_from_frontend() {
   const appLocalDataDirPath = await appLocalDataDir()
 
-  const set_stake_id_from_frontend: boolean = await invoke('set_stake_id_from_frontend', {
-    stake: stake_ID,
-    datadir: appLocalDataDirPath,
-    window: appWindow
-  })
+  const stake_ID = await get_stake_id_via_index()
 
-  if (!set_stake_id_from_frontend) {
-    // Error while setting stake id
+  if (stake_ID) {
+    const set_stake_id_from_frontend: boolean = await invoke('set_stake_id_from_frontend', {
+      stake: stake_ID,
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
+
+    if (!set_stake_id_from_frontend) {
+      // Error while setting stake id
+      return false
+    }
+  }
+  else {
+    const err_message = 'Could not derive stake via Index. Has your assign device transaction been confirmed? Please try again. If the error persists, contact support.'
+    await invoke('log_and_emit_from_frontend', {
+      message: err_message,
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
     return false
   }
 
@@ -117,8 +132,8 @@ async function initial_device_start_from_frontend(stake_ID: string) {
 /**
  * Initial startup of device.
  */
-export async function start_device_for_first_time(stake_ID: string, deviceInitializedref: Ref<boolean>, nodeOnlineMessageref: Ref<string>) {
-  const has_device_start_from_frontended_successfully = await initial_device_start_from_frontend(stake_ID)
+export async function start_device_for_first_time(deviceInitializedref: Ref<boolean>, nodeOnlineMessageref: Ref<string>) {
+  const has_device_start_from_frontended_successfully = await initial_device_start_from_frontend()
   if (has_device_start_from_frontended_successfully == true) {
     complete_initialization_flow(deviceInitializedref, nodeOnlineMessageref)
   }
@@ -261,6 +276,43 @@ async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>,
     clearInterval(AutoCheckNodeOnline)
   }
 }
+
+/**
+ *
+ * @param node_address XE node address
+ * Checks if the XE node address is online.
+ */
+export async function get_stake_id_via_index() {
+  const appLocalDataDirPath = await appLocalDataDir()
+  try {
+    const index_url: string = await invoke('get_index_url_from_frontend', {
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
+    const node_address: string = await invoke('get_node_address_from_frontend', {
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
+
+    const cb = (r: SuperAgentRequest) => r.timeout(10 * 1000)
+    const stake_id = (await stake.deviceStake(index_url, node_address, cb)).stake
+    return stake_id
+  }
+  catch (e) {
+    const error_string = JSON.stringify(e)
+    const err_msg_1 = 'Stake not found http error code:' + error_string
+
+    await invoke('log_and_emit_from_frontend', {
+      message: err_msg_1,
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
+    return false
+  }
+
+
+}
+
 
 /**
  *
