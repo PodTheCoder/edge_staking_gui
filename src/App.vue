@@ -52,6 +52,10 @@ async function back_to_setup() {
     datadir: appLocalDataDirPath,
     window: appWindow
   })
+  await invoke('reset_config_from_frontend', {
+    datadir: appLocalDataDirPath,
+    window: appWindow
+  })
   sync_initialization_status(deviceInitialized)
 }
 

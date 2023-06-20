@@ -10,6 +10,7 @@ use check_requirements::{
     pretty_check_string::{self, pretty_err_str},
 };
 use config::{
+    create_default_config,
     getters::{
         get_autostart_status, get_initialization_status, get_last_node_payment,
         get_launch_minimized_status, get_network, get_node_address, get_wallet_address,
@@ -356,6 +357,16 @@ fn set_wallet_address_from_frontend(
 }
 
 #[tauri::command]
+fn reset_config_from_frontend(window: Window, datadir: String) -> bool {
+    let backend_communicator = &BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir,
+        front_end_window: window,
+    };
+    create_default_config(backend_communicator).is_ok()
+}
+
+#[tauri::command]
 async fn update_edge_cli_from_frontend(window: Window, datadir: String) -> bool {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
@@ -399,6 +410,7 @@ fn main() {
             set_network_from_frontend,
             set_stake_id_from_frontend,
             set_wallet_address_from_frontend,
+            reset_config_from_frontend,
             update_edge_cli_from_frontend,
         ])
         .system_tray(tray)
