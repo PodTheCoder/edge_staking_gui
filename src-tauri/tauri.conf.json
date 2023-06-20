@@ -83,7 +83,7 @@
         "resizable": true,
         "title": "Edge Staking GUI",
         "width": 800,
-        "height": 1000,
+        "height": 850,
         "visible": false,
         "center": true
       }
