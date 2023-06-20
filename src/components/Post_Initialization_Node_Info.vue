@@ -43,7 +43,7 @@ get_wallet_address_from_config()
     <div class="card" style="line-height:10px">
       <p>Device address: {{ device_address }}</p>
       <p>Stake ID: {{ stake_id }}</p>
-      <p>Wallet_address: {{ wallet_address }}</p>
+      <p>Wallet address: {{ wallet_address }}</p>
     </div>
   </div>
 </template>
