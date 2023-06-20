@@ -159,7 +159,7 @@ get_staking_url()
       </div>
 
       <div class="step">
-        <p>4. Wait 5-10 minutes until your device token assignment is confirmed.</p>
+        <p>4. Assign your <i>device token</i>. Wait 2-5 minutes until it is confirmed.</p>
       </div>
 
       <div class="step">
