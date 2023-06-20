@@ -30,6 +30,7 @@ async function call_start_device_for_first_time() {
 const App_version = ref()
 const network = ref('')
 const App_name = ref()
+const config_location = ref('')
 /**
  * Get Application Version
  */
@@ -101,9 +102,18 @@ async function switch_network() {
   })
 }
 
+async function get_config_location() {
+  const appLocalDataDirPath = await appLocalDataDir()
+  config_location.value = await invoke('get_config_location_from_frontend', {
+    datadir: appLocalDataDirPath,
+    window: appWindow
+  })
+
+}
 
 get_app_version()
 get_app_name()
+get_config_location()
 get_network()
 sync_initialization_status(deviceInitialized)
 sync_launch_minimized_status()
@@ -167,12 +177,16 @@ sync_launch_minimized_status()
       </div>
       <Post_Initialization_Autocheck />
     </div>
-    <div style="position:absolute; right: 8px; white-space: nowrap;">
+    <div style="position:fixed; left: 8px; white-space: nowrap;">
       <span style="font-size: small; color: gray;" @click="switch_network()">
         Network: {{ network }} |
       </span>
       <span style="font-size: small; color: gray;">
         GUI Version: {{ App_version }}
+      </span>
+      <br />
+      <span style="font-size: small; color: gray;">
+        Configuration file location: {{ config_location }}
       </span>
     </div>
   </div>

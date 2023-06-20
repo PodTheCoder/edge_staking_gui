@@ -12,8 +12,9 @@ use check_requirements::{
 use config::{
     create_default_config,
     getters::{
-        get_autostart_status, get_initialization_status, get_last_node_payment,
-        get_launch_minimized_status, get_network, get_node_address, get_wallet_address,
+        get_autostart_status, get_config_path_as_str, get_initialization_status,
+        get_last_node_payment, get_launch_minimized_status, get_network, get_node_address,
+        get_wallet_address,
     },
     setters::{
         set_autostart_status, set_device_initialization_status, set_last_node_payment,
@@ -104,6 +105,17 @@ fn get_autostart_status_from_frontend(window: Window, datadir: String) -> bool {
     };
 
     get_autostart_status(backend_communicator)
+}
+
+#[tauri::command]
+fn get_config_location_from_frontend(window: Window, datadir: String) -> String {
+    let backend_communicator = &BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir,
+        front_end_window: window,
+    };
+
+    get_config_path_as_str(backend_communicator)
 }
 
 /// Returns true if initialization is complete, false if not.
@@ -403,6 +415,7 @@ fn main() {
             device_start_from_frontend,
             device_stop_from_frontend,
             get_autostart_status_from_frontend,
+            get_config_location_from_frontend,
             get_device_initialization_status_from_frontend,
             get_edge_cli_download_url_from_frontend,
             get_index_url_from_frontend,
