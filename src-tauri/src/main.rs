@@ -190,6 +190,17 @@ fn get_node_address_from_frontend(window: Window, datadir: String) -> String {
 }
 
 #[tauri::command]
+fn get_stake_id_from_frontend(window: Window, datadir: String) -> String {
+    let backend_communicator = &BackendCommunicator {
+        status_listener: String::from(STATUSLISTENER),
+        data_dir: datadir,
+        front_end_window: window,
+    };
+
+    config::getters::get_stake_id(backend_communicator)
+}
+
+#[tauri::command]
 fn get_wallet_address_from_frontend(window: Window, datadir: String) -> String {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
@@ -399,6 +410,7 @@ fn main() {
             get_last_node_payment_from_frontend,
             get_network_from_frontend,
             get_node_address_from_frontend,
+            get_stake_id_from_frontend,
             get_wallet_address_from_frontend,
             install_edge_cli_from_frontend,
             log_and_emit_from_frontend,

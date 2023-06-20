@@ -5,6 +5,7 @@ import Current_Status from './components/Current_Status.vue'
 import Install_Edge_Cli from './components/Install_Edge_Cli.vue'
 import LaunchWindowVisibility from './components/LaunchWindowVisibility.vue'
 import Post_Initialization_Autocheck from './components/Post_Initialization_Autocheck.vue'
+import Post_Initialization_Node_Info from './components/Post_Initialization_Node_Info.vue'
 import Post_Initialization_Node_Control from './components/Post_Initialization_Node_Control.vue'
 import { appLocalDataDir } from '@tauri-apps/api/path'
 import { appWindow } from '@tauri-apps/api/window'
@@ -146,6 +147,9 @@ sync_launch_minimized_status()
     <div v-else class="container">
       <div class="step">
         <Post_Initialization_Node_Control />
+      </div>
+      <div class="step">
+        <Post_Initialization_Node_Info />
       </div>
       <div class="step">
         <Auto_Start />
