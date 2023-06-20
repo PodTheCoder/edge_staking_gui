@@ -127,7 +127,6 @@ pub async fn create_device_code(
         general_purpose::URL_SAFE_NO_PAD.encode(device_json_string.as_bytes());
 
     let network = get_network(backend_communicator);
-
     let mainnet = String::from("mainnet");
     let mainnet_wallet_url = String::from("https://wallet.xe.network/staking");
     let testnet = String::from("testnet");

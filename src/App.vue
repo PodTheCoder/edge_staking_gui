@@ -31,6 +31,8 @@ const App_version = ref()
 const network = ref('')
 const App_name = ref()
 const config_location = ref('')
+const staking_url = ref('')
+
 /**
  * Get Application Version
  */
@@ -100,6 +102,7 @@ async function switch_network() {
     datadir: appLocalDataDirPath,
     window: appWindow
   })
+  await get_staking_url()
 }
 
 async function get_config_location() {
@@ -108,7 +111,19 @@ async function get_config_location() {
     datadir: appLocalDataDirPath,
     window: appWindow
   })
+}
 
+async function get_staking_url() {
+  await get_network();
+  let mainnet_wallet_url = "https://wallet.xe.network/staking"
+  let testnet = "testnet"
+  let testnet_wallet_url = "https://wallet.test.network/staking"
+
+  if (network.value == testnet) {
+    return staking_url.value = testnet_wallet_url
+  } else {
+    return staking_url.value = mainnet_wallet_url
+  }
 }
 
 get_app_version()
@@ -117,6 +132,7 @@ get_config_location()
 get_network()
 sync_initialization_status(deviceInitialized)
 sync_launch_minimized_status()
+get_staking_url()
 </script>
 
 <template>
@@ -128,23 +144,26 @@ sync_launch_minimized_status()
     </div>
     <div v-if="!deviceInitialized" class="container">
       <!-- Initialize device -->
+      <div class="step">
+        <p>1. Create a Host stake at: {{ staking_url }}</p>
+      </div>
 
       <div class="step">
-        <p>1. Install the latest Edge CLI.</p>
+        <p>2. Install the latest Edge CLI.</p>
         <Install_Edge_Cli />
       </div>
 
       <div class="step">
-        <p>2. Get your <i>Device Token</i></p>
+        <p>3. Get your <i>Device Token</i></p>
         <Add_Device />
       </div>
 
       <div class="step">
-        <p>3. Wait 5-10 minutes until your device token assignment is confirmed.</p>
+        <p>4. Wait 5-10 minutes until your device token assignment is confirmed.</p>
       </div>
 
       <div class="step">
-        <p>4. Start your node.</p>
+        <p>5. Start your node.</p>
         <div class="card">
           <button type="button" @click="call_start_device_for_first_time()">
             Start Node
