@@ -22,6 +22,10 @@ Q: How can I switch networks?
 
 A: Click "Network" in the bottom-right of the GUI.
 
+Q: When running the .msi installer I get the error: Microsoft Defender SmartScreen prevented an unrecognised app from starting.
+
+A: This is expected because the Edge Staking GUI is a new program. To continue, click on "More info -> Run anyway"
+
 Q: Help I am stuck. Where can I get support?
 
 A: On the Edge Discord: https://ed.ge/discord. Ask in the *staking-support* channel.
