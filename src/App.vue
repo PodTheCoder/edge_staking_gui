@@ -156,10 +156,10 @@ sync_launch_minimized_status()
 
     <div v-else class="container">
       <div class="step">
-        <Post_Initialization_Node_Control />
+        <Post_Initialization_Node_Info />
       </div>
       <div class="step">
-        <Post_Initialization_Node_Info />
+        <Post_Initialization_Node_Control />
       </div>
       <div class="step">
         <Auto_Start />

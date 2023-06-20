@@ -40,7 +40,7 @@ get_wallet_address_from_config()
 <template>
   <div>
     <h2>Node Info</h2>
-    <div class="card">
+    <div class="card" style="line-height:10px">
       <p>Device address: {{ device_address }}</p>
       <p>Stake ID: {{ stake_id }}</p>
       <p>Wallet_address: {{ wallet_address }}</p>
