@@ -21,11 +21,6 @@ pub fn get_node_address(backend_communicator: &BackendCommunicator) -> String {
                 log_and_emit(err, backend_communicator);
                 no_node_found
             } else {
-                let ok_message = format!(
-                    "Loaded device address successfully from config: {}",
-                    node_address
-                );
-                log_and_emit(ok_message, backend_communicator);
                 node_address
             }
         }
