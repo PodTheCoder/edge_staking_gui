@@ -839,7 +839,7 @@ checksum = "56ce8c6da7551ec6c462cbaf3bfbc75131ebbfa1c944aeaa9dab51ca1c5f0c3b"
 
 [[package]]
 name = "edge_staking_gui"
-version = "0.8.2"
+version = "0.9.0"
 dependencies = [
  "base64 0.21.0",
  "chrono",
