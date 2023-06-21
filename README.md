@@ -10,8 +10,7 @@
 - Fast & small program.
 
 ## Screenshot
-<img width="598" alt="edge_staking_gui_screenshot - Copy" src="https://github.com/PodTheCoder/edge_staking_gui/assets/113918164/cc6dccca-52c5-4538-9d7d-b20638217ffe">
-
+<img width="597" alt="edge-staking-gui - Copy" src="https://github.com/PodTheCoder/edge_staking_gui/assets/113918164/26217e9c-894d-47dd-8d4d-fcc30fd3d8f4">
 
 ## Frequently Asked Questions
 Q: Does the GUI have access to my wallet?
