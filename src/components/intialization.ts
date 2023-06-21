@@ -4,7 +4,6 @@ import { appWindow } from '@tauri-apps/api/window'
 import { invoke } from '@tauri-apps/api'
 import { send_notification } from './notification'
 import { session, stake } from '@edge/index-utils'
-import { SuperAgentRequest } from 'superagent'
 
 
 export async function set_wallet_address(deviceInitializedref: Ref<boolean>) {
