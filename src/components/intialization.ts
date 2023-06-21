@@ -294,8 +294,7 @@ export async function get_stake_id_via_index() {
       window: appWindow
     })
 
-    const cb = (r: SuperAgentRequest) => r.timeout(10 * 1000)
-    const stake_id = (await stake.deviceStake(index_url, node_address, cb)).stake
+    const stake_id = (await stake.deviceStake(index_url, node_address)).stake
     return stake_id
   }
   catch (e) {
