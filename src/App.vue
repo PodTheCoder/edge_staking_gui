@@ -30,7 +30,7 @@ async function call_start_device_for_first_time() {
 const App_version = ref()
 const network = ref('')
 const App_name = ref()
-const config_location = ref('')
+const log_location = ref('')
 const staking_url = ref('')
 
 /**
@@ -107,7 +107,7 @@ async function switch_network() {
 
 async function get_config_location() {
   const appLocalDataDirPath = await appLocalDataDir()
-  config_location.value = await invoke('get_config_location_from_frontend', {
+  log_location.value = await invoke('get_log_location_from_frontend', {
     datadir: appLocalDataDirPath,
     window: appWindow
   })
@@ -161,7 +161,6 @@ get_staking_url()
       <div class="step">
         <p>4. Assign your <i>device token</i>. Wait 2-5 minutes until it is confirmed.</p>
       </div>
-
       <div class="step">
         <p>5. Start your node.</p>
         <div class="card">
@@ -205,7 +204,7 @@ get_staking_url()
       </span>
       <br />
       <span style="font-size: small; color: gray;">
-        Config location: {{ config_location }}
+        Log: {{ log_location }}
       </span>
     </div>
   </div>

@@ -139,15 +139,19 @@ pub fn log_and_emit(message: String, backend_communicator: &BackendCommunicator)
     {}
 }
 
+pub fn get_log_path(backend_communicator: &BackendCommunicator) -> String {
+    let log_name = "log.txt".to_string();
+    let log_path_str = format!("{}{}", backend_communicator.data_dir.clone(), log_name);
+    log_path_str
+}
+
 /// Log a message locally
 pub fn log_message(
     message: String,
     backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
-    let log_name = "log.txt".to_string();
-    let log_path_str = format!("{}{}", backend_communicator.data_dir.clone(), log_name);
-
     let dt: DateTime<Utc> = Utc::now();
+    let log_path_str = get_log_path(backend_communicator);
 
     let file = OpenOptions::new()
         .create(true)
