@@ -4,6 +4,7 @@ import { get_node_wallet_from_config } from './intialization'
 import { invoke } from '@tauri-apps/api'
 import { send_notification } from './notification'
 import { tx } from '@edge/index-utils'
+import { get_index_url } from './utils'
 
 
 
@@ -34,7 +35,10 @@ export async function check_node_earnings() {
   const appLocalDataDirPath = await appLocalDataDir()
   const wallet_from_config = await get_node_wallet_from_config()
 
-  const txs = await tx.transactions('https://index.xe.network', wallet_from_config)
+
+  const index_url: string = await get_index_url()
+
+  const txs = await tx.transactions(index_url, wallet_from_config)
 
   let api_latest_transaction_timestamp = 0
   let amount_of_latest_transaction_timestamp = 0
@@ -59,7 +63,7 @@ export async function check_node_earnings() {
     await set_last_node_payment(api_latest_transaction_timestamp)
     const pretty_date = new Date(api_latest_transaction_timestamp)
     const pretty_node_earnings = amount_of_latest_transaction_timestamp / 1000000
-    const ok_message = `You earned ${pretty_node_earnings} XE! \nThe transaction was received on ${pretty_date.toString()}.`
+    const ok_message = `You earned ${pretty_node_earnings} XE/! \nThe transaction was received on ${pretty_date.toString()}.`
     await invoke('log_and_emit_from_frontend', {
       message: ok_message,
       datadir: appLocalDataDirPath,

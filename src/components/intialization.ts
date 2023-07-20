@@ -4,6 +4,7 @@ import { appWindow } from '@tauri-apps/api/window'
 import { invoke } from '@tauri-apps/api'
 import { send_notification } from './notification'
 import { session, stake } from '@edge/index-utils'
+import { get_index_url } from './utils'
 
 
 export async function set_wallet_address(deviceInitializedref: Ref<boolean>) {
@@ -30,13 +31,10 @@ export async function get_node_wallet_from_config() {
 async function derive_and_set_node_wallet_based_on_node_address(node_address: string) {
   const appLocalDataDirPath = await appLocalDataDir()
 
-  const network: string = await invoke('get_index_url_from_frontend', {
-    datadir: appLocalDataDirPath,
-    window: appWindow
-  })
-  const sess = await session.session(network, node_address);
+  const index_url: string = await get_index_url()
+  const sess = await session.session(index_url, node_address);
   const node_stake = sess.node.stake
-  const myStake = await stake.stake(network, node_stake);
+  const myStake = await stake.stake(index_url, node_stake);
   const derived_wallet_addr = myStake.wallet
   const err_str_1 = 'Unset'
   const err_str_2 = 'CouldNotLoadWalletAddressFromConfig'
@@ -283,10 +281,7 @@ async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>,
 export async function get_stake_id_via_index() {
   const appLocalDataDirPath = await appLocalDataDir()
   try {
-    const index_url: string = await invoke('get_index_url_from_frontend', {
-      datadir: appLocalDataDirPath,
-      window: appWindow
-    })
+    const index_url = await get_index_url()
     const node_address: string = await invoke('get_node_address_from_frontend', {
       datadir: appLocalDataDirPath,
       window: appWindow
@@ -319,10 +314,7 @@ export async function get_stake_id_via_index() {
 export async function check_node_online_status(node_address: string) {
   const appLocalDataDirPath = await appLocalDataDir()
   try {
-    const index_url: string = await invoke('get_index_url_from_frontend', {
-      datadir: appLocalDataDirPath,
-      window: appWindow
-    })
+    const index_url: string = await get_index_url()
     const sess = await session.session(index_url, node_address)
     const is_node_online = sess.online
 
