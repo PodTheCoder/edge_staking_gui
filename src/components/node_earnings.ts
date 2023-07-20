@@ -65,7 +65,7 @@ export async function check_node_earnings() {
     const pretty_date = new Date(api_latest_transaction_timestamp)
     const pretty_node_earnings = amount_of_latest_transaction_timestamp / 1000000
     const pretty_node_earnings_in_dollars = pretty_node_earnings * exchange_rate_usd_to_xe
-    const ok_message = `You earned ${pretty_node_earnings} XE / ${pretty_node_earnings_in_dollars}\$! \nThe transaction was received on ${pretty_date.toString()}.`
+    const ok_message = `You earned ${pretty_node_earnings.toFixed(6)} XE / ${pretty_node_earnings_in_dollars.toFixed(6)}\$! \nThe transaction was received on ${pretty_date.toString()}.`
     await invoke('log_and_emit_from_frontend', {
       message: ok_message,
       datadir: appLocalDataDirPath,
