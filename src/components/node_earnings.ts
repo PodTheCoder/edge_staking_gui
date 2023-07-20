@@ -40,7 +40,7 @@ export async function check_node_earnings() {
   let amount_of_latest_transaction_timestamp = 0
   const node_earnings_memo_str = 'Node Earnings'
 
-  for (const tx of txs.results) {
+  for (const tx of txs.results.reverse()) {
     const current_memo = tx.data.memo
 
     if ((typeof current_memo === 'string') && current_memo.includes(node_earnings_memo_str)) {
