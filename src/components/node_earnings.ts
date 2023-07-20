@@ -50,6 +50,12 @@ export async function check_node_earnings() {
         await send_node_earning_notification(tx)
       }
     }
+    if (await is_lottery_transaction(tx)) {
+      if (tx.timestamp > config_latest_processed_transaction_timestamp) {
+        found_one_or_more_new_node_earnings = true
+        await send_lottery_earning_notification(tx)
+      }
+    }
   }
 
   return found_one_or_more_new_node_earnings
@@ -79,5 +85,20 @@ export async function check_node_earnings() {
       window: appWindow
     })
     send_notification('Received Edge Node Earnings', ok_message)
+  }
+
+  async function send_lottery_earning_notification(tx: tx.Tx) {
+    const current_tx_amount = tx.amount
+    await set_last_node_payment(tx.timestamp)
+    const pretty_date = new Date(tx.timestamp)
+    const pretty_lottery_earnings = current_tx_amount / 1000000
+    const pretty_lottery_earnings_in_dollars = pretty_lottery_earnings * exchange_rate_usd_to_xe
+    const ok_message = `You earned ${pretty_lottery_earnings.toFixed(6)} XE (${pretty_lottery_earnings_in_dollars.toFixed(6)}\$)! \nThe transaction was received on ${pretty_date.toString()}.`
+    await invoke('log_and_emit_from_frontend', {
+      message: ok_message,
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
+    send_notification('Congratulations! You won the Edge Lottery!', ok_message)
   }
 }
