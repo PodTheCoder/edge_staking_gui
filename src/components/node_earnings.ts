@@ -45,7 +45,6 @@ export async function check_node_earnings() {
 
     if ((typeof current_memo === 'string') && current_memo.includes(node_earnings_memo_str)) {
       // is a node earning memo
-      console.log(tx.timestamp)
       const current_transaction_timestamp = tx.timestamp
       if (current_transaction_timestamp > api_latest_transaction_timestamp) {
         api_latest_transaction_timestamp = current_transaction_timestamp
@@ -55,9 +54,7 @@ export async function check_node_earnings() {
   }
 
   const config_latest_transaction_timestamp = await get_last_node_payment()
-  console.log(api_latest_transaction_timestamp)
   if (api_latest_transaction_timestamp > config_latest_transaction_timestamp) {
-    console.log('Found new transaction!')
     // Found new node earning transaction!
     await set_last_node_payment(api_latest_transaction_timestamp)
     const pretty_date = new Date(api_latest_transaction_timestamp)

@@ -46,7 +46,6 @@ async function derive_and_set_node_wallet_based_on_node_address(node_address: st
     return false
   }
 
-  console.log(JSON.stringify(derived_wallet_addr))
   await invoke('set_wallet_address_from_frontend', {
     walletaddress: derived_wallet_addr,
     datadir: appLocalDataDirPath,
@@ -325,8 +324,6 @@ export async function check_node_online_status(node_address: string) {
       window: appWindow
     })
     const sess = await session.session(index_url, node_address)
-    console.log(JSON.stringify(sess))
-    console.log(sess.lastActive)
     const is_node_online = sess.online
 
     if ((typeof is_node_online === 'boolean') && is_node_online) {
