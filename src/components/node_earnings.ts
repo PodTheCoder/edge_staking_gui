@@ -41,31 +41,43 @@ export async function check_node_earnings() {
   const txs = await tx.transactions(index_url, wallet_from_config)
   const exchange_rate_usd_to_xe = (await exchangeRate.current(index_url)).rate
   let found_one_or_more_new_node_earnings = false
-  const node_earnings_memo_str = 'Node Earnings'
 
   for (const tx of txs.results.reverse()) {
-    const current_memo = tx.data.memo
-    if ((typeof current_memo === 'string') && current_memo.includes(node_earnings_memo_str)) {
-      const config_latest_transaction_timestamp = await get_last_node_payment()
-      const current_transaction_timestamp = tx.timestamp
-
-      if (current_transaction_timestamp > config_latest_transaction_timestamp) {
+    const config_latest_processed_transaction_timestamp = await get_last_node_payment()
+    if (await is_node_transaction(tx)) {
+      if (tx.timestamp > config_latest_processed_transaction_timestamp) {
         found_one_or_more_new_node_earnings = true
-        const current_tx_amount = tx.amount
-        await set_last_node_payment(current_transaction_timestamp)
-        const pretty_date = new Date(current_transaction_timestamp)
-        const pretty_node_earnings = current_tx_amount / 1000000
-        const pretty_node_earnings_in_dollars = pretty_node_earnings * exchange_rate_usd_to_xe
-        const ok_message = `You earned ${pretty_node_earnings.toFixed(6)} XE (${pretty_node_earnings_in_dollars.toFixed(6)}\$)! \nThe transaction was received on ${pretty_date.toString()}.`
-        await invoke('log_and_emit_from_frontend', {
-          message: ok_message,
-          datadir: appLocalDataDirPath,
-          window: appWindow
-        })
-        send_notification('Received Edge Node Earnings', ok_message)
+        await send_node_earning_notification(tx)
       }
     }
   }
 
   return found_one_or_more_new_node_earnings
+
+  async function is_node_transaction(tx: tx.Tx) {
+    const edge_payout_wallet = 'xe_7Bb7B633834f251a8D4132028f5749Ac03010982'
+    const node_earnings_memo_str = 'Node Earnings'
+    return ((typeof tx.data.memo === 'string') && tx.data.memo.includes(node_earnings_memo_str) && (tx.sender == edge_payout_wallet))
+  }
+
+  async function is_lottery_transaction(tx: tx.Tx) {
+    const lottery_winnings_memo_str = 'Lottery Winnings'
+    const edge_lottery_wallet = 'xe_127eaC00394edf285B1B5936617329e01c9756c5'
+    return ((typeof tx.data.memo === 'string') && tx.data.memo.includes(lottery_winnings_memo_str) && (tx.sender == edge_lottery_wallet))
+  }
+
+  async function send_node_earning_notification(tx: tx.Tx) {
+    const current_tx_amount = tx.amount
+    await set_last_node_payment(tx.timestamp)
+    const pretty_date = new Date(tx.timestamp)
+    const pretty_node_earnings = current_tx_amount / 1000000
+    const pretty_node_earnings_in_dollars = pretty_node_earnings * exchange_rate_usd_to_xe
+    const ok_message = `You earned ${pretty_node_earnings.toFixed(6)} XE (${pretty_node_earnings_in_dollars.toFixed(6)}\$)! \nThe transaction was received on ${pretty_date.toString()}.`
+    await invoke('log_and_emit_from_frontend', {
+      message: ok_message,
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
+    send_notification('Received Edge Node Earnings', ok_message)
+  }
 }
