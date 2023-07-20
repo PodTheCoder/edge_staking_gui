@@ -3,7 +3,7 @@ import { appWindow } from '@tauri-apps/api/window'
 import { get_node_wallet_from_config } from './intialization'
 import { invoke } from '@tauri-apps/api'
 import { send_notification } from './notification'
-import { tx } from '@edge/index-utils'
+import { exchangeRate, tx } from '@edge/index-utils'
 import { get_index_url } from './utils'
 
 
@@ -39,6 +39,7 @@ export async function check_node_earnings() {
   const index_url: string = await get_index_url()
 
   const txs = await tx.transactions(index_url, wallet_from_config)
+  const exchange_rate_usd_to_xe = (await exchangeRate.current(index_url)).rate
 
   let api_latest_transaction_timestamp = 0
   let amount_of_latest_transaction_timestamp = 0
@@ -63,7 +64,8 @@ export async function check_node_earnings() {
     await set_last_node_payment(api_latest_transaction_timestamp)
     const pretty_date = new Date(api_latest_transaction_timestamp)
     const pretty_node_earnings = amount_of_latest_transaction_timestamp / 1000000
-    const ok_message = `You earned ${pretty_node_earnings} XE/! \nThe transaction was received on ${pretty_date.toString()}.`
+    const pretty_node_earnings_in_dollars = pretty_node_earnings * exchange_rate_usd_to_xe
+    const ok_message = `You earned ${pretty_node_earnings} XE / ${pretty_node_earnings_in_dollars}\$! \nThe transaction was received on ${pretty_date.toString()}.`
     await invoke('log_and_emit_from_frontend', {
       message: ok_message,
       datadir: appLocalDataDirPath,
