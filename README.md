@@ -2,7 +2,7 @@
 
 ## Features
 - Easily setup & control your Edge host with a GUI (Graphical User Interface).
-- Uses the *device token* staking method. Has no access to your XE wallet.
+- Improve your security. By design, the GUI has no access to your XE wallet.
 - Autolaunch your node. Can also launch minimized for a seamless experience.
 - Get notified when you receive node earnings or when your node is offline.
 - Cross-platform 64-bit (Windows, Mac, and Linux.)
@@ -13,13 +13,13 @@
 <img width="597" alt="edge-staking-gui - Copy" src="https://github.com/PodTheCoder/edge_staking_gui/assets/113918164/26217e9c-894d-47dd-8d4d-fcc30fd3d8f4">
 
 ## Frequently Asked Questions
-Q: Does the GUI have access to my wallet?
+Q: How does the GUI improve security?
 
-A: No. The GUI is designed to use the *device code* staking method.
+A: The GUI improves security compared to the traditional approach by implementing the *device token* staking method. The major benefit of this method is that the GUI has no access to your wallet. Furthermore, the official Edge software is used under the hood and the software is open source.
 
 Q: How can I switch networks?
 
-A: Click "Network" in the bottom-right of the GUI.
+A: Click "Network" in the bottom-left of the GUI.
 
 Q: When running the .msi installer I get the error: Microsoft Defender SmartScreen prevented an unrecognised app from starting.
 
