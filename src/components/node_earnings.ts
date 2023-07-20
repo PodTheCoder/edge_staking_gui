@@ -40,41 +40,32 @@ export async function check_node_earnings() {
 
   const txs = await tx.transactions(index_url, wallet_from_config)
   const exchange_rate_usd_to_xe = (await exchangeRate.current(index_url)).rate
-
-  let api_latest_transaction_timestamp = 0
-  let amount_of_latest_transaction_timestamp = 0
+  let found_one_or_more_new_node_earnings = false
   const node_earnings_memo_str = 'Node Earnings'
 
   for (const tx of txs.results.reverse()) {
     const current_memo = tx.data.memo
-
     if ((typeof current_memo === 'string') && current_memo.includes(node_earnings_memo_str)) {
-      // is a node earning memo
+      const config_latest_transaction_timestamp = await get_last_node_payment()
       const current_transaction_timestamp = tx.timestamp
-      if (current_transaction_timestamp > api_latest_transaction_timestamp) {
-        api_latest_transaction_timestamp = current_transaction_timestamp
-        amount_of_latest_transaction_timestamp = tx.amount
+
+      if (current_transaction_timestamp > config_latest_transaction_timestamp) {
+        found_one_or_more_new_node_earnings = true
+        const current_tx_amount = tx.amount
+        await set_last_node_payment(current_transaction_timestamp)
+        const pretty_date = new Date(current_transaction_timestamp)
+        const pretty_node_earnings = current_tx_amount / 1000000
+        const pretty_node_earnings_in_dollars = pretty_node_earnings * exchange_rate_usd_to_xe
+        const ok_message = `You earned ${pretty_node_earnings.toFixed(6)} XE (${pretty_node_earnings_in_dollars.toFixed(6)}\$)! \nThe transaction was received on ${pretty_date.toString()}.`
+        await invoke('log_and_emit_from_frontend', {
+          message: ok_message,
+          datadir: appLocalDataDirPath,
+          window: appWindow
+        })
+        send_notification('Received Edge Node Earnings', ok_message)
       }
     }
   }
 
-  const config_latest_transaction_timestamp = await get_last_node_payment()
-  if (api_latest_transaction_timestamp > config_latest_transaction_timestamp) {
-    // Found new node earning transaction!
-    await set_last_node_payment(api_latest_transaction_timestamp)
-    const pretty_date = new Date(api_latest_transaction_timestamp)
-    const pretty_node_earnings = amount_of_latest_transaction_timestamp / 1000000
-    const pretty_node_earnings_in_dollars = pretty_node_earnings * exchange_rate_usd_to_xe
-    const ok_message = `You earned ${pretty_node_earnings.toFixed(6)} XE / ${pretty_node_earnings_in_dollars.toFixed(6)}\$! \nThe transaction was received on ${pretty_date.toString()}.`
-    await invoke('log_and_emit_from_frontend', {
-      message: ok_message,
-      datadir: appLocalDataDirPath,
-      window: appWindow
-    })
-    send_notification('Received Node Earnings', ok_message)
-    return true
-  }
-  else {
-    return false
-  }
+  return found_one_or_more_new_node_earnings
 }
