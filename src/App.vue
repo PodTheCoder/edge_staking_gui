@@ -5,8 +5,8 @@ import Current_Status from './components/Current_Status.vue'
 import Install_Edge_Cli from './components/Install_Edge_Cli.vue'
 import LaunchWindowVisibility from './components/LaunchWindowVisibility.vue'
 import Post_Initialization_Autocheck from './components/Post_Initialization_Autocheck.vue'
-import Post_Initialization_Node_Info from './components/Post_Initialization_Node_Info.vue'
 import Post_Initialization_Node_Control from './components/Post_Initialization_Node_Control.vue'
+import Post_Initialization_Node_Info from './components/Post_Initialization_Node_Info.vue'
 import { appLocalDataDir } from '@tauri-apps/api/path'
 import { appWindow } from '@tauri-apps/api/window'
 import { invoke } from '@tauri-apps/api/tauri'
@@ -92,15 +92,16 @@ async function get_network() {
  */
 async function switch_network() {
   const appLocalDataDirPath = await appLocalDataDir()
-  if (network.value == "mainnet") {
+  if (network.value == 'mainnet') {
     await invoke('set_network_from_frontend', {
-      network: "testnet",
+      network: 'testnet',
       datadir: appLocalDataDirPath,
       window: appWindow
     })
-  } else {
+  }
+  else {
     await invoke('set_network_from_frontend', {
-      network: "mainnet",
+      network: 'mainnet',
       datadir: appLocalDataDirPath,
       window: appWindow
     })
@@ -125,14 +126,15 @@ async function get_config_location() {
 }
 
 async function get_staking_url() {
-  await get_network();
-  let mainnet_wallet_url = "https://wallet.xe.network/staking"
-  let testnet = "testnet"
-  let testnet_wallet_url = "https://wallet.test.network/staking"
+  await get_network()
+  const mainnet_wallet_url = 'https://wallet.xe.network/staking'
+  const testnet = 'testnet'
+  const testnet_wallet_url = 'https://wallet.test.network/staking'
 
   if (network.value == testnet) {
     return staking_url.value = testnet_wallet_url
-  } else {
+  }
+  else {
     return staking_url.value = mainnet_wallet_url
   }
 }

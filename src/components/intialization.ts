@@ -1,10 +1,10 @@
 import { Ref } from 'vue'
 import { appLocalDataDir } from '@tauri-apps/api/path'
 import { appWindow } from '@tauri-apps/api/window'
+import { get_index_url } from './utils'
 import { invoke } from '@tauri-apps/api'
 import { send_notification } from './notification'
 import { session, stake } from '@edge/index-utils'
-import { get_index_url } from './utils'
 
 
 export async function set_wallet_address(deviceInitializedref: Ref<boolean>) {
@@ -32,9 +32,9 @@ async function derive_and_set_node_wallet_based_on_node_address(node_address: st
   const appLocalDataDirPath = await appLocalDataDir()
 
   const index_url: string = await get_index_url()
-  const sess = await session.session(index_url, node_address);
+  const sess = await session.session(index_url, node_address)
   const node_stake = sess.node.stake
-  const myStake = await stake.stake(index_url, node_stake);
+  const myStake = await stake.stake(index_url, node_stake)
   const derived_wallet_addr = myStake.wallet
   const err_str_1 = 'Unset'
   const err_str_2 = 'CouldNotLoadWalletAddressFromConfig'
@@ -107,6 +107,7 @@ async function initial_device_start_from_frontend() {
     }
   }
   else {
+    // eslint-disable-next-line max-len
     const err_message = 'Could not derive stake via Index. Has your assign device transaction been confirmed? Please try again. If the error persists, contact support.'
     await invoke('log_and_emit_from_frontend', {
       message: err_message,
@@ -356,7 +357,7 @@ export async function check_node_online_status(node_address: string) {
 }
 
 /**
- * 
+ *
  * @returns boolean ; true if initialized, false if not initialized
  */
 export async function check_device_initialization() {
