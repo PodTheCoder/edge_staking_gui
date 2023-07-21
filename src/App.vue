@@ -208,7 +208,7 @@ get_staking_url()
       </div>
       <Post_Initialization_Autocheck />
     </div>
-    <div style="position:fixed; left: 8px; white-space: nowrap;">
+    <div style="left: 8px; white">
       <span style="font-size: small; color: gray;" @click="switch_network()">
         Network: {{ network }} |
       </span>
