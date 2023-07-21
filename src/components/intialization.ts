@@ -355,6 +355,10 @@ export async function check_node_online_status(node_address: string) {
 
 }
 
+/**
+ * 
+ * @returns boolean ; true if initialized, false if not initialized
+ */
 export async function check_device_initialization() {
   const appLocalDataDirPath = await appLocalDataDir()
   const has_device_been_initialized = await invoke('get_device_initialization_status_from_frontend', {

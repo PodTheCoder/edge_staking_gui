@@ -27,8 +27,15 @@ async function PostInitializationAutocheck(timer_seconds_delay = 3600) {
   let recheck_count = 0
   if (!isPostInitializationAutocheckActive) {
     isPostInitializationAutocheckActive = true
-    setInterval(async () => {
+    const AutoCheckNode = setInterval(async () => {
       recheck_count += 1
+
+      const device_is_initialized = await check_device_initialization()
+      if (!device_is_initialized) {
+        clearInterval(AutoCheckNode)
+      }
+
+
       const recheck_msg = 'Autochecking for node earnings & node online status. Check nr:' + recheck_count
       await invoke('log_and_emit_from_frontend', {
         message: recheck_msg,

@@ -52,10 +52,21 @@ async function get_app_name() {
  */
 async function back_to_setup() {
   const appLocalDataDirPath = await appLocalDataDir()
+  // Set device to not initialized.
+  // Initialization status is used by functions running on interval.
   await invoke('set_device_not_initialized_from_frontend', {
     datadir: appLocalDataDirPath,
     window: appWindow
   })
+
+  // Stop node if running
+  await invoke('device_stop_from_frontend', {
+    checklatestbinary: false,
+    datadir: appLocalDataDirPath,
+    window: appWindow
+  })
+
+  // Complete reset of config
   await invoke('reset_config_from_frontend', {
     datadir: appLocalDataDirPath,
     window: appWindow

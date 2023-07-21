@@ -101,25 +101,30 @@ async function auto_start_node(timer_seconds_delay = 30, recheck_limit = 60) {
   const appLocalDataDirPath = await appLocalDataDir()
 
   const node_starts_automatically = await sync_autostart_status()
-  const device_is_initialized = await check_device_initialization()
 
-  if (!node_starts_automatically || !device_is_initialized) {
+  if (!node_starts_automatically) {
     // Don't autostart.
     return
   }
 
-  const auto_launch_node = `Staking GUI will try to automatically launch your node every ${timer_seconds_delay} seconds.`
+  const auto_launch_node_msg = `Staking GUI will try to automatically launch your node every ${timer_seconds_delay} seconds.`
   await invoke('log_and_emit_from_frontend', {
-    message: auto_launch_node,
+    message: auto_launch_node_msg,
     datadir: appLocalDataDirPath,
     window: appWindow
   })
+
 
   let recheck_count = 0
   if (!isNodeAutostartIntervalActive) {
     isNodeAutostartIntervalActive = true
     const AutoStartNode = setInterval(async () => {
       recheck_count += 1
+
+      const device_is_initialized = await check_device_initialization()
+      if (!device_is_initialized) {
+        clearInterval(AutoStartNode)
+      }
 
       if (recheck_count == 4) {
         send_notification('Node Autostart Failing', 'Will keep trying. Are you connected to the internet and is Docker running?')
