@@ -7,6 +7,11 @@
         "plugin:vue/essential",
         "@edge/eslint-config-typescript"
     ],
+    "ignorePatterns": [
+        "**/*.json",
+        "**/*.md",
+        "**/Makefile"
+    ],
     "overrides": [],
     "parser": "vue-eslint-parser",
     "parserOptions": {
