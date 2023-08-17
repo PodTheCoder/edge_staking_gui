@@ -5,7 +5,7 @@
 - Improve your security. By design, the GUI has no access to your XE wallet.
 - Autolaunch your node. Can also launch minimized for a seamless experience.
 - Get notified when you receive node earnings or when your node is offline.
-- Cross-platform 64-bit (Windows, Mac, and Linux.)
+- Cross-platform 64-bit for processors supported by the Edge CLI (Intel64/AMD64). Windows 7+, Mac 10.15+, and experimental Linux support.
 - Helpful error messages.
 - Fast & small program.
 
@@ -54,8 +54,9 @@ MacOS: Resolves to $HOME/Library/Application Support.
 
 Linux = $XDG_DATA_HOME or $HOME/.local/share.
 
-On Linux, you need the libraries:
-OpenSSL 1.0.1, 1.0.2, 1.1.0, or 1.1.1 with headers (see https://github.com/sfackler/rust-openssl)
+On Linux, depending on your distribution, you need several libraries:
+- Reqwest requirements: https://github.com/seanmonstar/reqwest#requirements
+- Tauri requirements: https://github.com/tauri-apps/tauri/blob/dev/README.md#get-started
 
 ## Credits
 Logo Photo by <a href="https://unsplash.com/@ortodummie?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Peter Žagar</a> on <a href="https://unsplash.com/photos/bLgWa9b0ioY?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
