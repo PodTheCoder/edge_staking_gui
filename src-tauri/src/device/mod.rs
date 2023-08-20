@@ -16,6 +16,20 @@ use crate::docker::{
 use crate::utility::log_and_emit;
 use crate::{check_requirements, BackendCommunicator};
 
+/// Logs and emits device code progress.
+fn helper_create_device_code_setup_stage_log_and_emit(
+    account_phase_current: &mut i32,
+    backend_communicator: &BackendCommunicator,
+) {
+    let account_phases_total: i32 = 7;
+    *account_phase_current += 1;
+    let ok_device_token_step = format!(
+        "Creating device token. Phase {} / {}",
+        *account_phase_current, account_phases_total
+    );
+    log_and_emit(ok_device_token_step, backend_communicator);
+}
+
 /// Flow for creating a device token. If successful displays the next step.
 /// Can be rerun multiple times to generate a different device token.
 pub async fn create_device_code(
@@ -24,26 +38,32 @@ pub async fn create_device_code(
     public_key: String,
     backend_communicator: &BackendCommunicator,
 ) -> Result<String, String> {
-    let network = get_network(backend_communicator);
-    println!(
-        "add_device_from_frontend function called. address {}, private_key {}, public_key {}",
-        address, private_key, public_key
-    );
-    // TODO: Check if input is correct.
-
-    #[derive(Default, Debug, Serialize, Deserialize, Clone)]
-    pub struct DeviceJSON {
-        pub address: String,    // XE address
-        pub privateKey: String, // Private key of XE address
-    }
-
-    // Check requirements to see if Docker is running
+    // Prereq: Check requirements to see if Docker is running
     match check_requirements::main(false, false, true, false, backend_communicator).await {
         Ok(_) => {}
         Err(err_str) => return Err(err_str),
     }
 
-    // Save info to config file.
+    // Phase 1: Generate device data. This is partially done in frontend.
+    let mut account_phase_current: i32 = 0; // increment each time
+    helper_create_device_code_setup_stage_log_and_emit(
+        &mut account_phase_current,
+        backend_communicator,
+    );
+
+    let network = get_network(backend_communicator);
+    println!(
+        "add_device_from_frontend function called. address {}, private_key {}, public_key {}",
+        address, private_key, public_key
+    );
+
+    // TODO: Check if input is correct.
+
+    // Phase 2 - Save device data in config file
+    helper_create_device_code_setup_stage_log_and_emit(
+        &mut account_phase_current,
+        backend_communicator,
+    );
 
     match set_device_data(
         &network,
@@ -56,14 +76,18 @@ pub async fn create_device_code(
         Err(err) => return Err(err),
     }
 
+    // Phase 3: Convert config files to temp individual files
+    helper_create_device_code_setup_stage_log_and_emit(
+        &mut account_phase_current,
+        backend_communicator,
+    );
+
     let fields_hashmap: HashMap<String, String> = HashMap::from([
-        ("network".to_string(), network.clone()),
+        ("network".to_string(), network),
         ("address".to_string(), address.clone()),
         ("privateKey".to_string(), private_key.clone()),
         ("publicKey".to_string(), public_key),
     ]); //
-
-    // Convert config file to individual files in preparation of Docker
 
     let mut filepaths: Vec<String> = vec![];
     for (filename, file_value) in fields_hashmap.clone() {
@@ -72,6 +96,12 @@ pub async fn create_device_code(
             Err(err_str) => return Err(err_str),
         }
     }
+
+    // Phase 4: Copy files to Docker
+    helper_create_device_code_setup_stage_log_and_emit(
+        &mut account_phase_current,
+        backend_communicator,
+    );
 
     // Copy files to Docker
     match start_docker_container_for_copying_data(backend_communicator) {
@@ -89,7 +119,11 @@ pub async fn create_device_code(
         }
     }
 
-    // Cleanup
+    // Phase 5 Cleanup
+    helper_create_device_code_setup_stage_log_and_emit(
+        &mut account_phase_current,
+        backend_communicator,
+    );
 
     match remove_temporary_container(backend_communicator) {
         Ok(_) => {}
@@ -105,11 +139,17 @@ pub async fn create_device_code(
         }
     }
 
-    // Success!
+    // Phase 6: Serialize
+    helper_create_device_code_setup_stage_log_and_emit(
+        &mut account_phase_current,
+        backend_communicator,
+    );
 
-    let success_message = "Successfully added device data.".to_string();
-    log_and_emit(success_message, backend_communicator);
-
+    #[derive(Default, Debug, Serialize, Deserialize, Clone)]
+    pub struct DeviceJSON {
+        pub address: String,    // XE address
+        pub privateKey: String, // Private key of XE address
+    }
     let device_json = DeviceJSON {
         address,
         privateKey: private_key,
@@ -155,6 +195,12 @@ pub async fn create_device_code(
         log_and_emit(err_message.clone(), backend_communicator);
         return Err(err_message);
     }
+
+    // Phase 7: Show next step
+    helper_create_device_code_setup_stage_log_and_emit(
+        &mut account_phase_current,
+        backend_communicator,
+    );
 
     let next_step = format!(
         "Please assign your device token at {}. Your device token is : {}",
