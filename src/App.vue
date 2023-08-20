@@ -92,6 +92,14 @@ async function get_network() {
  */
 async function switch_network() {
   const appLocalDataDirPath = await appLocalDataDir()
+
+  // Stop node if running
+  await invoke('device_stop_from_frontend', {
+    checklatestbinary: false,
+    datadir: appLocalDataDirPath,
+    window: appWindow
+  })
+
   if (network.value == 'mainnet') {
     await invoke('set_network_from_frontend', {
       network: 'testnet',
@@ -155,7 +163,10 @@ get_staking_url()
         <Current_Status />
       </Suspense>
     </div>
-    <div v-if="!deviceInitialized" class="container">
+    <div
+      v-if="!deviceInitialized"
+      class="container"
+    >
       <!-- Initialize device -->
       <div class="step">
         <p>1. Create a Host stake at: {{ staking_url }}</p>
@@ -177,7 +188,10 @@ get_staking_url()
       <div class="step">
         <p>5. Start your node.</p>
         <div class="card">
-          <button type="button" @click="call_start_device_for_first_time()">
+          <button
+            type="button"
+            @click="call_start_device_for_first_time()"
+          >
             Start Node
           </button>
           <p>{{ Node_Online_Message }}</p>
@@ -185,7 +199,10 @@ get_staking_url()
       </div>
     </div>
 
-    <div v-else class="container">
+    <div
+      v-else
+      class="container"
+    >
       <div class="step">
         <Post_Initialization_Node_Info />
       </div>
@@ -201,7 +218,10 @@ get_staking_url()
       <div class="step">
         <p>Anything went wrong? You can go back to the setup.</p>
         <div class="card">
-          <button type="button" @click="back_to_setup()">
+          <button
+            type="button"
+            @click="back_to_setup()"
+          >
             Back to Setup.
           </button>
         </div>
@@ -209,7 +229,10 @@ get_staking_url()
       <Post_Initialization_Autocheck />
     </div>
     <div style="left: 8px; white">
-      <span style="font-size: small; color: gray;" @click="switch_network()">
+      <span
+        style="font-size: small; color: gray;"
+        @click="switch_network()"
+      >
         Network: {{ network }} |
       </span>
       <span style="font-size: small; color: gray;">
