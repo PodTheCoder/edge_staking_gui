@@ -1,6 +1,6 @@
 [package]
 name = "edge_staking_gui"
-version = "0.9.3"
+version = "0.9.4"
 description = "Easy setup for Edge host."
 authors = ["Pod"]
 license = ""
