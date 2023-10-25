@@ -212,6 +212,7 @@ async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>,
           datadir: appLocalDataDirPath,
           window: appWindow
         })
+        Disable_Autocheck_Node_online(AutoCheckNodeOnline)
         return
       }
 
