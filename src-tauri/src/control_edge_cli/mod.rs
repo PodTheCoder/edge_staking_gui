@@ -131,7 +131,7 @@ async fn command_edge_cli(
 pub async fn device_stop_from_frontend(
     checklatestbinary: bool,
     backend_communicator: &BackendCommunicator,
-) {
+) -> bool {
     let stake_id: String = get_stake_id(backend_communicator);
     let cli_command = format!("device stop --stake={}", stake_id);
     let command_edge_cli_future =
@@ -140,9 +140,11 @@ pub async fn device_stop_from_frontend(
         Ok(_) => {
             let ok_message = "Device stopped successfully.".to_string();
             log_and_emit(ok_message, backend_communicator);
+            true
         }
         Err(stderr_str) => {
             log_and_emit(stderr_str, backend_communicator);
+            false
         }
     }
 }
@@ -163,7 +165,7 @@ pub async fn device_start_from_frontend(
             true
         }
         Err(stderr_str) => {
-            let error_message = format!("Could not start device. Err: {}", stderr_str);
+            let error_message = format!("Could not start device. Error: {}", stderr_str);
             log_and_emit(error_message, backend_communicator);
             false
         }

@@ -117,13 +117,34 @@ async function initial_device_start_from_frontend() {
     return false
   }
 
-  const has_device_start_from_frontended_successfully: boolean = await invoke('device_start_from_frontend', {
-    checklatestbinary: false,
+  // Stop node to ensure clean slate where latest config is used.
+  // Assumes the container is successfully removed via the CLI command.
+  // https://github.com/edge/cli/blob/f71951a34144313b1e1500dfc9d0b7963c765b11/src/device/cli/stop.ts#L38-L39
+  const deviceStopped = await invoke('device_stop_from_frontend', {
+    checklatestbinary: true,
     datadir: appLocalDataDirPath,
     window: appWindow
   })
+  if (deviceStopped) {
+    const has_device_started_from_frontend_successfully: boolean = await invoke('device_start_from_frontend', {
+      checklatestbinary: true,
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
+    return has_device_started_from_frontend_successfully
+  }
+  else {
+    // eslint-disable-next-line max-len
+    const next_step_msg = 'Could not start node. Make sure you have the latest CLI installed and that Docker is running. Then try again. If the error persists, contact support.'
+    await invoke('log_and_emit_from_frontend', {
+      message: next_step_msg,
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
+    return false
+  }
 
-  return has_device_start_from_frontended_successfully
+
 }
 
 /**

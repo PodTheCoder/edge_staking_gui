@@ -52,26 +52,39 @@ async function get_app_name() {
  */
 async function back_to_setup() {
   const appLocalDataDirPath = await appLocalDataDir()
-  // Set device to not initialized.
-  // Initialization status is used by functions running on interval.
-  await invoke('set_device_not_initialized_from_frontend', {
+
+  // Stop node to ensure clean slate where latest config is used.
+  // Assumes the container is successfully removed via the CLI command.
+  // https://github.com/edge/cli/blob/f71951a34144313b1e1500dfc9d0b7963c765b11/src/device/cli/stop.ts#L38-L39
+  const deviceStopped = await invoke('device_stop_from_frontend', {
+    checklatestbinary: true,
     datadir: appLocalDataDirPath,
     window: appWindow
   })
 
-  // Stop node if running
-  await invoke('device_stop_from_frontend', {
-    checklatestbinary: false,
-    datadir: appLocalDataDirPath,
-    window: appWindow
-  })
+  if (deviceStopped) {
+    // Set device to not initialized.
+    // Initialization status is used by functions running on interval.
+    await invoke('set_device_not_initialized_from_frontend', {
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
 
-  // Complete reset of config
-  await invoke('reset_config_from_frontend', {
-    datadir: appLocalDataDirPath,
-    window: appWindow
-  })
-  sync_initialization_status(deviceInitialized)
+    // Complete reset of config
+    await invoke('reset_config_from_frontend', {
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
+    sync_initialization_status(deviceInitialized)
+  }
+  else {
+    const next_step_msg = 'Reset not successful. Your node could not be automatically stopped. Make sure you have the latest CLI installed and that Docker is running. Then try again. If the error persists, contact support.'
+    await invoke('log_and_emit_from_frontend', {
+      message: next_step_msg,
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
+  }
 }
 
 /**
@@ -93,36 +106,49 @@ async function get_network() {
 async function switch_network() {
   const appLocalDataDirPath = await appLocalDataDir()
 
-  // Stop node if running
-  await invoke('device_stop_from_frontend', {
-    checklatestbinary: false,
+  // Stop node to ensure clean slate where latest config is used.
+  // Assumes the container is successfully removed via the CLI command.
+  // https://github.com/edge/cli/blob/f71951a34144313b1e1500dfc9d0b7963c765b11/src/device/cli/stop.ts#L38-L39
+  const deviceStopped = await invoke('device_stop_from_frontend', {
+    checklatestbinary: true,
     datadir: appLocalDataDirPath,
     window: appWindow
   })
 
-  if (network.value == 'mainnet') {
-    await invoke('set_network_from_frontend', {
-      network: 'testnet',
+  if (deviceStopped) {
+    if (network.value == 'mainnet') {
+      await invoke('set_network_from_frontend', {
+        network: 'testnet',
+        datadir: appLocalDataDirPath,
+        window: appWindow
+      })
+    }
+    else {
+      await invoke('set_network_from_frontend', {
+        network: 'mainnet',
+        datadir: appLocalDataDirPath,
+        window: appWindow
+      })
+
+    }
+    await get_network()
+    const network_next_step = `Your network has been set to ${network.value}. Make sure you update the CLI and that your stake is set correctly. This might require going back to setup.`
+    await invoke('log_and_emit_from_frontend', {
+      message: network_next_step,
       datadir: appLocalDataDirPath,
       window: appWindow
     })
+    await get_staking_url()
   }
   else {
-    await invoke('set_network_from_frontend', {
-      network: 'mainnet',
+    const next_step_msg = 'The network was not switched because the node could not be stopped. Make sure you have the latest CLI installed and that Docker is running. Then try again. If the error persists, contact support.'
+    await invoke('log_and_emit_from_frontend', {
+      message: next_step_msg,
       datadir: appLocalDataDirPath,
       window: appWindow
     })
-
   }
-  await get_network()
-  const network_next_step = `Your network has been set to ${network.value}. Make sure you update the CLI and that your stake is set correctly. This might require going back to setup.`
-  await invoke('log_and_emit_from_frontend', {
-    message: network_next_step,
-    datadir: appLocalDataDirPath,
-    window: appWindow
-  })
-  await get_staking_url()
+
 }
 
 async function get_config_location() {
@@ -183,7 +209,7 @@ get_staking_url()
       </div>
 
       <div class="step">
-        <p>4. Assign your <i>device token</i>. Wait 2-5 minutes until it is confirmed.</p>
+        <p>4. Assign your <i>device token</i>. Wait a few minutes until it is confirmed.</p>
       </div>
       <div class="step">
         <p>5. Start your node.</p>
