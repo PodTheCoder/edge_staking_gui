@@ -25,7 +25,7 @@ pub fn get_node_address(backend_communicator: &BackendCommunicator) -> String {
             }
         }
         Err(err) => {
-            let err_message = format!("Could not load node address config. Err: {}", err);
+        let err_message = format!("Could not load node address config. Error: {}", err);
             log_and_emit(err_message, backend_communicator);
             no_node_found
         }
