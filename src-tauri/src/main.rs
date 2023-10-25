@@ -86,14 +86,18 @@ async fn device_start_from_frontend(
 }
 
 #[tauri::command]
-async fn device_stop_from_frontend(checklatestbinary: bool, window: Window, datadir: String) {
+async fn device_stop_from_frontend(
+    checklatestbinary: bool,
+    window: Window,
+    datadir: String,
+) -> bool {
     let backend_communicator = &BackendCommunicator {
         status_listener: String::from(STATUSLISTENER),
         data_dir: datadir.clone(),
         front_end_window: window,
     };
 
-    control_edge_cli::device_stop_from_frontend(checklatestbinary, backend_communicator).await;
+    control_edge_cli::device_stop_from_frontend(checklatestbinary, backend_communicator).await
 }
 
 #[tauri::command]
