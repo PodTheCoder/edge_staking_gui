@@ -18,6 +18,25 @@ pub struct ProcessorInfo {
     pub full_architecture_supported: bool,
 }
 
+pub struct OsSimpleStrings {
+    pub windows: String,
+    pub macos: String,
+    pub linux: String,
+}
+
+/// Gets the simple os strings used in the url path eg. windows. Useful for describing options.
+pub fn get_os_simple_strings() -> OsSimpleStrings {
+    let windows_simple_string = "windows".to_string();
+    let linux_simple_string = "linux".to_string();
+    let macos_simple_string = "macos".to_string();
+
+    OsSimpleStrings {
+        windows: (windows_simple_string),
+        macos: (macos_simple_string),
+        linux: (linux_simple_string),
+    }
+}
+
 /// Gets bitness eg. 64
 fn get_os_bitness() -> String {
     let info = os_info::get();
@@ -41,9 +60,11 @@ fn get_raw_os_name() -> String {
 /// If supported, returns OS type eg. Windows
 fn is_os_name_supported(os_type: String) -> Result<String, String> {
     // Simple strings are used for downloading the correct Edge binary
-    let windows_simple_string = "windows".to_string();
-    let linux_simple_string = "linux".to_string();
-    let macos_simple_string = "macos".to_string();
+    let simple_os_strings = get_os_simple_strings();
+
+    let windows_simple_string = simple_os_strings.windows;
+    let linux_simple_string = simple_os_strings.linux;
+    let macos_simple_string = simple_os_strings.macos;
 
     // Assumption is that the Edge Binary functions the same on all linux distributions.
 

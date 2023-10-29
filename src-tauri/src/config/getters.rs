@@ -1,3 +1,4 @@
+use crate::check_requirements::check_specifications::{get_os_info, get_os_simple_strings};
 use crate::{utility::log_and_emit, BackendCommunicator};
 
 use super::{get_config, ConfigStruct};
@@ -25,7 +26,7 @@ pub fn get_node_address(backend_communicator: &BackendCommunicator) -> String {
             }
         }
         Err(err) => {
-        let err_message = format!("Could not load node address config. Error: {}", err);
+            let err_message = format!("Could not load node address config. Error: {}", err);
             log_and_emit(err_message, backend_communicator);
             no_node_found
         }
@@ -156,15 +157,35 @@ pub fn get_network(backend_communicator: &BackendCommunicator) -> String {
     }
 }
 
-// Get edge binary name based on network value
+/// Get edge binary name based on network value
 pub fn get_edge_binary_name(backend_communicator: &BackendCommunicator) -> String {
     let network = get_network(backend_communicator);
+
     let mainnet = String::from("mainnet");
-    let mainnet_bin = String::from("edge.exe");
+    let mainnet_bin_windows = String::from("edge.exe");
+    let mainnet_bin_macos = String::from("edge");
+    let mainnet_bin_linux = String::from("edge");
+
     let testnet = String::from("testnet");
-    let testnet_bin = String::from("edgetest.exe");
+    let testnet_bin_windows = String::from("edgetest.exe");
+    let testnet_bin_macos = String::from("edgetest");
+    let testnet_bin_linux = String::from("edgetest");
+
+    let os_info = get_os_info(backend_communicator);
+    let cli_os_name = os_info.cli_os_name;
+    // Optional OS's
+    let os_options = get_os_simple_strings();
+
     if network == mainnet {
-        let bin_name = mainnet_bin;
+        let bin_name: String;
+        if cli_os_name == os_options.windows {
+            bin_name = mainnet_bin_windows;
+        } else if cli_os_name == os_options.macos {
+            bin_name = mainnet_bin_macos;
+        } else {
+            bin_name = mainnet_bin_linux;
+        }
+
         let ok_message = format!(
             "Derived binary name {} based on network {}",
             bin_name, network
@@ -172,7 +193,14 @@ pub fn get_edge_binary_name(backend_communicator: &BackendCommunicator) -> Strin
         log_and_emit(ok_message, backend_communicator);
         bin_name
     } else if network == testnet {
-        let bin_name = testnet_bin;
+        let bin_name;
+        if cli_os_name == os_options.windows {
+            bin_name = testnet_bin_windows;
+        } else if cli_os_name == os_options.macos {
+            bin_name = testnet_bin_macos;
+        } else {
+            bin_name = testnet_bin_linux;
+        }
         let ok_message = format!(
             "Derived binary name {} based on network {}",
             bin_name, network
