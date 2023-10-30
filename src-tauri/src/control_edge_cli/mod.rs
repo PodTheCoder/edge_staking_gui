@@ -43,10 +43,14 @@ async fn command_edge_cli(
     let command = Command::new(bin_path)
         .args(arglist)
         .creation_flags(WINDOWS_CREATE_NO_WINDOW)
+        .env("PATH", "/bin")
         .output();
 
     #[cfg(not(target_os = "windows"))]
-    let command = Command::new(bin_path).args(arglist).output();
+    let command = Command::new(bin_path)
+        .args(arglist)
+        .env("PATH", "/bin")
+        .output();
 
     match command {
         Ok(command_completed_result) => {
