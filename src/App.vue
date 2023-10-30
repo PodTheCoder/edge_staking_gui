@@ -57,7 +57,7 @@ async function back_to_setup() {
   // Assumes the container is successfully removed via the CLI command.
   // https://github.com/edge/cli/blob/f71951a34144313b1e1500dfc9d0b7963c765b11/src/device/cli/stop.ts#L38-L39
   const deviceStopped = await invoke('device_stop_from_frontend', {
-    checklatestbinary: true,
+    checklatestbinary: false,
     datadir: appLocalDataDirPath,
     window: appWindow
   })
