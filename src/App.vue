@@ -106,50 +106,31 @@ async function get_network() {
 async function switch_network() {
   const appLocalDataDirPath = await appLocalDataDir()
 
-  // Stop node to ensure clean slate where latest config is used.
-  // Assumes the container is successfully removed via the CLI command.
-  // https://github.com/edge/cli/blob/f71951a34144313b1e1500dfc9d0b7963c765b11/src/device/cli/stop.ts#L38-L39
-  const deviceStopped = await invoke('device_stop_from_frontend', {
-    checklatestbinary: true,
+  if (network.value == 'mainnet') {
+    await invoke('set_network_from_frontend', {
+      network: 'testnet',
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
+  }
+  else {
+    await invoke('set_network_from_frontend', {
+      network: 'mainnet',
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
+
+  }
+  await get_network()
+  const network_next_step = `Your network has been set to ${network.value}. This is an advanced feature. Make sure your node is stopped, the CLI updated, and that your stake is set correctly. This might require going back to setup.`
+  await invoke('log_and_emit_from_frontend', {
+    message: network_next_step,
     datadir: appLocalDataDirPath,
     window: appWindow
   })
-
-  if (deviceStopped) {
-    if (network.value == 'mainnet') {
-      await invoke('set_network_from_frontend', {
-        network: 'testnet',
-        datadir: appLocalDataDirPath,
-        window: appWindow
-      })
-    }
-    else {
-      await invoke('set_network_from_frontend', {
-        network: 'mainnet',
-        datadir: appLocalDataDirPath,
-        window: appWindow
-      })
-
-    }
-    await get_network()
-    const network_next_step = `Your network has been set to ${network.value}. Make sure you update the CLI and that your stake is set correctly. This might require going back to setup.`
-    await invoke('log_and_emit_from_frontend', {
-      message: network_next_step,
-      datadir: appLocalDataDirPath,
-      window: appWindow
-    })
-    await get_staking_url()
-  }
-  else {
-    const next_step_msg = 'The network was not switched because the node could not be stopped. Make sure you have the latest CLI installed and that Docker is running. Then try again. If the error persists, contact support.'
-    await invoke('log_and_emit_from_frontend', {
-      message: next_step_msg,
-      datadir: appLocalDataDirPath,
-      window: appWindow
-    })
-  }
-
+  await get_staking_url()
 }
+
 
 async function get_config_location() {
   const appLocalDataDirPath = await appLocalDataDir()
@@ -255,14 +236,14 @@ get_staking_url()
       <Post_Initialization_Autocheck />
     </div>
     <div style="left: 8px; white">
+      <span style="font-size: small; color: gray;">
+        GUI Version: {{ App_version }} |
+      </span>
       <span
         style="font-size: small; color: gray;"
         @click="switch_network()"
       >
-        Network: {{ network }} |
-      </span>
-      <span style="font-size: small; color: gray;">
-        GUI Version: {{ App_version }}
+        Network: {{ network }} (Advanced feature: click to switch)
       </span>
       <br />
       <span style="font-size: small; color: gray;">
