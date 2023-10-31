@@ -25,7 +25,7 @@ A: Network switching is an advanced feature.
 
 - Stop the program (make sure it does not run minimized). 
 
-- Then change your config.txt to: `network = 'testnet'`.
+- Then change your config.txt to: `network = 'testnet'` or `network = 'mainnet'`
 
 - Restart the program & follow the steps in the GUI.
 
