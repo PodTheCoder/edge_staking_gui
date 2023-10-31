@@ -132,7 +132,10 @@ pub async fn download_file(
         use std::fs;
         use std::os::unix::fs::PermissionsExt;
         let permissions_code = 0o744; //rwxr--r--
-        match fs::set_permissions(download_path_str, Permissions::from_mode(permissions_code)) {
+        match fs::set_permissions(
+            download_path_str,
+            PermissionsExt::from_mode(permissions_code),
+        ) {
             Ok(_) => {
                 let ok_msg = format!(
                     "Set file {} permissions to {}",
