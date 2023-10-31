@@ -98,40 +98,6 @@ async function get_network() {
   })
 }
 
-/**
- * Switch network eg. testnet or mainnet
- * Function is inlined because Vue unwraps a reference:
-* https://github.com/vuejs/composition-api/issues/605
- */
-async function switch_network() {
-  const appLocalDataDirPath = await appLocalDataDir()
-
-  if (network.value == 'mainnet') {
-    await invoke('set_network_from_frontend', {
-      network: 'testnet',
-      datadir: appLocalDataDirPath,
-      window: appWindow
-    })
-  }
-  else {
-    await invoke('set_network_from_frontend', {
-      network: 'mainnet',
-      datadir: appLocalDataDirPath,
-      window: appWindow
-    })
-
-  }
-  await get_network()
-  const network_next_step = `Your network has been set to ${network.value}. This is an advanced feature. Make sure your node is stopped, the CLI updated, and that your stake is set correctly. This might require going back to setup.`
-  await invoke('log_and_emit_from_frontend', {
-    message: network_next_step,
-    datadir: appLocalDataDirPath,
-    window: appWindow
-  })
-  await get_staking_url()
-}
-
-
 async function get_config_location() {
   const appLocalDataDirPath = await appLocalDataDir()
   log_location.value = await invoke('get_log_location_from_frontend', {
@@ -142,14 +108,32 @@ async function get_config_location() {
 
 async function get_staking_url() {
   await get_network()
+
+  const mainnet_string = 'mainnet'
   const mainnet_wallet_url = 'https://wallet.xe.network/staking'
-  const testnet = 'testnet'
+  const testnet_string = 'testnet'
   const testnet_wallet_url = 'https://wallet.test.network/staking'
 
-  if (network.value == testnet) {
+  if (network.value == testnet_string) {
     return staking_url.value = testnet_wallet_url
   }
+  else if (network.value == mainnet_string) {
+    return staking_url.value = mainnet_wallet_url
+  }
   else {
+    const appLocalDataDirPath = await appLocalDataDir()
+    await invoke('set_network_from_frontend', {
+      network: mainnet_string,
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
+    const err_msg = `Expected network to be ${mainnet_string} or ${testnet_string} in configuration. Auto-fixed to ${mainnet_string}.`
+    await invoke('log_and_emit_from_frontend', {
+      message: err_msg,
+      datadir: appLocalDataDirPath,
+      window: appWindow
+    })
+    get_network()
     return staking_url.value = mainnet_wallet_url
   }
 }
@@ -239,11 +223,8 @@ get_staking_url()
       <span style="font-size: small; color: gray;">
         GUI Version: {{ App_version }} |
       </span>
-      <span
-        style="font-size: small; color: gray;"
-        @click="switch_network()"
-      >
-        Network: {{ network }} (Advanced feature: click to switch)
+      <span style="font-size: small; color: gray;">
+        Network: {{ network }}
       </span>
       <br />
       <span style="font-size: small; color: gray;">

@@ -19,7 +19,15 @@ A: The GUI improves security compared to the traditional approach by implementin
 
 Q: How can I switch networks?
 
-A: Click "Network" in the bottom-left of the GUI.
+A: Network switching is an advanced feature. 
+
+- If a stake is already setup, first click the button `Back To Setup.` 
+
+- Stop the program (make sure it does not run minimized). 
+
+- Then change your config.txt to: `network = 'testnet'`.
+
+- Restart the program & follow the steps in the GUI.
 
 Q: When running the .msi installer I get the error: Microsoft Defender SmartScreen prevented an unrecognised app from starting.
 
