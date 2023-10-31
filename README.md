@@ -29,9 +29,9 @@ A: Network switching is an advanced feature.
 
 - Restart the program & follow the steps in the GUI.
 
-Q: When running the .msi installer I get the error: Microsoft Defender SmartScreen prevented an unrecognised app from starting.
+Q: My installer says the app/developer is unrecognized. Eg. Running the .msi installer I get the error: Microsoft Defender SmartScreen prevented an unrecognised app from starting.
 
-A: This is expected because the Edge Staking GUI is a new program. To continue, click on "More info -> Run anyway"
+A: This is expected because the Edge Staking GUI is a new program and does not yet have code signing. To continue on Microsoft Defender Smartscreen, click on "More info -> Run anyway". On MacOS you might also need to explicitly choose to trust the unidentified developer.
 
 Q: Help I am stuck. Where can I get support?
 
