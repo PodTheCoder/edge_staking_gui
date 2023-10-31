@@ -142,10 +142,7 @@ pub async fn device_stop_from_frontend(
             log_and_emit(ok_message, backend_communicator);
             true
         }
-        Err(stderr_str) => {
-            log_and_emit(stderr_str, backend_communicator);
-            false
-        }
+        Err(_) => false,
     }
 }
 
@@ -164,10 +161,6 @@ pub async fn device_start_from_frontend(
             log_and_emit(ok_message, backend_communicator);
             true
         }
-        Err(stderr_str) => {
-            let error_message = format!("Could not start device. Error: {}", stderr_str);
-            log_and_emit(error_message, backend_communicator);
-            false
-        }
+        Err(_) => false,
     }
 }
