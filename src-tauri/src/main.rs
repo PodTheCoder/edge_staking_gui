@@ -424,6 +424,12 @@ fn main() {
         .add_native_item(SystemTrayMenuItem::Separator);
     let tray = SystemTray::new().with_menu(tray_menu);
 
+    // Fix PATH on MacOS & Linux https://tauri.app/v1/guides/building/macos/
+    // It's an official plugin and other plugins also use .unwrap
+    // TODO: Figure out how to add logging
+    fix_path_env::fix()
+        .expect("Program failed to start because it could not fix environment variables.");
+
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             add_device_from_frontend,
