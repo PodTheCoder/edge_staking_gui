@@ -133,20 +133,23 @@ pub async fn download_file(
         use std::os::unix::fs::PermissionsExt;
         let permissions_code = 0o744; //rwxr--r--
         match fs::set_permissions(
-            download_path_str,
+            download_path_str.clone(),
             PermissionsExt::from_mode(permissions_code),
         ) {
             Ok(_) => {
                 let ok_msg = format!(
                     "Set file {} permissions to {}",
-                    download_path_str, permissions_code
+                    download_path_str.clone(),
+                    permissions_code
                 );
                 log_and_emit(ok_msg, backend_communicator);
             }
             Err(err) => {
                 let err_msg = format!(
                     "Could not set file {} permissions to {}. Err: {}",
-                    download_path_str, permissions_code, err
+                    download_path_str.clone(),
+                    permissions_code,
+                    err
                 );
                 log_and_emit(err_msg, backend_communicator);
             }
@@ -154,7 +157,7 @@ pub async fn download_file(
     }
 
     #[cfg(target_family = "unix")]
-    set_unix_permissions(download_path_str, backend_communicator);
+    set_unix_permissions(download_path_str.clone(), backend_communicator);
 
     Ok(())
 }
