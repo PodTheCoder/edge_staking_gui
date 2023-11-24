@@ -1,7 +1,7 @@
 {
   "name": "edge_staking_gui",
   "private": true,
-  "version": "0.9.9",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
