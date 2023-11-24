@@ -152,7 +152,7 @@ async function auto_start_node(timer_seconds_delay = 30, recheck_limit = 60) {
       }
 
       if (recheck_count >= recheck_limit) {
-        const error_message = 'Could not start your node automatically. Try manually starting the node, do you meet all requirements? You might need to enable Docker launch at start. If the error persists, please contact support.'
+        const error_message = 'Could not start your node automatically. Try manually starting the node, do you meet all requirements? You might need to enable Docker launch at start. If the error persists, please contact support on the Edge Discord: https://ed.ge/discord.'
         await invoke('log_and_emit_from_frontend', {
           message: error_message,
           datadir: appLocalDataDirPath,
@@ -186,15 +186,26 @@ auto_start_node()
 <template>
   <div>
     <p>Automatically launch your node when your computer starts.</p>
-    <div v-if="!auto_start_enabled" class="card">
-      <button type="button" @click="enable_autostart()">
+    <div
+      v-if="!auto_start_enabled"
+      class="card"
+    >
+      <button
+        type="button"
+        @click="enable_autostart()"
+      >
         Enable Autostart (Recommended)
       </button>
     </div>
-    <div v-else class="card">
-      <button type="button" @click="disable_autostart()">
-        Disable Autostart
-      </button>
-    </div>
+    <div
+      v-else
+      class="card"
+  >
+    <button
+      type="button"
+      @click="disable_autostart()"
+    >
+      Disable Autostart
+    </button>
   </div>
-</template>
+</div></template>

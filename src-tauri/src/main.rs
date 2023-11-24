@@ -294,7 +294,7 @@ fn set_device_fully_initialized_from_frontend(window: Window, datadir: String) -
         }
         Err(err_str) => {
             let err_message = format!(
-                "Congratulations, your device is working! Yet was unable to set the initialization config value to true. On next restart, just click the start node button again. If the error keeps persisting, please contact support. Error: {}", err_str
+                "Congratulations, your device is working! Yet was unable to set the initialization config value to true. On next restart, just click the start node button again. If the error keeps persisting, please contact support on the Edge Discord: https://ed.ge/discord. Error: {}", err_str
             );
             let err_message_pretty = pretty_err_str(&err_message, false);
             log_and_emit(err_message_pretty, backend_communicator);
@@ -319,7 +319,7 @@ fn set_device_not_initialized_from_frontend(window: Window, datadir: String) -> 
         }
         Err(err) => {
             let err_message = format!(
-                "Unable to reset program to setup stage. Try pressing the button again and reloading. If the problem persists, contact support. Error: {}", err
+                "Unable to reset program to setup stage. Try pressing the button again and reloading. If the problem persists, contact support on the Edge Discord: https://ed.ge/discord. Error: {}", err
             );
             log_and_emit(err_message, backend_communicator);
             false

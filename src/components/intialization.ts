@@ -108,7 +108,7 @@ async function initial_device_start_from_frontend() {
   }
   else {
     // eslint-disable-next-line max-len
-    const err_message = 'Could not derive stake via Index. Has your assign device transaction been confirmed? Please try again. If the error persists, contact support.'
+    const err_message = 'Could not derive stake via Index. Has your assign device transaction been confirmed? Please try again. If the error persists, contact support on the Edge Discord: https://ed.ge/discord.'
     await invoke('log_and_emit_from_frontend', {
       message: err_message,
       datadir: appLocalDataDirPath,
@@ -135,7 +135,7 @@ async function initial_device_start_from_frontend() {
   }
   else {
     // eslint-disable-next-line max-len
-    const next_step_msg = 'Could not start node. Make sure you have the latest CLI installed and that Docker is running. Then try again. If the error persists, contact support.'
+    const next_step_msg = 'Could not start node. Make sure you have the latest CLI installed and that Docker is running. Then try again. If the error persists, contact support on the Edge Discord: https://ed.ge/discord.'
     await invoke('log_and_emit_from_frontend', {
       message: next_step_msg,
       datadir: appLocalDataDirPath,
@@ -276,7 +276,7 @@ async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>,
       if (recheck_count >= recheck_limit) {
         const error_message = ('Could not find your node online after several retries'
           + 'Please double check if your device code was correctly assigned.'
-          + 'Try starting the node again. If the error keeps persisting, contact support.')
+          + 'Try starting the node again. If the error keeps persisting, contact support on the Edge Discord: https://ed.ge/discord.')
         await invoke('log_and_emit_from_frontend', {
           message: error_message,
           datadir: appLocalDataDirPath,

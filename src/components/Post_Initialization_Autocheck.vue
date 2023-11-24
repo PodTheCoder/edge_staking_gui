@@ -52,13 +52,13 @@ async function PostInitializationAutocheck(timer_seconds_delay = 3600) {
       })
 
       if ((await check_node_online_status(node_address)) === false) {
-        const err_msg = 'Node not online according to index. Check if your node is running. If the issue persists, contact support.'
+        const err_msg = 'Node not online according to index. Check if your node is running. If the issue persists, contact support on the Edge Discord: https://ed.ge/discord.'
         await invoke('log_and_emit_from_frontend', {
           message: err_msg,
           datadir: appLocalDataDirPath,
           window: appWindow
         })
-        send_notification('Node not online.', 'Your Edge node is not currently online according to index. Double check if your node is started. If you keep getting this error message, please contact support.')
+        send_notification('Node not online.', 'Your Edge node is not currently online according to index. Double check if your node is started. If you keep getting this error message, please contact support on the Edge Discord: https://ed.ge/discord.')
 
       }
 

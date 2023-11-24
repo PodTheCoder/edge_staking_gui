@@ -78,7 +78,7 @@ async function back_to_setup() {
     sync_initialization_status(deviceInitialized)
   }
   else {
-    const next_step_msg = 'Reset not successful. Your node could not be automatically stopped. Make sure you have the latest CLI installed and that Docker is running. Then try again. If the error persists, contact support.'
+    const next_step_msg = 'Reset not successful. Your node could not be automatically stopped. Make sure you have the latest CLI installed and that Docker is running. Then try again. If the error persists, contact support on the Edge Discord: https://ed.ge/discord.'
     await invoke('log_and_emit_from_frontend', {
       message: next_step_msg,
       datadir: appLocalDataDirPath,
