@@ -44,6 +44,9 @@ A: On the Edge Discord: https://ed.ge/discord.
 - Frontend -> Vue with Vite.
 - Backend -> Rust.
 
+## Maintenance
+The program was designed to be low maintenance & keep working in the future. It heavily relies on the official Edge `cli` & `xe-utils`. I consider the GUI feature-complete. The core functionality works without extra frills.
+
 ## Development
 
 Prerequisites: https://tauri.app/v1/guides/getting-started/prerequisites
