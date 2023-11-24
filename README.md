@@ -1,11 +1,11 @@
-# Pod's Edge Staking GUI (beta)
+# Pod's Edge Staking GUI
 
 ## Features
 - Easily setup & control your Edge host with a GUI (Graphical User Interface).
 - Improve your security. By design, the GUI has no access to your XE wallet.
 - Autolaunch your node. Can also launch minimized for a seamless experience.
 - Get notified when you receive node earnings or when your node is offline.
-- Cross-platform 64-bit for processors supported by the Edge CLI (Intel64/AMD64). Windows 7+, Mac 10.15+, and experimental Linux support.
+- Cross-platform. Windows 7+, Mac 10.15+, and experimental Linux support.
 - Helpful error messages.
 - Fast & small program.
 
@@ -13,6 +13,11 @@
 <img width="597" alt="edge-staking-gui - Copy" src="https://github.com/PodTheCoder/edge_staking_gui/assets/113918164/26217e9c-894d-47dd-8d4d-fcc30fd3d8f4">
 
 ## Frequently Asked Questions
+
+Q: My installer says the app/developer is unrecognized. "Microsoft Defender SmartScreen prevented an unrecognised app from starting."
+
+A: This is expected because the Edge Staking GUI is a new program and does not yet have code signing. To continue on Microsoft Defender Smartscreen, click on "More info -> Run anyway". On MacOS you might also need to explicitly choose to trust the unidentified developer.
+
 Q: How does the GUI improve security?
 
 A: The GUI improves security compared to the traditional approach by implementing the *device token* staking method. The major benefit of this method is that the GUI has no access to your wallet. Furthermore, the official Edge software is used under the hood and the software is open source.
@@ -29,13 +34,9 @@ A: Network switching is an advanced feature.
 
 - Restart the program & follow the steps in the GUI.
 
-Q: My installer says the app/developer is unrecognized. Eg. Running the .msi installer I get the error: Microsoft Defender SmartScreen prevented an unrecognised app from starting.
-
-A: This is expected because the Edge Staking GUI is a new program and does not yet have code signing. To continue on Microsoft Defender Smartscreen, click on "More info -> Run anyway". On MacOS you might also need to explicitly choose to trust the unidentified developer.
-
 Q: Help I am stuck. Where can I get support?
 
-A: On the Edge Discord: https://ed.ge/discord. Ask in the *staking-support* channel.
+A: On the Edge Discord: https://ed.ge/discord.
 
 
 ## Nerd Info
