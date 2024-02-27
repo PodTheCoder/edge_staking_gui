@@ -27,11 +27,13 @@ async function PostInitializationAutocheck(timer_seconds_delay = 3600) {
   let recheck_count = 0
   if (!isPostInitializationAutocheckActive) {
     isPostInitializationAutocheckActive = true
+    // @ts-ignore
     const AutoCheckNode = setInterval(async () => {
       recheck_count += 1
 
       const device_is_initialized = await check_device_initialization()
       if (!device_is_initialized) {
+        // @ts-ignore
         clearInterval(AutoCheckNode)
       }
 

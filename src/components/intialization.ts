@@ -210,6 +210,7 @@ async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>,
   let recheck_count = 0
   if (!isNodeOnlineAutocheckActive) {
     isNodeOnlineAutocheckActive = true
+    // @ts-ignore
     const AutoCheckNodeOnline = setInterval(async () => {
       recheck_count += 1
       const recheck_message = 'Rechecking node online status. Count : ' + recheck_count
@@ -292,6 +293,7 @@ async function auto_recheck_node_online(deviceInitializedref: Ref<boolean>,
 
   function Disable_Autocheck_Node_online(AutoCheckNodeOnline: NodeJS.Timer) {
     isNodeOnlineAutocheckActive = false
+    // @ts-ignore
     clearInterval(AutoCheckNodeOnline)
   }
 }

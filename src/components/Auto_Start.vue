@@ -118,11 +118,13 @@ async function auto_start_node(timer_seconds_delay = 30, recheck_limit = 60) {
   let recheck_count = 0
   if (!isNodeAutostartIntervalActive) {
     isNodeAutostartIntervalActive = true
+    // @ts-ignore
     const AutoStartNode = setInterval(async () => {
       recheck_count += 1
 
       const device_is_initialized = await check_device_initialization()
       if (!device_is_initialized) {
+        // @ts-ignore
         clearInterval(AutoStartNode)
       }
 
@@ -148,6 +150,7 @@ async function auto_start_node(timer_seconds_delay = 30, recheck_limit = 60) {
         })
         send_notification('Node Autostarted', 'Your Edge node has successfully autostarted!')
         // Stop autochecking
+        // @ts-ignore
         clearInterval(AutoStartNode)
       }
 
@@ -159,6 +162,7 @@ async function auto_start_node(timer_seconds_delay = 30, recheck_limit = 60) {
           window: appWindow
         })
         // Stop autochecking
+        // @ts-ignore
         clearInterval(AutoStartNode)
       }
     }, timer_seconds_delay * 1000)
